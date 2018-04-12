@@ -1,0 +1,74 @@
+PATH
+  remote: .
+  specs:
+    form_obj (0.1.0)
+      activemodel (>= 3.2)
+      typed_array (>= 1.0.0)
+
+GEM
+  remote: https://rubygems.org/
+  specs:
+    actionpack (3.2.22.5)
+      activemodel (= 3.2.22.5)
+      activesupport (= 3.2.22.5)
+      builder (~> 3.0.0)
+      erubis (~> 2.7.0)
+      journey (~> 1.0.4)
+      rack (~> 1.4.5)
+      rack-cache (~> 1.2)
+      rack-test (~> 0.6.1)
+      sprockets (~> 2.2.1)
+    activemodel (3.2.22.5)
+      activesupport (= 3.2.22.5)
+      builder (~> 3.0.0)
+    activesupport (3.2.22.5)
+      i18n (~> 0.6, >= 0.6.4)
+      multi_json (~> 1.0)
+    builder (3.0.4)
+    concurrent-ruby (1.0.5)
+    diff-lcs (1.3)
+    erubis (2.7.0)
+    hike (1.2.3)
+    i18n (0.9.3)
+      concurrent-ruby (~> 1.0)
+    journey (1.0.4)
+    multi_json (1.13.1)
+    rack (1.4.7)
+    rack-cache (1.7.1)
+      rack (>= 0.4)
+    rack-test (0.6.3)
+      rack (>= 1.0)
+    rake (10.5.0)
+    rspec (3.7.0)
+      rspec-core (~> 3.7.0)
+      rspec-expectations (~> 3.7.0)
+      rspec-mocks (~> 3.7.0)
+    rspec-core (3.7.1)
+      rspec-support (~> 3.7.0)
+    rspec-expectations (3.7.0)
+      diff-lcs (>= 1.2.0, < 2.0)
+      rspec-support (~> 3.7.0)
+    rspec-mocks (3.7.0)
+      diff-lcs (>= 1.2.0, < 2.0)
+      rspec-support (~> 3.7.0)
+    rspec-support (3.7.1)
+    sprockets (2.2.3)
+      hike (~> 1.2)
+      multi_json (~> 1.0)
+      rack (~> 1.0)
+      tilt (~> 1.1, != 1.3.0)
+    tilt (1.4.1)
+    typed_array (1.0.1)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  actionpack (>= 3.2)
+  bundler (~> 1.16)
+  form_obj!
+  rake (~> 10.0)
+  rspec (~> 3.0)
+
+BUNDLED WITH
+   1.16.1

@@ -1,5 +1,8 @@
 require "bundler/setup"
 require "form_obj"
+require 'action_view'
+require 'action_pack'
+require 'action_controller'
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure
@@ -10,5 +13,17 @@ RSpec.configure do |config|
 
   config.expect_with :rspec do |c|
     c.syntax = :expect
+  end
+end
+
+RSpec.shared_context 'renderable' do
+  include ActionController::RecordIdentifier
+  include ActionView::Context
+  include ActionView::Helpers::FormHelper
+
+  before { _prepare_context }
+
+  def protect_against_forgery?
+    false
   end
 end
