@@ -21,8 +21,8 @@ class FormObj
       ids_exists = []
       items_to_add = []
 
-      vals.map(&:with_indifferent_access).each do |val|
-        id = val[item_class.primary_key]
+      vals.each do |val|
+        id = hash_val(val, item_class.primary_key)
         item = self.find { |i| i.primary_key == id }
         if item
           item.update_attributes(val)
@@ -39,7 +39,7 @@ class FormObj
         self.create.update_attributes(item)
       end
 
-      sort! { |a, b| vals.index { |val| val[item_class.primary_key] == a.primary_key } <=> vals.index { |val| val[item_class.primary_key] == b.primary_key } }
+      sort! { |a, b| vals.index { |val| hash_val(val, item_class.primary_key) == a.primary_key } <=> vals.index { |val| hash_val(val, item_class.primary_key) == b.primary_key } }
     end
 
     def save_to_models(models)
@@ -91,6 +91,10 @@ class FormObj
     def export_to_model_hash(models)
       self.each { |item| models[:default] << item.export_to_model_hash(models.merge(default: {}))[:default] }
       models
+    end
+
+    def hash_val(hash, key)
+      hash.key?(key.to_sym) ? hash[key.to_sym] : hash[key.to_s]
     end
   end
 end
