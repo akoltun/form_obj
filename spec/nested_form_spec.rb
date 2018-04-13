@@ -1,4 +1,4 @@
-RSpec.describe FormObj, concept: true do
+RSpec.describe 'Nested Form Object' do
   include_context 'renderable'
 
   subject do
@@ -42,24 +42,22 @@ RSpec.describe FormObj, concept: true do
     end
   end
 
-  describe 'nested form' do
+  context 'Implicit declaration of form objects' do
 
-    module NestedForm
-      class Form < FormObj
-        attribute :name
-        attribute :year
-        attribute :car do
-          attribute :model
-          attribute :driver
-          attribute :engine do
-            attribute :power
-            attribute :volume
-          end
+    class ImplicitNestedForm < FormObj
+      attribute :name
+      attribute :year
+      attribute :car do
+        attribute :model
+        attribute :driver
+        attribute :engine do
+          attribute :power
+          attribute :volume
         end
       end
     end
 
-    let(:form) { NestedForm::Form.new }
+    let(:form) { ImplicitNestedForm.new }
     before do
       form.name = 'Ferrari'
       form.year = 1950
@@ -72,9 +70,9 @@ RSpec.describe FormObj, concept: true do
     it_behaves_like 'rendered form'
   end
 
-  describe 'explicit declaration of each nested form' do
+  context 'Explicit declaration of form objects' do
 
-    module NestedForm
+    module ExplicitNested
       class EngineForm < FormObj
         attribute :power
         attribute :volume
@@ -90,9 +88,9 @@ RSpec.describe FormObj, concept: true do
         attribute :car, class: CarForm
       end
     end
+    let(:form) { ExplicitNested::TeamForm.new }
 
-    context 'dot notation' do
-      let(:form) { NestedForm::TeamForm.new }
+    context 'implicit creation of nested form object instances (via dot notation)' do
       before do
         form.name = 'Ferrari'
         form.year = 1950
@@ -105,10 +103,9 @@ RSpec.describe FormObj, concept: true do
       it_behaves_like 'rendered form'
     end
 
-    context 'explicit class creation notation' do
-      let(:form) { NestedForm::TeamForm.new }
-      let(:car_form) { NestedForm::CarForm.new }
-      let(:engine_form) { NestedForm::EngineForm.new }
+    context 'explicit creation of nested form object instances' do
+      let(:car_form) { ExplicitNested::CarForm.new }
+      let(:engine_form) { ExplicitNested::EngineForm.new }
       before do
         engine_form.power = 335
         engine_form.volume = 4.1

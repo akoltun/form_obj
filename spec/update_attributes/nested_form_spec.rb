@@ -1,4 +1,4 @@
-RSpec.describe 'FormObj - update attributes', concept: true do
+RSpec.describe 'update_attributes: Nested Form Object' do
   shared_examples 'updated form' do
     let(:update_attributes) {
       form.update_attributes(
@@ -31,26 +31,25 @@ RSpec.describe 'FormObj - update attributes', concept: true do
     end
   end
 
-  context 'nested forms present' do
-    describe 'nested form' do
-      module UpdateAttributes
-        module NestedForm
-          class Form < FormObj
-            attribute :name
-            attribute :car do
-              attribute :model
-              attribute :engine do
-                attribute :power
-                attribute :volume
-              end
-              attribute :driver
-            end
-            attribute :year
+  describe 'Implicit declaration of form object classes' do
+    module UpdateAttributes
+      class ImplicitNestedForm < FormObj
+        attribute :name
+        attribute :car do
+          attribute :model
+          attribute :engine do
+            attribute :power
+            attribute :volume
           end
+          attribute :driver
         end
+        attribute :year
       end
+    end
 
-      let(:form) { UpdateAttributes::NestedForm::Form.new }
+    let(:form) { UpdateAttributes::ImplicitNestedForm.new }
+
+    context 'nested forms present already' do
       before do
         form.name = 'Ferrari'
         form.year = 1950
@@ -63,29 +62,39 @@ RSpec.describe 'FormObj - update attributes', concept: true do
       it_behaves_like 'updated form'
     end
 
-    describe 'explicit declaration of each nested form' do
-
-      module UpdateAttributes
-        module NestedForm
-          class EngineForm < FormObj
-            attribute :power
-            attribute :volume
-          end
-          class CarForm < FormObj
-            attribute :model
-            attribute :engine, class: EngineForm
-            attribute :driver
-          end
-          class TeamForm < FormObj
-            attribute :name
-            attribute :car, class: CarForm
-            attribute :year
-          end
-        end
+    context 'nested forms not present yet' do
+      before do
+        form.name = 'Ferrari'
+        form.year = 1950
       end
 
-      context 'dot notation' do
-        let(:form) { UpdateAttributes::NestedForm::TeamForm.new }
+      it_behaves_like 'updated form'
+    end
+  end
+
+  context 'Explicit declaration of form object classes' do
+    module UpdateAttributes
+      module ExplicitNested
+        class EngineForm < FormObj
+          attribute :power
+          attribute :volume
+        end
+        class CarForm < FormObj
+          attribute :model
+          attribute :engine, class: EngineForm
+          attribute :driver
+        end
+        class TeamForm < FormObj
+          attribute :name
+          attribute :car, class: CarForm
+          attribute :year
+        end
+      end
+    end
+    let(:form) { UpdateAttributes::ExplicitNested::TeamForm.new }
+
+    context 'nested forms present already' do
+      context 'implicit creation of nested form object instances (via dot notation)' do
         before do
           form.name = 'Ferrari'
           form.year = 1950
@@ -97,11 +106,9 @@ RSpec.describe 'FormObj - update attributes', concept: true do
 
         it_behaves_like 'updated form'
       end
-
-      context 'explicit class creation notation' do
-        let(:form) { UpdateAttributes::NestedForm::TeamForm.new }
-        let(:car_form) { UpdateAttributes::NestedForm::CarForm.new }
-        let(:engine_form) { UpdateAttributes::NestedForm::EngineForm.new }
+      context 'explicit creation of nested form object instances' do
+        let(:car_form) { UpdateAttributes::ExplicitNested::CarForm.new }
+        let(:engine_form) { UpdateAttributes::ExplicitNested::EngineForm.new }
         before do
           engine_form.power = 335
           engine_form.volume = 4.1
@@ -117,59 +124,10 @@ RSpec.describe 'FormObj - update attributes', concept: true do
 
         it_behaves_like 'updated form'
       end
-    end
-  end
 
-  context 'nested forms not present yet' do
-    describe 'nested form' do
-      module UpdateAttributes
-        module NestedForm
-          class Form < FormObj
-            attribute :name
-            attribute :car do
-              attribute :model
-              attribute :engine do
-                attribute :power
-                attribute :volume
-              end
-              attribute :driver
-            end
-            attribute :year
-          end
-        end
-      end
-
-      let(:form) { UpdateAttributes::NestedForm::Form.new }
-      before do
-        form.name = 'Ferrari'
-        form.year = 1950
-      end
-
-      it_behaves_like 'updated form'
     end
 
-    describe 'explicit declaration of each nested form' do
-
-      module UpdateAttributes
-        module NestedForm
-          class EngineForm < FormObj
-            attribute :power
-            attribute :volume
-          end
-          class CarForm < FormObj
-            attribute :model
-            attribute :engine, class: EngineForm
-            attribute :driver
-          end
-          class TeamForm < FormObj
-            attribute :name
-            attribute :car, class: CarForm
-            attribute :year
-          end
-        end
-      end
-
-      let(:form) { UpdateAttributes::NestedForm::TeamForm.new }
+    context 'nested forms not present yet' do
       before do
         form.name = 'Ferrari'
         form.year = 1950

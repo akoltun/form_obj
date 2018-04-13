@@ -1,4 +1,4 @@
-RSpec.describe FormObj, concept: true do
+RSpec.describe 'Array of Form Objects' do
   include_context 'renderable'
 
   subject do
@@ -44,24 +44,22 @@ RSpec.describe FormObj, concept: true do
     end
   end
 
-  describe 'array of nested forms' do
+  context 'Implicit declaration of form objects' do
 
-    module ArrayOfForms
-      class Form < FormObj
-        attribute :name
-        attribute :year
-        attribute :cars, array: true do
-          attribute :model
-          attribute :driver
-          attribute :engine do
-            attribute :power
-            attribute :volume
-          end
+    class ImplicitArrayForm < FormObj
+      attribute :name
+      attribute :year
+      attribute :cars, array: true do
+        attribute :model
+        attribute :driver
+        attribute :engine do
+          attribute :power
+          attribute :volume
         end
       end
     end
 
-    let(:form) { ArrayOfForms::Form.new }
+    let(:form) { ImplicitArrayForm.new }
     before do
       form.name = 'Ferrari'
       form.year = 1950
@@ -83,9 +81,9 @@ RSpec.describe FormObj, concept: true do
     it_behaves_like 'rendered form'
   end
 
-  describe 'explicit declaration of nested forms in array' do
+  context 'Explicit declaration of form objects' do
 
-    module ArrayOfForms
+    module ExplicitArray
       class EngineForm < FormObj
         attribute :power
         attribute :volume
@@ -102,8 +100,8 @@ RSpec.describe FormObj, concept: true do
       end
     end
 
-    context 'dot notation' do
-      let(:form) { ArrayOfForms::TeamForm.new }
+    context 'implicit creation of array of form objects (via dot notation)' do
+      let(:form) { ExplicitArray::TeamForm.new }
       before do
         form.name = 'Ferrari'
         form.year = 1950
@@ -125,23 +123,23 @@ RSpec.describe FormObj, concept: true do
       it_behaves_like 'rendered form'
     end
 
-    context 'explicit class creation notation' do
-      let(:form) { ArrayOfForms::TeamForm.new }
+    context 'explicit creation of array of form objects' do
+      let(:form) { ExplicitArray::TeamForm.new }
       before do
-        engine1 = ArrayOfForms::EngineForm.new
+        engine1 = ExplicitArray::EngineForm.new
         engine1.power = 335
         engine1.volume = 4.1
 
-        car1 = ArrayOfForms::CarForm.new
+        car1 = ExplicitArray::CarForm.new
         car1.model = '340 F1'
         car1.driver = 'Ascari'
         car1.engine = engine1
 
-        engine2 = ArrayOfForms::EngineForm.new
+        engine2 = ExplicitArray::EngineForm.new
         engine2.power = 300
         engine2.volume = 3.3
 
-        car2 = ArrayOfForms::CarForm.new
+        car2 = ExplicitArray::CarForm.new
         car2.model = '275 F1'
         car2.driver = 'Villoresi'
         car2.engine = engine2
