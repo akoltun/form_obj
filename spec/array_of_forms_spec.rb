@@ -49,15 +49,15 @@ RSpec.describe FormObj, concept: true do
     module ArrayOfForms
       class Form < FormObj
         attribute :name
+        attribute :year
         attribute :cars, array: true do
           attribute :model
+          attribute :driver
           attribute :engine do
             attribute :power
             attribute :volume
           end
-          attribute :driver
         end
-        attribute :year
       end
     end
 
@@ -92,13 +92,13 @@ RSpec.describe FormObj, concept: true do
       end
       class CarForm < FormObj
         attribute :model
-        attribute :engine, class: EngineForm
         attribute :driver
+        attribute :engine, class: EngineForm
       end
       class TeamForm < FormObj
         attribute :name
-        attribute :cars, array: true, class: CarForm
         attribute :year
+        attribute :cars, array: true, class: CarForm
       end
     end
 

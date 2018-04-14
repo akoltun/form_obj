@@ -4,15 +4,15 @@ RSpec.describe FormObj, concept: true do
   subject do
     form_for form, url: '/form' do |f|
       concat f.text_field :name
+      concat f.text_field :year
       concat(f.fields_for(:car) do |fc|
         concat fc.text_field :model
+        concat fc.text_field :driver
         concat(fc.fields_for(:engine) do |fce|
           concat fce.text_field :power
           concat fce.text_field :volume
         end)
-        concat fc.text_field :driver
       end)
-      concat f.text_field :year
     end
   end
 
@@ -47,15 +47,15 @@ RSpec.describe FormObj, concept: true do
     module NestedForm
       class Form < FormObj
         attribute :name
+        attribute :year
         attribute :car do
           attribute :model
+          attribute :driver
           attribute :engine do
             attribute :power
             attribute :volume
           end
-          attribute :driver
         end
-        attribute :year
       end
     end
 
@@ -81,13 +81,13 @@ RSpec.describe FormObj, concept: true do
       end
       class CarForm < FormObj
         attribute :model
-        attribute :engine, class: EngineForm
         attribute :driver
+        attribute :engine, class: EngineForm
       end
       class TeamForm < FormObj
         attribute :name
-        attribute :car, class: CarForm
         attribute :year
+        attribute :car, class: CarForm
       end
     end
 

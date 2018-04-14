@@ -1,8 +1,7 @@
 # FormObj
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/form_obj`. To experiment with that code, run `bin/console` for an interactive prompt.
-
-TODO: Delete this and the text above, and describe your gem
+Form Object allows to describe complicated data structure (nesting, arrays) and use it with Rails-cmpatible form builders.
+Form Object can serialize and deserialize itself to/from model and hash.
 
 ## Installation
 
@@ -22,7 +21,154 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+**WARNING!!!** The gem is still under development. Expecting braking changes.<br/>
+**WARNING!!!** Documentation is still under development. All working examples could be taken from the tests.
+
+### Definition
+
+Inherit your class from `FormObj` and define its attributes.
+
+```ruby
+class SimpleForm < FormObj
+  attribute :name
+  attribute :year
+end
+```
+
+Use it in form builder.
+
+```ruby
+<%= form_for(@simple_form) do |f| %>
+  <%= f.label :name %>
+  <%= f.text_field :name %>
+
+  <%= f.label :year %>
+  <%= f.text_field :year %>
+<% end %>
+```
+
+#### Nested Form Objects
+
+Use blocks to define nested forms.
+
+```ruby
+class NestedForm < FormObj
+  attribute :name
+  attribute :year
+  attribute :car do
+    attribute :model
+    attribute :driver
+    attribute :engine do
+      attribute :power
+      attribute :volume
+    end
+  end
+end
+```
+
+Or explicitly define nested form class.
+
+```ruby
+class EngineForm < FormObj
+  attribute :power
+  attribute :volume
+end
+class CarForm < FormObj
+  attribute :model
+  attribute :driver
+  attribute :engine, class: EngineForm
+end
+class NestedForm < FormObj
+  attribute :name
+  attribute :year
+  attribute :car, class: CarForm
+end
+```
+
+Use nested forms in form builder.
+
+```ruby
+<%= form_for(@nested_form) do |f| %>
+  <%= f.label :name %>
+  <%= f.text_field :name %>
+
+  <%= f.label :year %>
+  <%= f.text_field :year %>
+
+  <%= f.fields_for(:car) do |fc| %>
+    <%= fc.label :model %>
+    <%= fc.text_field :model %>
+
+    <%= fc.label :driver %>
+    <%= fc.text_field :driver %>
+
+    <%= fc.field_for(:engine) do |fce| %>
+      <%= fce.label :power %>
+      <%= fce.text_field :power %>
+
+      <%= fce.label :volume %>
+      <%= fce.text_field :volume %>
+    <% end %>
+  <% end %>
+<% end %>
+```
+
+#### Array of Form Objects
+
+Specify attribute parameter `array: true` in order to define an array of form objects
+
+```ruby
+class FormArray < FormObj
+  attribute :name
+  attribute :year
+  attribute :cars, array: true do
+    attribute :model
+    attribute :driver
+    attribute :engine do
+      attribute :power
+      attribute :volume
+    end
+  end
+end
+```
+
+or
+
+```ruby
+class EngineForm < FormObj
+  attribute :power
+  attribute :volume
+end
+class CarForm < FormObj
+  attribute :model
+  attribute :driver
+  attribute :engine, class: EngineForm
+end
+class FormArray < FormObj
+  attribute :name
+  attribute :year
+  attribute :cars, array: true, class: CarForm
+end
+```
+
+Add new elements in the array by using method :create on which adds a new it.
+
+```ruby
+form_array = FormArray.new
+form_array.size 				# => 0
+form_array.cars.create
+form_array.size 				# => 1
+```
+
+### Update attributes
+
+...
+
+### Serialize to hash
+
+...
+
+### 
 
 ## Development
 
@@ -32,7 +178,7 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/form_obj.
+Bug reports and pull requests are welcome on GitHub at https://github.com/akoltun/form_obj.
 
 ## License
 
