@@ -118,7 +118,7 @@ Use nested forms in form builder.
 Specify attribute parameter `array: true` in order to define an array of form objects
 
 ```ruby
-class FormArray < FormObj
+class ArrayForm < FormObj
   attribute :name
   attribute :year
   attribute :cars, array: true do
@@ -144,7 +144,7 @@ class CarForm < FormObj
   attribute :driver
   attribute :engine, class: EngineForm
 end
-class FormArray < FormObj
+class ArrayForm < FormObj
   attribute :name
   attribute :year
   attribute :cars, array: true, class: CarForm
@@ -154,10 +154,10 @@ end
 Add new elements in the array by using method :create on which adds a new it.
 
 ```ruby
-form_array = FormArray.new
-form_array.size 				# => 0
-form_array.cars.create
-form_array.size 				# => 1
+array_form = ArrayForm.new
+array_form.size 				# => 0
+array_form.cars.create
+array_form.size 				# => 1
 ```
 
 ### Update attributes
