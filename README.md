@@ -160,7 +160,95 @@ array_form.cars.create
 array_form.size 				# => 1
 ```
 
-### Update attributes
+### Update Attributes
+
+Update form object attributes with the parameter hash received from the browser.
+
+```ruby
+simple_form = SimpleForm.new
+simple_form.update_attributes(
+                                name: 'Ferrari',
+                                year: 1950
+                             )
+```
+
+#### Nested Form Objects
+
+```ruby
+nested_form = NestedForm.new
+nested_form.update_attributes(
+                                name: 'McLaren',
+                                year: 1966,
+                                car: {
+                                  model: 'M2B',
+                                  driver: 'Bruce McLaren',
+                                  engine: {
+                                    power: 300,
+                                    volume: 3.0
+                                  }
+                                }
+                             )
+```
+
+#### Array of Form Objects
+
+In order to identify objects in array the primary key has to be specified. If it is not specified the :id field is supposed to be a primary key.
+Primary key can be specified either on the attribute level or on the form level
+
+```ruby
+class FormArray < FormObj
+  attribute :name
+  attribute :year
+  attribute :cars, array: true do
+    attribute :model, primary_key: true     # <- primary key is specified on attribute level
+    attribute :driver
+    attribute :engine do
+      attribute :power
+      attribute :volume
+    end
+  end
+end
+``` 
+
+```ruby
+class FormArray < FormObj
+  attribute :name
+  attribute :year
+  attribute :cars, array: true, primary_key: :model do     # <- primary key is specified on form level
+    attribute :model
+    attribute :driver
+    attribute :engine do
+      attribute :power
+      attribute :volume
+    end
+  end
+end
+``` 
+
+```ruby
+array_form = ArrayForm.new
+array_form.update_attributes(
+                              name: 'McLaren',
+                              year: 1966,
+                              cars: [
+                                  {
+                                      model: 'M2B',
+                                      driver: 'Bruce McLaren',
+                                      engine: {
+                                          volume: 3.0
+                                      }
+                                  }, {
+                                      model: 'M7A',
+                                      driver: 'Denis Hulme',
+                                      engine: {
+                                          power: 415,
+                                      }
+                                  }
+                              ],
+                            )
+```
+
+
 
 ...
 
