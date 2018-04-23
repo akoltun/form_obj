@@ -249,14 +249,31 @@ array_form.update_attributes(
 ```
 
 
+### Serialize to Hash
+
+### Map Form Object to Models
 
 ...
 
-### Serialize to hash
+### Load Form Object from Models
 
 ...
 
-### 
+### Save Form Object to Models
+
+...
+
+### Serialize Form Object to Model Hash
+
+...
+
+### Copy Model Errors into Form Object
+
+... 
+
+### Rails example
+
+...
 
 ## Development
 
