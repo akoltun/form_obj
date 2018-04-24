@@ -351,7 +351,124 @@ array_form.to_hash      # => {
 
 ### Map Form Object to Models
 
-...
+Map form object attributes to one or few models by using `:model` and `:model_attribute` parameters.
+By default each form object attribute is mapped to the model attribute with the same name of the `:default` model. 
+
+Use dot notation to map model attribute to nested model. Use colon to specify "hash" attribute.
+
+```ruby
+class SimpleForm < FormObj
+  attribute :name, model_attribute: :team_name
+  attribute :year
+  attribute :engine_power, model_attribute: 'car.:engine.power'
+end
+```
+
+Suppose `form = SimpleForm.new` and `model` to be an instance of a model.
+
+| Form Object attribute | Model attribute |
+| --------------------- | --------------- |
+| `form.name` | `model.team_name` |
+| `form.year` | `model.year` |
+| `form.engine_power` | `model.car[:engine].power` |
+
+#### Multiple Models Example
+
+```ruby
+class MultiForm < FormObj
+  attribute :name, model_attribute: :team_name
+  attribute :year
+  attribute :engine_power, model: :car, model_attribute: ':engine.power'
+end
+```
+
+Suppose `multi_form = MultiForm.new` and `default`, `car` to be instances of two models.
+
+| Form Object attribute | Model attribute |
+| --------------------- | --------------- |
+| `multi_form.name` | `default.team_name` |
+| `multi_form.year` | `default.year` |
+| `multi_form.engine_power` | `car[:engine].power` |
+
+#### Skip Attribute Mapping (not implemented yet)
+
+Use `model_attribute: false` in order to avoid attribute mapping to the model.
+
+```ruby
+class SimpleForm < FormObj
+  attribute :name, model_attribute: :team_name
+  attribute :year
+  attribute :engine_power, model_attribute: false
+end
+```
+
+Suppose `form = SimpleForm.new` and `model` to be an instance of a model.
+
+| Form Object attribute | Model attribute |
+| --------------------- | --------------- |
+| `form.name` | `model.team_name` |
+| `form.year` | `model.year` |
+| `form.engine_power` | - |
+
+##### Map Nested Form Object Attribute to Parent Level Model Attribute
+
+Use `model_attribute: false` for nested form object in order to map its attributes to the parent level of the model.
+
+```ruby
+class NestedForm < FormObj
+  attribute :name, model_attribute: :team_name
+  attribute :year
+  attribute :car, model_attribute: false do   # nesting only in form object but not in a model
+    attribute :model
+    attribute :driver
+    attribute :engine do
+      attribute :power
+      attribute :volume
+    end
+  end
+end
+```
+
+Suppose `form = NestedForm.new` and `model` to be an instance of a model.
+
+| Form Object attribute | Model attribute |
+| --------------------- | --------------- |
+| `form.name` | `model.team_name` |
+| `form.year` | `model.year` |
+| `form.car.model` | `model.model` |
+| `form.car.driver` | `model.driver` |
+| `form.car.engine.power` | `model.engine.power` |
+| `form.car.engine.volume` | `model.engine.volume` |
+
+#### Map Nested Form Object to A Hash Model
+
+Use `hash: true` in order to map a nested form object to a hash as a model.
+
+```ruby
+class NestedForm < FormObj
+  attribute :name, model_attribute: :team_name
+  attribute :year
+  attribute :car, hash: true do   # nesting only in form object but not in a model
+    attribute :model
+    attribute :driver
+    attribute :engine do
+      attribute :power
+      attribute :volume
+    end
+  end
+end
+```
+
+Suppose `form = NestedForm.new` and `model` to be an instance of a model.
+
+| Form Object attribute | Model attribute |
+| --------------------- | --------------- |
+| `form.name` | `model.team_name` |
+| `form.year` | `model.year` |
+| `form.car.model` | `model.car[:model]` |
+| `form.car.driver` | `model.car[:driver]` |
+| `form.car.engine.power` | `model.car[:engine].power` |
+| `form.car.engine.volume` | `model.car[:engine].volume` |
 
 ### Load Form Object from Models
 
