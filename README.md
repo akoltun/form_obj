@@ -299,6 +299,56 @@ array_form.cars[1].engine.volume    # => nil    - this value is nil because this
 
 ### Serialize to Hash
 
+Call `to_hash` method in order to get hash representation of the form object
+
+```ruby
+simple_form.to_hash     # => {
+                        # =>    :name => "McLaren",
+                        # =>    :year => 1966  
+                        # => }
+```
+
+#### Nested Form Objects
+
+```ruby
+nested_form.to_hash     # => {
+                        # =>    :name => "McLaren",
+                        # =>    :year => 1966,
+                        # =>    :car  => {
+                        # =>      :model => "340 F1",
+                        # =>      :driver => "Ascari",
+                        # =>      :engine => {
+                        # =>        :power => 335,
+                        # =>        :volume => 4.1
+                        # =>      }   
+                        # =>    }
+                        # => }
+```
+
+#### Array of Form Objects
+
+```ruby
+array_form.to_hash      # => {
+                        # =>    :name => "McLaren",
+                        # =>    :year => 1966,
+                        # =>    :cars => [{
+                        # =>      :model => "M2B",
+                        # =>      :driver => "Bruce McLaren",
+                        # =>      :engine => {
+                        # =>        :power => 300,
+                        # =>        :volume => 3.0
+                        # =>      }
+                        # =>    }, {
+                        # =>      :model => "M7A",
+                        # =>      :driver => "Denis Hulme",
+                        # =>      :engine => {
+                        # =>        :power => 415,
+                        # =>        : volume => nil
+                        # =>      }
+                        # =>    }] 
+                        # => }
+```
+
 ### Map Form Object to Models
 
 ...
