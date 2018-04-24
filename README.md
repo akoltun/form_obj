@@ -166,16 +166,26 @@ Update form object attributes with the parameter hash received from the browser.
 
 ```ruby
 simple_form = SimpleForm.new
+simple_form.name = 'Ferrari'
+simple_form.year = 1950
 simple_form.update_attributes(
-                                name: 'Ferrari',
-                                year: 1950
+                                name: 'McLaren',
+                                year: 1966
                              )
+simple_form.name      # => "McLaren"                             
+simple_form.year      # => 1966                             
 ```
 
 #### Nested Form Objects
 
 ```ruby
 nested_form = NestedForm.new
+nested_form.name = 'Ferrari'
+nested_form.year = 1950
+nested_form.car.model = '340 F1'
+nested_form.car.driver = 'Ascari'
+nested_form.car.engine.power = 335
+nested_form.car.engine.volume = 4.1
 nested_form.update_attributes(
                                 name: 'McLaren',
                                 year: 1966,
@@ -188,15 +198,26 @@ nested_form.update_attributes(
                                   }
                                 }
                              )
+nested_form.name                  # => "McLaren"
+nested_form.year                  # => 1966
+nested_form.car.model             # => "M2B"
+nested_form.car.driver            # => "Bruce McLaren"
+nested_form.car.engine.power      # => 300
+nested_form.car.engine.volume     # => 3.0
 ```
 
 #### Array of Form Objects
 
-In order to identify objects in array the primary key has to be specified. If it is not specified the :id field is supposed to be a primary key.
-Primary key can be specified either on the attribute level or on the form level
+Updating array of form objects will compare the existing array and the new one.
+New array elements will be added, existing array elements will be updated, absent array elements will be deleted 
+(deleting behaviour is the subject of changes in future releases - only elements with flag _destroy == true will be deleted).
+
+In order to compare old and new array its elements have to be identified via the primary key.
+Primary key can be specified either on the attribute level or on the form level.
+If it is not specified the :id field is supposed to be a primary key.
 
 ```ruby
-class FormArray < FormObj
+class ArrayForm < FormObj
   attribute :name
   attribute :year
   attribute :cars, array: true do
@@ -211,7 +232,7 @@ end
 ``` 
 
 ```ruby
-class FormArray < FormObj
+class ArrayForm < FormObj
   attribute :name
   attribute :year
   attribute :cars, array: true, primary_key: :model do     # <- primary key is specified on form level
@@ -227,6 +248,21 @@ end
 
 ```ruby
 array_form = ArrayForm.new
+array_form.name = 'Ferrari'
+array_form.year = 1950
+
+car1 = array_form.cars.create
+car1.model = '340 F1'
+car1.driver = 'Ascari'
+car1.engine.power = 335
+car1.engine.volume = 4.1
+
+car2 = array_form.cars.create
+car2.model = 'M2B'
+car2.driver = 'Villoresi'
+car2.engine.power = 300
+car2.engine.volume = 3.3
+
 array_form.update_attributes(
                               name: 'McLaren',
                               year: 1966,
@@ -246,8 +282,20 @@ array_form.update_attributes(
                                   }
                               ],
                             )
-```
+                            
+array_form.name                     # => "McLaren"
+array_form.year                     # => 1966
 
+array_form.cars[0].model            # => "M2B"
+array_form.cars[0].driver           # => "Bruce McLaren"
+array_form.cars[0].engine.power     # => 300    - this value was not updated in update_attributes
+array_form.cars[0].engine.volume    # => 3.0
+
+array_form.cars[1].model            # => "M7A"
+array_form.cars[1].driver           # => "Denis Hulme"
+array_form.cars[1].engine.power     # => 415
+array_form.cars[1].engine.volume    # => nil    - this value is nil because this car was created in updated_attributes
+```
 
 ### Serialize to Hash
 
