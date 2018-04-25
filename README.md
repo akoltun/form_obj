@@ -598,8 +598,142 @@ single_form.copy_errors_from_model(model)
 
 ### Rails example
 
-...
+```ruby
+# db/migrate/yyyymmddhhmiss_create_team.rb
+class CreateTeam < ActiveRecord::Migration
+  def change
+    create_table :teams do |t|
+      t.string :team_name
+      t.integer :year
+    end
+  end
+end
+```
+```ruby
+# app/models/team.rb
+class Team < ApplicationRecord
+  has_many :cars, autosave: true
+  
+  validates :year, numericality: { greater_than_or_equal_to: 1950 }
+end
+```
+```ruby
+# db/migrate/yyyymmddhhmiss_create_car.rb
+class CreateCar < ActiveRecord::Migration
+  def change
+    create_table :cars do |t|
+      t.references :team    
+      t.string :model
+      t.text :engine
+    end
+  end
+end
+```
+```ruby
+# app/models/car.rb
+class Car < ApplicationRecord
+  belongs_to :team
+  
+  serialize :engine, Hash
+end
+```
+```ruby
+# app/form_objects/team_form.rb
+class TeamForm < FormObj
+  attribute :id
+  attribute :name, model_attribute: :team_name
+  attribute :year
+  attribute :cars, array: true do
+    attribute :id
+    attribute :model
+    attribute :engine_power, model_attribute: 'engine.:power'
+    
+    validates :model, presence: true
+  end
+  
+  validates :name, :year, presence: true
+end
+```
+```ruby
+# app/controllers/teams_controller.rb
+class TeamsController < ApplicationController
+  def show
+    @team = TeamForm.new.load_from_model(Team.find(params[:id])) 
+  end
+  
+  def new
+    @team = TeamForm.new
+  end
+  
+  def edit
+    @team = TeamForm.new.load_from_model(Team.find(params[:id]))
+  end
+  
+  def create
+    @team = TeamForm.new.update_attributes(params[:team])
+    
+    if @team.valid?
+      @team.save_to_model(model = Team.new) 
+      if model.save
+        return redirect_to team_path(model), notice: 'Team has been created'
+      else
+        @team.copy_errors_from_model(model) 
+      end
+    end
+    
+    render :new
+  end
+  
+  def update
+    @team = TeamForm.new.load_from_model(model = Team.find(params[:id]))
+    @team.update_attributes(params[:team])
+    
+    if @team.valid?
+      @team.save_to_model(model)
+      if model.save
+        return redirect_to team_path(model), notice: 'Team has been updated'
+      else
+        @team.copy_errors_from_model(model)
+      end
+    end
+    
+    render :edit
+  end
+end
+```
+```html
+# app/views/teams/show.html.erb
+<p>Name: <%= @team.name %></p> 
+<p>Year: <%= @team.year %></p>
+<p>Cars:</p>
+<ul>
+  <% @team.cars.each do |car| %>
+    <li><%= car.model %> (<%= car.engine[:power] %> hp)</li>    
+  <% end %>
+</ul>
+```
+```html
+# app/views/teams/new.html.erb
+<%= nested_form_for @team do |f| %>
+  <%= f.text_field :name %>
+  <%= f.text_field :year %>
 
+  <%= f.link_to_add 'Add a Car', :cars %>
+<% end %>
+```
+```html
+# app/views/teams/edit.html.erb
+<%= nested_form_for @team do |f| %>
+  <%= f.text_field :name %>
+  <%= f.text_field :year %>
+  
+  <%= f.fields_for :cars do |cf| %>
+    <%= cf.text_field :model %>
+    <%= cf.link_to_remove 'Remove the Car' %> 
+  <% end %>
+  <%= f.link_to_add 'Add a Car', :cars %>
+<% end %>
+```
 ## Development
 
 After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
