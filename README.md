@@ -162,7 +162,8 @@ array_form.size 				# => 1
 
 ### Update Attributes
 
-Update form object attributes with the parameter hash received from the browser.
+Update form object attributes with the parameter hash received from the browser. 
+Method `update_attributes` returns self so one can chain calls.
 
 ```ruby
 simple_form = SimpleForm.new
@@ -357,20 +358,20 @@ By default each form object attribute is mapped to the model attribute with the 
 Use dot notation to map model attribute to nested model. Use colon to specify "hash" attribute.
 
 ```ruby
-class SimpleForm < FormObj
+class SingleForm < FormObj
   attribute :name, model_attribute: :team_name
   attribute :year
   attribute :engine_power, model_attribute: 'car.:engine.power'
 end
 ```
 
-Suppose `form = SimpleForm.new` and `model` to be an instance of a model.
+Suppose `single_form = SingleForm.new` and `model` to be an instance of a model.
 
 | Form Object attribute | Model attribute |
 | --------------------- | --------------- |
-| `form.name` | `model.team_name` |
-| `form.year` | `model.year` |
-| `form.engine_power` | `model.car[:engine].power` |
+| `single_form.name` | `model.team_name` |
+| `single_form.year` | `model.year` |
+| `single_form.engine_power` | `model.car[:engine].power` |
 
 #### Multiple Models Example
 
@@ -472,19 +473,128 @@ Suppose `form = NestedForm.new` and `model` to be an instance of a model.
 
 ### Load Form Object from Models
 
-...
+Use `load_from_models` to load form object attributes from mapped models. 
+Method returns self so one can chain calls.
+
+```ruby
+class MultiForm < FormObj
+  attribute :name, model_attribute: :team_name
+  attribute :year
+  attribute :engine_power, model: :car, model_attribute: ':engine.power'
+end
+
+default_model = Struct.new(:team_name, :year).new('Ferrari', 1950)
+car_model = { engine: Struct.new(:power).new(335) }
+
+multi_form = MultiForm.new.load_from_models(default: default_model, car: car_model)
+multi_form.to_hash    # => {
+                      # =>    :name => "Ferrari"
+                      # =>    :year => 1950
+                      # =>    :engine_power => 335
+                      # => }
+``` 
+
+Use `load_from_models(default: model)` or `load_from_model(model)` to load from single model.
 
 ### Save Form Object to Models
 
-...
+Use `save_to_models` to save form object attributes to mapped models.
+Method returns self so one can chain calls.
+
+```ruby
+class MultiForm < FormObj
+  attribute :name, model_attribute: :team_name
+  attribute :year
+  attribute :engine_power, model: :car, model_attribute: ':engine.power'
+end
+
+default_model = Struct.new(:team_name, :year).new('Ferrari', 1950)
+car_model = { engine: Struct.new(:power).new(335) }
+
+multi_form = MultiForm.new
+multi_form.update_attributes(name: 'McLaren', year: 1966, engine_power: 415)
+multi_form.save_to_models(default: default_model, car: car_model)
+
+default_model.name          # => "McLaren"
+default_model.year          # => 1966
+car_model[:engine].power    # => 415 
+``` 
+
+Use `save_to_models(default: model)` or `save_to_model(model)` to save to single model.
+
+Neither `save_to_models` nor `save_to_model` calls `save` method on the model(s).
+Also they don't call `valid?` method on the model(s). 
+Instead they just assign form object attributes values to mapped model attributes
+using `<attribute_name>=` accessors on the model(s).
+
+It is completely up to developer to do any additional validations on the model(s) and save it(them).
 
 ### Serialize Form Object to Model Hash
 
-...
+Use `to_model_hash` to get hash representation of model which mapped to the form object.
 
-### Copy Model Errors into Form Object
+```ruby
+class MultiForm < FormObj
+  attribute :name, model_attribute: :team_name
+  attribute :year
+  attribute :engine_power, model: :car, model_attribute: ':engine.power'
+end
 
-... 
+multi_form = MultiForm.new
+multi_form.update_attributes(name: 'McLaren', year: 1966, engine_power: 415)
+
+multi_form.to_model_hash              # => { :team_name => "McLaren", :year => 1966 }
+multi_form.to_model_hash(:default)    # => { :team_name => "McLaren", :year => 1966 }
+multi_form.to_model_hash(:car)        # => { :engine => { :power => 415 } }
+``` 
+
+The `:default` model is considered if it is not specified.
+
+### Validation and Coercion
+
+Form Object is just a Ruby class. By default it includes (could be changed in future releases):
+
+```ruby
+  extend ::ActiveModel::Naming
+  extend ::ActiveModel::Translation
+
+  include ::ActiveModel::Conversion
+  include ::ActiveModel::Validations
+```
+
+So add ActiveModel validations directly to Form Object class definition.
+
+```ruby
+class MultiForm < FormObj
+  attribute :name, model_attribute: :team_name
+  attribute :year
+  attribute :engine_power, model: :car, model_attribute: ':engine.power'
+  
+  validates :name, :year, presence: true
+end
+```
+
+There is no coercion during assigning/updating form object attributes. 
+Coercion can be done manually by redefining assigning methods `<attribute_name>=`
+or it will happen in the model when the form object will be saved to it. 
+This is the standard way how coercion happens in Rails for example.  
+
+### Copy Model Validation Errors into Form Object
+
+Even though validation could and should happen in the form object it is possible to have (additional) validation(s) in the model(s).
+In this case it is handy to copy model validation errors to form object in order to be able to present them to the user in a standard way.
+
+Use `copy_errors_from_models` or `copy_errors_from_model` in order to do it.
+Methods return self so one can chain calls.
+
+```ruby
+multi_form.copy_errors_from_models(default: default_model, car: car_model)
+``` 
+
+In case of single model:
+```ruby
+single_form.copy_errors_from_model(model)
+```
 
 ### Rails example
 
