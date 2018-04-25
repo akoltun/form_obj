@@ -24,7 +24,7 @@ Or install it yourself as:
 **WARNING!!!** The gem is still under development. Expecting braking changes.<br/>
 **WARNING!!!** Documentation is still under development. All working examples could be taken from the tests.
 
-### Definition
+### 1. Definition
 
 Inherit your class from `FormObj` and define its attributes.
 
@@ -47,7 +47,7 @@ Use it in form builder.
 <% end %>
 ```
 
-#### Nested Form Objects
+#### 1.1. Nested Form Objects
 
 Use blocks to define nested forms.
 
@@ -113,7 +113,7 @@ Use nested forms in form builder.
 <% end %>
 ```
 
-#### Array of Form Objects
+#### 1.2. Array of Form Objects
 
 Specify attribute parameter `array: true` in order to define an array of form objects
 
@@ -160,7 +160,7 @@ array_form.cars.create
 array_form.size 				# => 1
 ```
 
-### Update Attributes
+### 2. Update Attributes
 
 Update form object attributes with the parameter hash received from the browser. 
 Method `update_attributes` returns self so one can chain calls.
@@ -177,7 +177,7 @@ simple_form.name      # => "McLaren"
 simple_form.year      # => 1966                             
 ```
 
-#### Nested Form Objects
+#### 2.1. Nested Form Objects
 
 ```ruby
 nested_form = NestedForm.new
@@ -207,7 +207,7 @@ nested_form.car.engine.power      # => 300
 nested_form.car.engine.volume     # => 3.0
 ```
 
-#### Array of Form Objects
+#### 2.2. Array of Form Objects
 
 Updating array of form objects will compare the existing array and the new one.
 New array elements will be added, existing array elements will be updated, absent array elements will be deleted 
@@ -298,7 +298,7 @@ array_form.cars[1].engine.power     # => 415
 array_form.cars[1].engine.volume    # => nil    - this value is nil because this car was created in updated_attributes
 ```
 
-### Serialize to Hash
+### 3. Serialize to Hash
 
 Call `to_hash` method in order to get hash representation of the form object
 
@@ -309,7 +309,7 @@ simple_form.to_hash     # => {
                         # => }
 ```
 
-#### Nested Form Objects
+#### 3.1. Nested Form Objects
 
 ```ruby
 nested_form.to_hash     # => {
@@ -326,7 +326,7 @@ nested_form.to_hash     # => {
                         # => }
 ```
 
-#### Array of Form Objects
+#### 3.2. Array of Form Objects
 
 ```ruby
 array_form.to_hash      # => {
@@ -350,7 +350,7 @@ array_form.to_hash      # => {
                         # => }
 ```
 
-### Map Form Object to Models
+### 4. Map Form Object to Models
 
 Map form object attributes to one or few models by using `:model` and `:model_attribute` parameters.
 By default each form object attribute is mapped to the model attribute with the same name of the `:default` model. 
@@ -373,7 +373,7 @@ Suppose `single_form = SingleForm.new` and `model` to be an instance of a model.
 | `single_form.year` | `model.year` |
 | `single_form.engine_power` | `model.car[:engine].power` |
 
-#### Multiple Models Example
+#### 4.1. Multiple Models Example
 
 ```ruby
 class MultiForm < FormObj
@@ -391,7 +391,7 @@ Suppose `multi_form = MultiForm.new` and `default`, `car` to be instances of two
 | `multi_form.year` | `default.year` |
 | `multi_form.engine_power` | `car[:engine].power` |
 
-#### Skip Attribute Mapping (not implemented yet)
+#### 4.2. Skip Attribute Mapping (not implemented yet)
 
 Use `model_attribute: false` in order to avoid attribute mapping to the model.
 
@@ -411,7 +411,7 @@ Suppose `form = SimpleForm.new` and `model` to be an instance of a model.
 | `form.year` | `model.year` |
 | `form.engine_power` | - |
 
-##### Map Nested Form Object Attribute to Parent Level Model Attribute
+##### 4.2.1. Map Nested Form Object Attribute to Parent Level Model Attribute
 
 Use `model_attribute: false` for nested form object in order to map its attributes to the parent level of the model.
 
@@ -441,7 +441,7 @@ Suppose `form = NestedForm.new` and `model` to be an instance of a model.
 | `form.car.engine.power` | `model.engine.power` |
 | `form.car.engine.volume` | `model.engine.volume` |
 
-#### Map Nested Form Object to A Hash Model
+#### 4.3. Map Nested Form Object to A Hash Model
 
 Use `hash: true` in order to map a nested form object to a hash as a model.
 
@@ -471,7 +471,7 @@ Suppose `form = NestedForm.new` and `model` to be an instance of a model.
 | `form.car.engine.power` | `model.car[:engine].power` |
 | `form.car.engine.volume` | `model.car[:engine].volume` |
 
-### Load Form Object from Models
+### 5. Load Form Object from Models
 
 Use `load_from_models` to load form object attributes from mapped models. 
 Method returns self so one can chain calls.
@@ -496,7 +496,7 @@ multi_form.to_hash    # => {
 
 Use `load_from_models(default: model)` or `load_from_model(model)` to load from single model.
 
-### Save Form Object to Models
+### 6. Save Form Object to Models
 
 Use `save_to_models` to save form object attributes to mapped models.
 Method returns self so one can chain calls.
@@ -529,7 +529,7 @@ using `<attribute_name>=` accessors on the model(s).
 
 It is completely up to developer to do any additional validations on the model(s) and save it(them).
 
-#### Array of Form Objects and Models
+#### 6.1. Array of Form Objects and Models
 
 Saving array of form objects to corresponding array of models requires the class of the model to be known by the form object
 because it could create new instances of the model array elements.
@@ -561,7 +561,7 @@ class ArrayForm < FormObj
 end
 ``` 
 
-### Serialize Form Object to Model Hash
+### 7. Serialize Form Object to Model Hash
 
 Use `to_model_hash` to get hash representation of model which mapped to the form object.
 
@@ -582,7 +582,7 @@ multi_form.to_model_hash(:car)        # => { :engine => { :power => 415 } }
 
 The `:default` model is considered if it is not specified.
 
-### Validation and Coercion
+### 8. Validation and Coercion
 
 Form Object is just a Ruby class. By default it includes (could be changed in future releases):
 
@@ -611,7 +611,7 @@ Coercion can be done manually by redefining assigning methods `<attribute_name>=
 or it will happen in the model when the form object will be saved to it. 
 This is the standard way how coercion happens in Rails for example.  
 
-### Copy Model Validation Errors into Form Object
+### 9. Copy Model Validation Errors into Form Object
 
 Even though validation could and should happen in the form object it is possible to have (additional) validation(s) in the model(s).
 In this case it is handy to copy model validation errors to form object in order to be able to present them to the user in a standard way.
@@ -628,7 +628,7 @@ In case of single model:
 single_form.copy_errors_from_model(model)
 ```
 
-### Rails example
+### 10. Rails Example
 
 ```ruby
 # db/migrate/yyyymmddhhmiss_create_team.rb
