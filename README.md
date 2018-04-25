@@ -529,6 +529,38 @@ using `<attribute_name>=` accessors on the model(s).
 
 It is completely up to developer to do any additional validations on the model(s) and save it(them).
 
+#### Array of Form Objects and Models
+
+Saving array of form objects to corresponding array of models requires the class of the model to be known by the form object
+because it could create new instances of the model array elements.
+Use `:model_class` parameter to specify it. 
+Form object will try to guess the name of the class from the name of the attribute if this parameter is absent.
+
+```ruby
+class ArrayForm < FormObj
+  attribute :name
+  attribute :year
+  attribute :cars, array: true, model_class: Car do
+    attribute :model, primary_key: true     # <- primary key is specified on attribute level
+    attribute :driver
+  end
+end
+``` 
+
+If corresponding `:model_attribute` parameter uses dot notations to reference
+nested models the value of `:model_class` parameter should be an array of corresponding model classes.
+
+```ruby
+class ArrayForm < FormObj
+  attribute :name
+  attribute :year
+  attribute :cars, array: true, model_attribute: 'equipment.cars', model_class: [Equipment, Car] do
+    attribute :model, primary_key: true     # <- primary key is specified on attribute level
+    attribute :driver
+  end
+end
+``` 
+
 ### Serialize Form Object to Model Hash
 
 Use `to_model_hash` to get hash representation of model which mapped to the form object.
