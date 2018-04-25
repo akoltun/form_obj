@@ -22,7 +22,30 @@ Or install it yourself as:
 ## Usage
 
 **WARNING!!!** The gem is still under development. Expecting braking changes.<br/>
-**WARNING!!!** Documentation is still under development. All working examples could be taken from the tests.
+
+### Table of Contents
+
+1. [Definition](#1-definition)
+   1. [Nested Form Objects](11-nested-form-objects)
+   2. [Array of Form Objects](12-array-of-form-objects)
+2. [Update Attributes](2-update-attributes)
+   1. [Nested Form Objects](21-nested-form-objects)
+   2. [Array of Form Objects](22-array-of-form-objects)
+3. [Serialize to Hash](3-serialize-to-hash)
+   1. [Nested Form Objects](31-nested-form-objects)
+   2. [Array of Form Objects](32-array-of-form-objects)
+4. [Map Form Object to Models](4-map-form-objects-to-models)
+   1. [Multiple Models Example](41-multiple-models-example)
+   2. [Skip Attribute Mapping (not implemented yet)](42-skip-attribute-mapping)
+      1. [Map Nested Form Object Attribute to Parent Level Model Attribute](421-map-nested-form-object-attribute-to-parent-level-model-attribute)
+   3. [Map Nested Form Object to A Hash Model](43-map-nested-form-object-to-a-hash-model)
+5. [Load Form Object from Models](5-load-form-object-from-models)
+6. [Save Form Object to Models](6-save-form-object-to-models)
+   1. [Array of Form Objects and Models](61-array-of-form-objects-and-models)
+7. [Serialize Form Object to Model Hash](7-serialize-form-object-to-model-hash)
+8. [Validation and Coercion](8-validation-and-coercion)
+9. [Copy Model Validation Errors into Form Object](9-copy-model-validation-errors-into-form-object)   
+10. [Rails Example](10-rails-example)
 
 ### 1. Definition
 
@@ -37,7 +60,7 @@ end
 
 Use it in form builder.
 
-```ruby
+```erb
 <%= form_for(@simple_form) do |f| %>
   <%= f.label :name %>
   <%= f.text_field :name %>
