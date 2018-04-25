@@ -89,6 +89,8 @@ class FormObj
       end
       self.primary_key = name.to_sym if primary_key
     end
+
+    self
   end
 
   def initialize(models = {}, opts = { hash: false })
