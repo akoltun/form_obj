@@ -605,6 +605,44 @@ multi_form.to_model_hash(:car)        # => { :engine => { :power => 415 } }
 
 The `:default` model is considered if it is not specified.
 
+If array of form objects mapped to the parent model (`model_attribute: false`) it is serialized to `:self` key.
+
+```ruby
+class ArrayForm < FormObj
+  attribute :name
+  attribute :year
+  attribute :cars, array: true, model_attribute: false do
+    attribute :model, primary_key: true
+    attribute :driver
+  end
+end
+
+array_form = MultiForm.new
+array_form.update_attributes(
+    name: 'McLaren', 
+    year: 1966, 
+    cars: [{
+      model: 'M2B', 
+      driver: 'Bruce McLaren'
+    }, {
+      model: 'M7A',
+      driver: 'Denis Hulme'
+    }]
+)
+
+array_form.to_model_hash    # => { 
+                            # =>    :team_name => "McLaren", 
+                            # =>    :year => 1966,
+                            # =>    :self => {
+                            # =>      :model => "M2B",
+                            # =>      :driver => "Bruce McLaren"
+                            # =>    }, {    
+                            # =>      :model => "M7A",
+                            # =>      :driver => "Denis Hulme"
+                            # =>    }  
+                            # => }
+```
+
 ### 8. Validation and Coercion
 
 Form Object is just a Ruby class. By default it includes (could be changed in future releases):
