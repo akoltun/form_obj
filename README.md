@@ -756,8 +756,8 @@ class TeamsController < ApplicationController
   end
 end
 ```
-```html
-# app/views/teams/show.html.erb
+```erb
+# app/views/teams/show.erb.erb
 <p>Name: <%= @team.name %></p> 
 <p>Year: <%= @team.year %></p>
 <p>Cars:</p>
@@ -767,8 +767,8 @@ end
   <% end %>
 </ul>
 ```
-```html
-# app/views/teams/new.html.erb
+```erb
+# app/views/teams/new.erb.erb
 <%= nested_form_for @team do |f| %>
   <%= f.text_field :name %>
   <%= f.text_field :year %>
@@ -776,8 +776,8 @@ end
   <%= f.link_to_add 'Add a Car', :cars %>
 <% end %>
 ```
-```html
-# app/views/teams/edit.html.erb
+```erb
+# app/views/teams/edit.erb.erb
 <%= nested_form_for @team do |f| %>
   <%= f.text_field :name %>
   <%= f.text_field :year %>
