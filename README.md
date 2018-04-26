@@ -46,6 +46,7 @@ Or install it yourself as:
 8. [Validation and Coercion](8-validation-and-coercion)
 9. [Copy Model Validation Errors into Form Object](9-copy-model-validation-errors-into-form-object)   
 10. [Rails Example](10-rails-example)
+11. [Reference Guide](11-reference-guide-attribute-parameters)
 
 ### 1. Definition
 
@@ -827,6 +828,21 @@ end
   <%= f.link_to_add 'Add a Car', :cars %>
 <% end %>
 ```
+
+### 11. Reference Guide: `attribute` parameters
+
+| Parameter | Block or `:class`?* | Default value | Description |
+| --- |:---:|:---:| --- |
+| array | yes | `false` | This attribute is an array of form objects. The structure of array element form object is described either in the block or in the separate class referenced by `:class` parameter |
+| class | - | - | This attribute is either nested form object or array of form objects. The value of this parameter is the class (not a name of the class!!!) of this form object. |
+| hash | yes | `false` | This attribute is either nested form object or array of form objects. This form object is mapped to a model of the class `Hash` so all its attributes should be accessed by `[:<attribute_name>]` instead of `.<attribute_name>` | 
+| model | any | `:default` | The name of the model to which this attribute is mapped |
+| model_attribute | any | `<attribute_name>` | The name of the model attribute to which this form object attribute is mapped. Dot notation is used in order to map to nested model, ex. `"car.engine.power"`. Colon is used in front of the name if the model is hash, ex. `"car.:engine.power"` - means call to `#car` returns `Hash` so the model attribute should be accessed like `car[:engine].power`. `false` value means that attribute is not mapped. If attribute describes nested form object and has `model_attribute: false` the attributes of nested form will be called on the parent (upper level) model. If attribute describes array of form objects and has `model_attribute: false` the methods to access array elements (`:[]` etc.) will be called on the parent (upper level) model. |
+| model_class | yes | `<attribute_name>.classify` | The class of mapped model. |
+| primary_key | no | `false` | This attribute is the primary key of the form object. The mapped model attribute is considered to be a primary key for the corresponding model. |
+| primary_key | yes | - | This attribute is either nested form object or array of form objects. The value of this parameter is the name of the primary key attribute of this form object. |
+\* Block or `:class` - means that either there is either block definition for the attribute or this attribute has `:class` parameter specified
+
 ## Development
 
 After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
