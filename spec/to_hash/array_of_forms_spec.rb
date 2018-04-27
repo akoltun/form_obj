@@ -1,4 +1,4 @@
-RSpec.describe FormObj, concept: true do
+RSpec.describe 'to_hash: Array of Form Objects' do
   subject { form.to_hash }
 
   shared_examples 'hashable form' do
@@ -26,25 +26,23 @@ RSpec.describe FormObj, concept: true do
     end
   end
 
-  describe 'array of nested forms - to_hash' do
-    module ArrayOfForms
-      module ToHash
-        class Form < FormObj
-          attribute :name
-          attribute :cars, array: true do
-            attribute :model
-            attribute :engine do
-              attribute :power
-              attribute :volume
-            end
-            attribute :driver
+  context 'Implicit declaration of form objects' do
+    module ToHash
+      class ImplicitArrayForm < FormObj
+        attribute :name
+        attribute :cars, array: true do
+          attribute :model
+          attribute :engine do
+            attribute :power
+            attribute :volume
           end
-          attribute :year
+          attribute :driver
         end
+        attribute :year
       end
     end
 
-    let(:form) { ArrayOfForms::ToHash::Form.new }
+    let(:form) { ToHash::ImplicitArrayForm.new }
     before do
       form.name = 'Ferrari'
       form.year = 1950
@@ -65,10 +63,9 @@ RSpec.describe FormObj, concept: true do
     it_behaves_like 'hashable form'
   end
 
-  describe 'explicit declaration of nested forms in array - to_hash' do
-
-    module ArrayOfForms
-      module ToHash
+  context 'Explicit declaration of form objects' do
+    module ToHash
+      module ExplicitArray
         class EngineForm < FormObj
           attribute :power
           attribute :volume
@@ -87,7 +84,7 @@ RSpec.describe FormObj, concept: true do
     end
 
     context 'dot notation' do
-      let(:form) { ArrayOfForms::ToHash::TeamForm.new }
+      let(:form) { ToHash::ExplicitArray::TeamForm.new }
       before do
         form.name = 'Ferrari'
         form.year = 1950
@@ -109,22 +106,22 @@ RSpec.describe FormObj, concept: true do
     end
 
     context 'explicit class creation notation' do
-      let(:form) { ArrayOfForms::ToHash::TeamForm.new }
+      let(:form) { ToHash::ExplicitArray::TeamForm.new }
       before do
-        engine1 = ArrayOfForms::ToHash::EngineForm.new
+        engine1 = ToHash::ExplicitArray::EngineForm.new
         engine1.power = 335
         engine1.volume = 4.1
 
-        car1 = ArrayOfForms::ToHash::CarForm.new
+        car1 = ToHash::ExplicitArray::CarForm.new
         car1.model = '340 F1'
         car1.driver = 'Ascari'
         car1.engine = engine1
 
-        engine2 = ArrayOfForms::ToHash::EngineForm.new
+        engine2 = ToHash::ExplicitArray::EngineForm.new
         engine2.power = 300
         engine2.volume = 3.3
 
-        car2 = ArrayOfForms::ToHash::CarForm.new
+        car2 = ToHash::ExplicitArray::CarForm.new
         car2.model = '275 F1'
         car2.driver = 'Villoresi'
         car2.engine = engine2

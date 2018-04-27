@@ -1,4 +1,6 @@
 RSpec.describe 'Simple Form Object' do
+  include_context 'renderable'
+
   class SimpleForm < FormObj
     attribute :name
     attribute :year

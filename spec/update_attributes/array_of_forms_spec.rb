@@ -913,20 +913,20 @@ RSpec.describe 'update_attributes: Array of Form Objects' do
       let(:form) { UpdateAttributes::PrimaryKeyFormLevel::ExplicitArray::TeamForm.new }
 
       before do
-        engine1 = UpdateAttributes::PrimaryKeyFormLevel::ArrayOfForms::EngineForm.new
+        engine1 = UpdateAttributes::PrimaryKeyFormLevel::ExplicitArray::EngineForm.new
         engine1.power = 335
         engine1.volume = 4.1
 
-        car1 = UpdateAttributes::PrimaryKeyFormLevel::ArrayOfForms::CarForm.new
+        car1 = UpdateAttributes::PrimaryKeyFormLevel::ExplicitArray::CarForm.new
         car1.model = '340 F1'
         car1.driver = 'Ascari'
         car1.engine = engine1
 
-        engine2 = UpdateAttributes::PrimaryKeyFormLevel::ArrayOfForms::EngineForm.new
+        engine2 = UpdateAttributes::PrimaryKeyFormLevel::ExplicitArray::EngineForm.new
         engine2.power = 300
         engine2.volume = 3.3
 
-        car2 = UpdateAttributes::PrimaryKeyFormLevel::ArrayOfForms::CarForm.new
+        car2 = UpdateAttributes::PrimaryKeyFormLevel::ExplicitArray::CarForm.new
         car2.model = '275 F1'
         car2.driver = 'Villoresi'
         car2.engine = engine2
@@ -970,11 +970,11 @@ RSpec.describe 'update_attributes: Array of Form Objects' do
 
         context 'form initially has less elements than updated data' do
           before do
-            engine1 = UpdateAttributes::PrimaryKeyFormLevel::ArrayOfForms::EngineForm.new
+            engine1 = UpdateAttributes::PrimaryKeyFormLevel::ExplicitArray::EngineForm.new
             engine1.power = 335
             engine1.volume = 4.1
 
-            car1 = UpdateAttributes::PrimaryKeyFormLevel::ArrayOfForms::CarForm.new
+            car1 = UpdateAttributes::PrimaryKeyFormLevel::ExplicitArray::CarForm.new
             car1.model = '340 F1'
             car1.driver = 'Ascari'
             car1.engine = engine1
@@ -1010,20 +1010,20 @@ RSpec.describe 'update_attributes: Array of Form Objects' do
 
         context 'form initially has the same quantity of elements as updated data' do
           before do
-            engine1 = UpdateAttributes::PrimaryKeyFormLevel::ArrayOfForms::EngineForm.new
+            engine1 = UpdateAttributes::PrimaryKeyFormLevel::ExplicitArray::EngineForm.new
             engine1.power = 335
             engine1.volume = 4.1
 
-            car1 = UpdateAttributes::PrimaryKeyFormLevel::ArrayOfForms::CarForm.new
+            car1 = UpdateAttributes::PrimaryKeyFormLevel::ExplicitArray::CarForm.new
             car1.model = '340 F1'
             car1.driver = 'Ascari'
             car1.engine = engine1
 
-            engine2 = UpdateAttributes::PrimaryKeyFormLevel::ArrayOfForms::EngineForm.new
+            engine2 = UpdateAttributes::PrimaryKeyFormLevel::ExplicitArray::EngineForm.new
             engine2.power = 300
             engine2.volume = 3.3
 
-            car2 = UpdateAttributes::PrimaryKeyFormLevel::ArrayOfForms::CarForm.new
+            car2 = UpdateAttributes::PrimaryKeyFormLevel::ExplicitArray::CarForm.new
             car2.model = '275 F1'
             car2.driver = 'Villoresi'
             car2.engine = engine2
@@ -1060,29 +1060,29 @@ RSpec.describe 'update_attributes: Array of Form Objects' do
 
         context 'form initially has more elements than updated data' do
           before do
-            engine1 = UpdateAttributes::PrimaryKeyFormLevel::ArrayOfForms::EngineForm.new
+            engine1 = UpdateAttributes::PrimaryKeyFormLevel::ExplicitArray::EngineForm.new
             engine1.power = 335
             engine1.volume = 4.1
 
-            car1 = UpdateAttributes::PrimaryKeyFormLevel::ArrayOfForms::CarForm.new
+            car1 = UpdateAttributes::PrimaryKeyFormLevel::ExplicitArray::CarForm.new
             car1.model = '340 F1'
             car1.driver = 'Ascari'
             car1.engine = engine1
 
-            engine2 = UpdateAttributes::PrimaryKeyFormLevel::ArrayOfForms::EngineForm.new
+            engine2 = UpdateAttributes::PrimaryKeyFormLevel::ExplicitArray::EngineForm.new
             engine2.power = 300
             engine2.volume = 3.3
 
-            car2 = UpdateAttributes::PrimaryKeyFormLevel::ArrayOfForms::CarForm.new
+            car2 = UpdateAttributes::PrimaryKeyFormLevel::ExplicitArray::CarForm.new
             car2.model = '275 F1'
             car2.driver = 'Villoresi'
             car2.engine = engine2
 
-            engine3 = UpdateAttributes::PrimaryKeyFormLevel::ArrayOfForms::EngineForm.new
+            engine3 = UpdateAttributes::PrimaryKeyFormLevel::ExplicitArray::EngineForm.new
             engine3.power = 350
             engine3.volume = 4.5
 
-            car3 = UpdateAttributes::PrimaryKeyFormLevel::ArrayOfForms::CarForm.new
+            car3 = UpdateAttributes::PrimaryKeyFormLevel::ExplicitArray::CarForm.new
             car3.model = '375 F1'
             car3.driver = 'Jose Gonzalez'
             car3.engine = engine3
@@ -1122,11 +1122,11 @@ RSpec.describe 'update_attributes: Array of Form Objects' do
       context 'initial form elements and updated elements have the same elements' do
         context 'form initially has one element which is included in the updated ones' do
           before do
-            engine1 = UpdateAttributes::PrimaryKeyFormLevel::ArrayOfForms::EngineForm.new
+            engine1 = UpdateAttributes::PrimaryKeyFormLevel::ExplicitArray::EngineForm.new
             engine1.power = 335
             engine1.volume = 4.1
 
-            car1 = UpdateAttributes::PrimaryKeyFormLevel::ArrayOfForms::CarForm.new
+            car1 = UpdateAttributes::PrimaryKeyFormLevel::ExplicitArray::CarForm.new
             car1.model = 'M7A'
             car1.driver = 'Ascari'
             car1.engine = engine1
@@ -1162,29 +1162,29 @@ RSpec.describe 'update_attributes: Array of Form Objects' do
 
         context 'form initially has three elements one of which is included in the updated ones' do
           before do
-            engine1 = UpdateAttributes::PrimaryKeyFormLevel::ArrayOfForms::EngineForm.new
+            engine1 = UpdateAttributes::PrimaryKeyFormLevel::ExplicitArray::EngineForm.new
             engine1.power = 335
             engine1.volume = 4.1
 
-            car1 = UpdateAttributes::PrimaryKeyFormLevel::ArrayOfForms::CarForm.new
+            car1 = UpdateAttributes::PrimaryKeyFormLevel::ExplicitArray::CarForm.new
             car1.model = '340 F1'
             car1.driver = 'Ascari'
             car1.engine = engine1
 
-            engine2 = UpdateAttributes::PrimaryKeyFormLevel::ArrayOfForms::EngineForm.new
+            engine2 = UpdateAttributes::PrimaryKeyFormLevel::ExplicitArray::EngineForm.new
             engine2.power = 300
             engine2.volume = 3.3
 
-            car2 = UpdateAttributes::PrimaryKeyFormLevel::ArrayOfForms::CarForm.new
+            car2 = UpdateAttributes::PrimaryKeyFormLevel::ExplicitArray::CarForm.new
             car2.model = 'M2B'
             car2.driver = 'Villoresi'
             car2.engine = engine2
 
-            engine3 = UpdateAttributes::PrimaryKeyFormLevel::ArrayOfForms::EngineForm.new
+            engine3 = UpdateAttributes::PrimaryKeyFormLevel::ExplicitArray::EngineForm.new
             engine3.power = 350
             engine3.volume = 4.5
 
-            car3 = UpdateAttributes::PrimaryKeyFormLevel::ArrayOfForms::CarForm.new
+            car3 = UpdateAttributes::PrimaryKeyFormLevel::ExplicitArray::CarForm.new
             car3.model = '375 F1'
             car3.driver = 'Jose Gonzalez'
             car3.engine = engine3

@@ -1,4 +1,4 @@
-RSpec.describe FormObj, concept: true do
+RSpec.describe 'to_hash: Nested Form Object' do
   subject { form.to_hash }
 
   shared_examples 'hashable form' do
@@ -19,25 +19,23 @@ RSpec.describe FormObj, concept: true do
     end
   end
 
-  describe 'nested form - to_hash' do
-    module NestedForm
-      module ToHash
-        class Form < FormObj
-          attribute :name
-          attribute :car do
-            attribute :model
-            attribute :engine do
-              attribute :power
-              attribute :volume
-            end
-            attribute :driver
+  describe 'Implicit declaration of form object classes' do
+    module ToHash
+      class ImplicitNestedForm < FormObj
+        attribute :name
+        attribute :car do
+          attribute :model
+          attribute :engine do
+            attribute :power
+            attribute :volume
           end
-          attribute :year
+          attribute :driver
         end
+        attribute :year
       end
     end
 
-    let(:form) { NestedForm::ToHash::Form.new }
+    let(:form) { ToHash::ImplicitNestedForm.new }
     before do
       form.name = 'Ferrari'
       form.year = 1950
@@ -50,10 +48,9 @@ RSpec.describe FormObj, concept: true do
     it_behaves_like 'hashable form'
   end
 
-  describe 'explicit declaration of each nested form - to_hash' do
-
-    module NestedForm
-      module ToHash
+  context 'Explicit declaration of form object classes' do
+    module ToHash
+      module ExplicitNested
         class EngineForm < FormObj
           attribute :power
           attribute :volume
@@ -72,7 +69,7 @@ RSpec.describe FormObj, concept: true do
     end
 
     context 'dot notation' do
-      let(:form) { NestedForm::ToHash::TeamForm.new }
+      let(:form) { ToHash::ExplicitNested::TeamForm.new }
       before do
         form.name = 'Ferrari'
         form.year = 1950
@@ -86,9 +83,9 @@ RSpec.describe FormObj, concept: true do
     end
 
     context 'explicit class creation notation' do
-      let(:form) { NestedForm::ToHash::TeamForm.new }
-      let(:car_form) { NestedForm::ToHash::CarForm.new }
-      let(:engine_form) { NestedForm::ToHash::EngineForm.new }
+      let(:form) { ToHash::ExplicitNested::TeamForm.new }
+      let(:car_form) { ToHash::ExplicitNested::CarForm.new }
+      let(:engine_form) { ToHash::ExplicitNested::EngineForm.new }
       before do
         engine_form.power = 335
         engine_form.volume = 4.1

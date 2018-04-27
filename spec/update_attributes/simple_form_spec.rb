@@ -1,4 +1,4 @@
-RSpec.describe 'update_attributes: Simpe Form Object' do
+RSpec.describe 'update_attributes: Simple Form Object' do
   include_context 'renderable'
 
   module UpdateAttributes
