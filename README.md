@@ -831,17 +831,21 @@ end
 
 ### 11. Reference Guide: `attribute` parameters
 
-| Parameter | Block or `:class`?* | Default value | Description |
+| Parameter | Condition | Default value | Description |
 | --- |:---:|:---:| --- |
-| array | yes | `false` | This attribute is an array of form objects. The structure of array element form object is described either in the block or in the separate class referenced by `:class` parameter |
+| array | block* or `:class`** | `false` | This attribute is an array of form objects. The structure of array element form object is described either in the block or in the separate class referenced by `:class` parameter |
 | class | - | - | This attribute is either nested form object or array of form objects. The value of this parameter is the class (not a name of the class!!!) of this form object. |
-| hash | yes | `false` | This attribute is either nested form object or array of form objects. This form object is mapped to a model of the class `Hash` so all its attributes should be accessed by `[:<attribute_name>]` instead of `.<attribute_name>` | 
-| model | any | `:default` | The name of the model to which this attribute is mapped |
-| model_attribute | any | `<attribute_name>` | The name of the model attribute to which this form object attribute is mapped. Dot notation is used in order to map to nested model, ex. `"car.engine.power"`. Colon is used in front of the name if the model is hash, ex. `"car.:engine.power"` - means call to `#car` returns `Hash` so the model attribute should be accessed like `car[:engine].power`. `false` value means that attribute is not mapped. If attribute describes nested form object and has `model_attribute: false` the attributes of nested form will be called on the parent (upper level) model. If attribute describes array of form objects and has `model_attribute: false` the methods to access array elements (`:[]` etc.) will be called on the parent (upper level) model. |
-| model_class | yes | `<attribute_name>.classify` | The class of mapped model. |
-| primary_key | no | `false` | This attribute is the primary key of the form object. The mapped model attribute is considered to be a primary key for the corresponding model. |
-| primary_key | yes | - | This attribute is either nested form object or array of form objects. The value of this parameter is the name of the primary key attribute of this form object. |
-\* Block or `:class` - means that either there is either block definition for the attribute or this attribute has `:class` parameter specified
+| hash | block* or `:class`** | `false` | This attribute is either nested form object or array of form objects. This form object is mapped to a model of the class `Hash` so all its attributes should be accessed by `[:<attribute_name>]` instead of `.<attribute_name>` | 
+| model | - | `:default` | The name of the model to which this attribute is mapped |
+| model_attribute | - | `<attribute_name>` | The name of the model attribute to which this form object attribute is mapped. Dot notation is used in order to map to nested model, ex. `"car.engine.power"`. Colon is used in front of the name if the model is hash, ex. `"car.:engine.power"` - means call to `#car` returns `Hash` so the model attribute should be accessed like `car[:engine].power`. `false` value means that attribute is not mapped. If attribute describes nested form object and has `model_attribute: false` the attributes of nested form will be called on the parent (upper level) model. If attribute describes array of form objects and has `model_attribute: false` the methods to access array elements (`:[]` etc.) will be called on the parent (upper level) model. |
+| model_class | block* or `:class`** or dot notation for `:model_attribute`*** | `<attribute_name>.classify` | The class (or the name of the class) of the mapped model. |
+| primary_key | no block* and no `:class`** | `false` | This attribute is the primary key of the form object. The mapped model attribute is considered to be a primary key for the corresponding model. |
+| primary_key | block* or `:class`** | - | This attribute is either nested form object or array of form objects. The value of this parameter is the name of the primary key attribute of this form object. |
+\* block - means that there is block definition for the attribute
+
+\** `:class` - means that this attribute has `:class` parameter specified
+
+\*** dot notation for `:model_attribute` - means that this attribute is mapped to nested model attribute (using dot notation)
 
 ## Development
 
