@@ -2,12 +2,6 @@ RSpec.describe 'save_to_models: Simple Form Object - Few Models - Name' do
   let(:team) { Struct.new(:team_name, :year).new }
   let(:car) { {} }
 
-  module SaveToModel
-    module FewModelsName
-      Engine = Struct.new(:power)
-    end
-  end
-
   before do
     form.name = 'Ferrari'
     form.year = 1950
@@ -18,9 +12,11 @@ RSpec.describe 'save_to_models: Simple Form Object - Few Models - Name' do
     module SaveToModel
       module FewModelsName
         class SimpleForm < FormObj
+          Engine = Struct.new(:power)
+
           attribute :name, model_attribute: :team_name, model: :team
           attribute :year, model: :team
-          attribute :engine_power, model: :car, model_attribute: ':engine.power', model_class: 'SaveToModel::FewModelsName::Engine'
+          attribute :engine_power, model: :car, model_attribute: ':engine.power', model_class: 'SaveToModel::FewModelsName::SimpleForm::Engine'
         end
       end
     end
@@ -61,9 +57,11 @@ RSpec.describe 'save_to_models: Simple Form Object - Few Models - Name' do
     module SaveToModel
       module FewModelsNameWithDefault
         class SimpleForm < FormObj
+          Engine = Struct.new(:power)
+
           attribute :name, model_attribute: :team_name
           attribute :year
-          attribute :engine_power, model: :car, model_attribute: ':engine.power', model_class: 'SaveToModel::FewModelsName::Engine'
+          attribute :engine_power, model: :car, model_attribute: ':engine.power', model_class: 'SaveToModel::FewModelsNameWithDefault::SimpleForm::Engine'
         end
       end
     end

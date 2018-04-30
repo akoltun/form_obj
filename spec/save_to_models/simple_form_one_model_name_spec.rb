@@ -1,17 +1,17 @@
 RSpec.describe 'save_to_model: Simple Form Object - One Model Name' do
   module SaveToModel
     module OneModelName
-      Engine = Struct.new(:power)
-
       class SimpleForm < FormObj
+        Engine = Struct.new(:power)
+
         attribute :name, model_attribute: :team_name
         attribute :year
-        attribute :engine_power, model_attribute: 'car.:engine.power', model_class: ['Hash', 'SaveToModel::OneModelName::Engine']
+        attribute :engine_power, model_attribute: 'car.:engine.power', model_class: ['Hash', 'SaveToModel::OneModelName::SimpleForm::Engine']
       end
     end
   end
 
-  let(:engine) { SaveToModel::OneModelName::Engine.new }
+  let(:engine) { SaveToModel::OneModelName::SimpleForm::Engine.new }
   let(:model) { Struct.new(:team_name, :year, :car).new }
   let(:form) { SaveToModel::OneModelName::SimpleForm.new() }
 

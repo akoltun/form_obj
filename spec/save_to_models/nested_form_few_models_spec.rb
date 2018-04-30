@@ -1,13 +1,15 @@
 RSpec.describe 'save_to_model: Nested Form Objects - Few Models' do
   module SaveToModel
     module FewModels
-      Engine      = Struct.new(:power, :volume)
-      Suspension  = Struct.new(:front, :rear)
+      module NestedForm
+        Engine      = Struct.new(:power, :volume)
+        Suspension  = Struct.new(:front, :rear)
+      end
     end
   end
 
-  let(:car) { { engine: SaveToModel::FewModels::Engine.new } }
-  let(:suspension) { SaveToModel::FewModels::Suspension.new }
+  let(:car) { { engine: SaveToModel::FewModels::NestedForm::Engine.new } }
+  let(:suspension) { SaveToModel::FewModels::NestedForm::Suspension.new }
 
   let(:model) { Struct.new(:team_name, :year, :car).new }
   let(:chassis) { Struct.new(:suspension, :brakes).new }
@@ -54,14 +56,14 @@ RSpec.describe 'save_to_model: Nested Form Objects - Few Models' do
           attribute :year
           attribute :car, hash: true do
             attribute :model
-            attribute :engine, model_class: Engine do
+            attribute :engine, model_class: SaveToModel::FewModels::NestedForm::Engine do
               attribute :power
               attribute :volume
             end
             attribute :driver
           end
           attribute :chassis, model_attribute: false, model: :chassis do
-            attribute :suspension, model_class: Suspension do
+            attribute :suspension, model_class: SaveToModel::FewModels::NestedForm::Suspension do
               attribute :front
               attribute :rear
             end
@@ -108,11 +110,11 @@ RSpec.describe 'save_to_model: Nested Form Objects - Few Models' do
           end
           class CarForm < FormObj
             attribute :model
-            attribute :engine, class: EngineForm, model_class: Engine
+            attribute :engine, class: EngineForm, model_class: SaveToModel::FewModels::NestedForm::Engine
             attribute :driver
           end
           class ChassisForm < FormObj
-            attribute :suspension, model_class: Suspension do
+            attribute :suspension, model_class: SaveToModel::FewModels::NestedForm::Suspension do
               attribute :front
               attribute :rear
             end
