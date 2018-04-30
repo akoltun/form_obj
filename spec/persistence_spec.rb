@@ -10,7 +10,7 @@ RSpec.describe 'Persistence' do
   end
 
   it 'becomes persisted creating from model' do
-    expect(PersistableForm.new(default: model).persisted?).to be_truthy
+    expect(PersistableForm.new.load_from_model(model).persisted?).to be_truthy
   end
 
   it 'becomes persisted after loading from model' do
@@ -30,11 +30,11 @@ RSpec.describe 'Persistence' do
   end
 
   it 'becomes non persisted after updating attributes' do
-    expect(PersistableForm.new(default: model).update_attributes(name: 'new').persisted?).to be_falsey
+    expect(PersistableForm.new.load_from_model(model).update_attributes(name: 'new').persisted?).to be_falsey
   end
 
   it 'becomes non persisted after updating each attribute individually' do
-    form = PersistableForm.new(default: model)
+    form = PersistableForm.new.load_from_model(model)
     form.name = 'new'
     expect(form.persisted?).to be_falsey
   end
