@@ -53,15 +53,15 @@ RSpec.describe 'save_to_models: Simple Form Object - Few Models - Name' do
 
   context 'with default model' do
     module SaveToModelsWithDefault
-      class SimpleForm < FormObj
+      class SimpleFormName < FormObj
         Engine = Struct.new(:power)
 
         attribute :name, model_attribute: :team_name
         attribute :year
-        attribute :engine_power, model: :car, model_attribute: ':engine.power', model_class: 'SaveToModelsWithDefault::SimpleForm::Engine'
+        attribute :engine_power, model: :car, model_attribute: ':engine.power', model_class: 'SaveToModelsWithDefault::SimpleFormName::Engine'
       end
     end
-    let(:form) { SaveToModelsWithDefault::SimpleForm.new }
+    let(:form) { SaveToModelsWithDefault::SimpleFormName.new }
 
     context 'nested models are created when they do not exist yet' do
       it 'has all attributes correctly saved' do

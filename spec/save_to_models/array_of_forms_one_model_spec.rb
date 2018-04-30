@@ -1,13 +1,13 @@
 RSpec.describe 'save_to_model: Array of Form Objects - One Model' do
   module SaveToModel
-    module ArrayForm
+    class ArrayForm < FormObj
       Engine = Struct.new(:power, :volume, :secret)
       Suspension = Struct.new(:front, :rear, :secret)
       Car = Struct.new(:car_model, :driver, :engine, :secret)
       Sponsor = Struct.new(:title, :money, :secret)
       Colour = Struct.new(:name, :rgb, :secret)
 
-      class Model < Array
+      class Model < ::Array
         attr_accessor :team_name, :year, :cars, :finance, :chassis
       end
     end
@@ -125,37 +125,37 @@ RSpec.describe 'save_to_model: Array of Form Objects - One Model' do
 
   context 'Implicit declaration of form object classes' do
     module SaveToModel
-      class ImplicitArrayForm < FormObj
+      class ArrayForm < FormObj
         attribute :name, model_attribute: :team_name
         attribute :year
-        attribute :cars, array: true, model_class: SaveToModel::ArrayForm::Car, primary_key: :model do
+        attribute :cars, array: true, model_class: Car, primary_key: :model do
           attribute :model, model_attribute: :car_model
           attribute :driver
-          attribute :engine, model_class: SaveToModel::ArrayForm::Engine do
+          attribute :engine, model_class: Engine do
             attribute :power
             attribute :volume
           end
         end
-        attribute :sponsors, array: true, model_attribute: 'finance.:sponsors', model_class: [Hash, SaveToModel::ArrayForm::Sponsor], primary_key: :title do
+        attribute :sponsors, array: true, model_attribute: 'finance.:sponsors', model_class: [Hash, Sponsor], primary_key: :title do
           attribute :title
           attribute :money
         end
         attribute :chassis, array: true, hash: true do
           attribute :id
-          attribute :suspension, model_class: SaveToModel::ArrayForm::Suspension do
+          attribute :suspension, model_class: Suspension do
             attribute :front
             attribute :rear
           end
           attribute :brakes
         end
-        attribute :colours, array: true, model_attribute: false, model_class: SaveToModel::ArrayForm::Colour, primary_key: :name do
+        attribute :colours, array: true, model_attribute: false, model_class: Colour, primary_key: :name do
           attribute :name
           attribute :rgb
         end
       end
     end
 
-    let(:form) { SaveToModel::ImplicitArrayForm.new }
+    let(:form) { SaveToModel::ArrayForm.new }
 
     context 'completely empty model' do
       include_context 'init form and save to models'
@@ -234,14 +234,14 @@ RSpec.describe 'save_to_model: Array of Form Objects - One Model' do
 
   context 'Explicit declaration of form object classes' do
     module SaveToModel
-      module ExplicitArray
+      class ArrayForm < FormObj
         class EngineForm < FormObj
           attribute :power
           attribute :volume
         end
         class CarForm < FormObj
           attribute :model, model_attribute: :car_model
-          attribute :engine, class: EngineForm, model_class: SaveToModel::ArrayForm::Engine
+          attribute :engine, class: EngineForm, model_class: Engine
           attribute :driver
         end
         class SponsorForm < FormObj
@@ -254,7 +254,7 @@ RSpec.describe 'save_to_model: Array of Form Objects - One Model' do
         end
         class ChassisForm < FormObj
           attribute :id
-          attribute :suspension, class: SuspensionForm, model_class: SaveToModel::ArrayForm::Suspension
+          attribute :suspension, class: SuspensionForm, model_class: Suspension
           attribute :brakes
         end
         class ColourForm < FormObj
@@ -264,15 +264,15 @@ RSpec.describe 'save_to_model: Array of Form Objects - One Model' do
         class TeamForm < FormObj
           attribute :name, model_attribute: :team_name
           attribute :year
-          attribute :cars, array: true, class: CarForm, model_class: SaveToModel::ArrayForm::Car, primary_key: :model
-          attribute :sponsors, array: true, model_attribute: 'finance.:sponsors', class: SponsorForm, model_class: [Hash, SaveToModel::ArrayForm::Sponsor], primary_key: :title
+          attribute :cars, array: true, class: CarForm, model_class: Car, primary_key: :model
+          attribute :sponsors, array: true, model_attribute: 'finance.:sponsors', class: SponsorForm, model_class: [Hash, Sponsor], primary_key: :title
           attribute :chassis, array: true, hash: true, class: ChassisForm
-          attribute :colours, array: true, model_attribute: false, class: ColourForm, model_class: SaveToModel::ArrayForm::Colour, primary_key: :name
+          attribute :colours, array: true, model_attribute: false, class: ColourForm, model_class: Colour, primary_key: :name
         end
       end
     end
 
-    let(:form) { SaveToModel::ExplicitArray::TeamForm.new }
+    let(:form) { SaveToModel::ArrayForm::TeamForm.new }
 
     context 'completely empty model' do
       include_context 'init form and save to models'

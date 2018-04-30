@@ -1,13 +1,13 @@
 RSpec.describe 'save_to_model: Array of Form Objects - One Model - Name' do
   module SaveToModel
-    module ArrayFormName
+    class ArrayFormName < FormObj
       Engine = Struct.new(:power, :volume, :secret)
       Suspension = Struct.new(:front, :rear, :secret)
       Car = Struct.new(:car_model, :driver, :engine, :secret)
       Sponsor = Struct.new(:title, :money, :secret)
       Colour = Struct.new(:name, :rgb, :secret)
 
-      class Model < Array
+      class Model < ::Array
         attr_accessor :team_name, :year, :cars, :finance, :chassis
       end
     end
@@ -125,7 +125,7 @@ RSpec.describe 'save_to_model: Array of Form Objects - One Model - Name' do
 
   context 'Implicit declaration of form object classes' do
     module SaveToModel
-      class ImplicitArrayFormName < FormObj
+      class ArrayFormName < FormObj
         attribute :name, model_attribute: :team_name
         attribute :year
         attribute :cars, array: true, model_class: 'SaveToModel::ArrayFormName::Car', primary_key: :model do
@@ -155,7 +155,7 @@ RSpec.describe 'save_to_model: Array of Form Objects - One Model - Name' do
       end
     end
 
-    let(:form) { SaveToModel::ImplicitArrayFormName.new }
+    let(:form) { SaveToModel::ArrayFormName.new }
 
     context 'completely empty model' do
       include_context 'init form and save to models'
@@ -234,7 +234,7 @@ RSpec.describe 'save_to_model: Array of Form Objects - One Model - Name' do
 
   context 'Explicit declaration of form object classes' do
     module SaveToModel
-      module ExplicitArrayName
+      class ArrayFormName < FormObj
         class EngineForm < FormObj
           attribute :power
           attribute :volume
@@ -272,7 +272,7 @@ RSpec.describe 'save_to_model: Array of Form Objects - One Model - Name' do
       end
     end
 
-    let(:form) { SaveToModel::ExplicitArrayName::TeamForm.new }
+    let(:form) { SaveToModel::ArrayFormName::TeamForm.new }
 
     context 'completely empty model' do
       include_context 'init form and save to models'

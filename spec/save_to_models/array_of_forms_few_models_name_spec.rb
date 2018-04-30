@@ -1,6 +1,6 @@
 RSpec.describe 'save_to_models: Array of Form Objects - Few Models - Name' do
   module SaveToModels
-    module ArrayFormName
+    class ArrayFormName < FormObj
       Engine = Struct.new(:power, :volume, :secret)
       Suspension = Struct.new(:front, :rear, :secret)
       Car = Struct.new(:car_model, :driver, :engine, :secret)
@@ -8,7 +8,7 @@ RSpec.describe 'save_to_models: Array of Form Objects - Few Models - Name' do
       Colour = Struct.new(:name, :rgb, :secret)
       Chassis = Struct.new(:chassis)
 
-      class Model < Array
+      class Model < ::Array
         attr_accessor :team_name, :year, :cars, :finance
       end
     end
@@ -127,7 +127,7 @@ RSpec.describe 'save_to_models: Array of Form Objects - Few Models - Name' do
 
   context 'Implicit declaration of form object classes' do
     module SaveToModels
-      class ImplicitArrayFormName < FormObj
+      class ArrayFormName < FormObj
         attribute :name, model_attribute: :team_name
         attribute :year
         attribute :cars, array: true, model_class: 'SaveToModels::ArrayFormName::Car', primary_key: :model do
@@ -157,7 +157,7 @@ RSpec.describe 'save_to_models: Array of Form Objects - Few Models - Name' do
       end
     end
 
-    let(:form) { SaveToModels::ImplicitArrayFormName.new }
+    let(:form) { SaveToModels::ArrayFormName.new }
 
     context 'completely empty model' do
       include_context 'init form and save to models'
@@ -236,7 +236,7 @@ RSpec.describe 'save_to_models: Array of Form Objects - Few Models - Name' do
 
   context 'Explicit declaration of form object classes' do
     module SaveToModels
-      module ExplicitArrayName
+      class ArrayFormName < FormObj
         class EngineForm < FormObj
           attribute :power
           attribute :volume
@@ -274,7 +274,7 @@ RSpec.describe 'save_to_models: Array of Form Objects - Few Models - Name' do
       end
     end
 
-    let(:form) { SaveToModels::ExplicitArrayName::TeamForm.new }
+    let(:form) { SaveToModels::ArrayFormName::TeamForm.new }
 
     context 'completely empty model' do
       include_context 'init form and save to models'
