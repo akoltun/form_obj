@@ -1,19 +1,17 @@
 RSpec.describe 'save_to_model: Simple Form Object - One Model' do
   module SaveToModel
-    module OneModel
-      class SimpleForm < FormObj
-        Engine = Struct.new(:power)
+    class SimpleForm < FormObj
+      Engine = Struct.new(:power)
 
-        attribute :name, model_attribute: :team_name
-        attribute :year
-        attribute :engine_power, model_attribute: 'car.:engine.power', model_class: [Hash, Engine]
-      end
+      attribute :name, model_attribute: :team_name
+      attribute :year
+      attribute :engine_power, model_attribute: 'car.:engine.power', model_class: [Hash, Engine]
     end
   end
 
-  let(:engine) { SaveToModel::OneModel::SimpleForm::Engine.new }
+  let(:engine) { SaveToModel::SimpleForm::Engine.new }
   let(:model) { Struct.new(:team_name, :year, :car).new }
-  let(:form) { SaveToModel::OneModel::SimpleForm.new() }
+  let(:form) { SaveToModel::SimpleForm.new() }
 
   shared_context 'fill in a form' do
     before do

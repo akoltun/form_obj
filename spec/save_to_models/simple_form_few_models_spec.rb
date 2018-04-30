@@ -9,18 +9,16 @@ RSpec.describe 'save_to_models: Simple Form Object - Few Models' do
   end
 
   context 'without default model' do
-    module SaveToModel
-      module FewModels
-        class SimpleForm < FormObj
-          Engine = Struct.new(:power)
+    module SaveToModels
+      class SimpleForm < FormObj
+        Engine = Struct.new(:power)
 
-          attribute :name, model_attribute: :team_name, model: :team
-          attribute :year, model: :team
-          attribute :engine_power, model: :car, model_attribute: ':engine.power', model_class: Engine
-        end
+        attribute :name, model_attribute: :team_name, model: :team
+        attribute :year, model: :team
+        attribute :engine_power, model: :car, model_attribute: ':engine.power', model_class: Engine
       end
     end
-    let(:form) { SaveToModel::FewModels::SimpleForm.new }
+    let(:form) { SaveToModels::SimpleForm.new }
 
     context 'nested models are created when they do not exist yet' do
       it 'has all attributes correctly saved' do
@@ -54,18 +52,16 @@ RSpec.describe 'save_to_models: Simple Form Object - Few Models' do
   end
 
   context 'with default model' do
-    module SaveToModel
-      module FewModelsWithDefault
-        class SimpleForm < FormObj
-          Engine = Struct.new(:power)
+    module SaveToModelsWithDefault
+      class SimpleForm < FormObj
+        Engine = Struct.new(:power)
 
-          attribute :name, model_attribute: :team_name
-          attribute :year
-          attribute :engine_power, model: :car, model_attribute: ':engine.power', model_class: Engine
-        end
+        attribute :name, model_attribute: :team_name
+        attribute :year
+        attribute :engine_power, model: :car, model_attribute: ':engine.power', model_class: Engine
       end
     end
-    let(:form) { SaveToModel::FewModelsWithDefault::SimpleForm.new }
+    let(:form) { SaveToModelsWithDefault::SimpleForm.new }
 
     context 'nested models are created when they do not exist yet' do
       it 'has all attributes correctly saved' do

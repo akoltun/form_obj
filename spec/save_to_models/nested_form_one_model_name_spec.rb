@@ -1,16 +1,14 @@
 RSpec.describe 'save_to_model: Nested Form Objects - One Model - Name' do
   Suspension = Struct.new(:front, :rear)
   module SaveToModel
-    module OneModelName
-      module NestedForm
-        Engine = Struct.new(:power, :volume)
-        Suspension = Struct.new(:front, :rear)
-      end
+    module NestedFormName
+      Engine = Struct.new(:power, :volume)
+      Suspension = Struct.new(:front, :rear)
     end
   end
 
-  let(:engine) { SaveToModel::OneModelName::NestedForm::Engine.new }
-  let(:suspension) { SaveToModel::OneModelName::NestedForm::Suspension.new }
+  let(:engine) { SaveToModel::NestedFormName::Engine.new }
+  let(:suspension) { SaveToModel::NestedFormName::Suspension.new }
   let(:model) { Struct.new(:team_name, :year, :car, :suspension, :brakes).new }
 
   shared_context 'initialize form' do
@@ -47,30 +45,28 @@ RSpec.describe 'save_to_model: Nested Form Objects - One Model - Name' do
 
   context 'Implicit declaration of form object classes' do
     module SaveToModel
-      module OneModelName
-        class ImplicitNestedForm < FormObj
-          attribute :name, model_attribute: :team_name
-          attribute :year
-          attribute :car, hash: true do
-            attribute :model
-            attribute :engine, model_class: 'SaveToModel::OneModelName::NestedForm::Engine' do
-              attribute :power
-              attribute :volume
-            end
-            attribute :driver
+      class ImplicitNestedFormName < FormObj
+        attribute :name, model_attribute: :team_name
+        attribute :year
+        attribute :car, hash: true do
+          attribute :model
+          attribute :engine, model_class: 'SaveToModel::NestedFormName::Engine' do
+            attribute :power
+            attribute :volume
           end
-          attribute :chassis, model_attribute: false do
-            attribute :suspension, model_class: 'SaveToModel::OneModelName::NestedForm::Suspension' do
-              attribute :front
-              attribute :rear
-            end
-            attribute :brakes
+          attribute :driver
+        end
+        attribute :chassis, model_attribute: false do
+          attribute :suspension, model_class: 'SaveToModel::NestedFormName::Suspension' do
+            attribute :front
+            attribute :rear
           end
+          attribute :brakes
         end
       end
     end
 
-    let(:form) { SaveToModel::OneModelName::ImplicitNestedForm.new }
+    let(:form) { SaveToModel::ImplicitNestedFormName.new }
 
     context 'nested models are created when they do not exist yet' do
       include_context 'initialize form'
@@ -100,35 +96,33 @@ RSpec.describe 'save_to_model: Nested Form Objects - One Model - Name' do
 
   context 'Explicit declaration of form object classes' do
     module SaveToModel
-      module OneModelName
-        module ExplicitNested
-          class EngineForm < FormObj
-            attribute :power
-            attribute :volume
+      module ExplicitNestedName
+        class EngineForm < FormObj
+          attribute :power
+          attribute :volume
+        end
+        class CarForm < FormObj
+          attribute :model
+          attribute :engine, class: EngineForm, model_class: 'SaveToModel::NestedFormName::Engine'
+          attribute :driver
+        end
+        class ChassisForm < FormObj
+          attribute :suspension, model_class: 'SaveToModel::NestedFormName::Suspension' do
+            attribute :front
+            attribute :rear
           end
-          class CarForm < FormObj
-            attribute :model
-            attribute :engine, class: EngineForm, model_class: 'SaveToModel::OneModelName::NestedForm::Engine'
-            attribute :driver
-          end
-          class ChassisForm < FormObj
-            attribute :suspension, model_class: 'SaveToModel::OneModelName::NestedForm::Suspension' do
-              attribute :front
-              attribute :rear
-            end
-            attribute :brakes
-          end
-          class TeamForm < FormObj
-            attribute :name, model_attribute: :team_name
-            attribute :car, class: CarForm, hash: true
-            attribute :year
-            attribute :chassis, class: ChassisForm, model_attribute: false
-          end
+          attribute :brakes
+        end
+        class TeamForm < FormObj
+          attribute :name, model_attribute: :team_name
+          attribute :car, class: CarForm, hash: true
+          attribute :year
+          attribute :chassis, class: ChassisForm, model_attribute: false
         end
       end
     end
 
-    let(:form) { SaveToModel::OneModelName::ExplicitNested::TeamForm.new }
+    let(:form) { SaveToModel::ExplicitNestedName::TeamForm.new }
 
     context 'nested models are created when they do not exist yet' do
       include_context 'initialize form'
