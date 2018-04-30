@@ -69,7 +69,7 @@ class FormObj
 
       else
         define_method name do
-          instance_variable_get("@#{name}") || instance_variable_set("@#{name}", klass.new({}, hash: hash))
+          instance_variable_get("@#{name}") || instance_variable_set("@#{name}", klass.new(hash: hash))
         end
         define_method "#{name}=" do |val|
           unless val.class == klass
@@ -93,11 +93,10 @@ class FormObj
     self
   end
 
-  def initialize(models = {}, opts = { hash: false })
+  def initialize(hash: false)
     @errors = ActiveModel::Errors.new(self)
     @persisted = false
-    @hash = opts[:hash]
-    load_from_models(models) if models.present?
+    @hash = hash
   end
 
   def persisted?

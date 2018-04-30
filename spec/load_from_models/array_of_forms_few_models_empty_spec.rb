@@ -1,17 +1,15 @@
-RSpec.describe FormObj, concept: true do
+RSpec.describe 'load_from_models: Array of Form Objects - Few Empty Models' do
   let(:colour) { Struct.new(:name, :rgb) }
 
-  module LoadFromModel
-    module ArrayOfForms
-      module FewModelsEmpty
-        class Model < Array
-          attr_accessor :team_name, :year, :cars, :finance
-        end
+  module LoadFromModelsEmpty
+    class ArrayForm < FormObj
+      class Model < ::Array
+        attr_accessor :team_name, :year, :cars, :finance
       end
     end
   end
 
-  let(:model) { LoadFromModel::ArrayOfForms::FewModelsEmpty::Model.new }
+  let(:model) { LoadFromModelsEmpty::ArrayForm::Model.new }
   before do
     model.team_name = 'Ferrari'
     model.year = 1950
@@ -21,6 +19,8 @@ RSpec.describe FormObj, concept: true do
 
   shared_examples 'a form of arrays' do
     it 'has all attributes correctly set up' do
+      form.load_from_models(default: model, chassis: nil)
+
       expect(form.name).to eq model.team_name
       expect(form.year).to eq model.year
 
@@ -51,88 +51,82 @@ RSpec.describe FormObj, concept: true do
     end
   end
 
-  describe 'array of nested forms' do
-    module LoadFromModel
-      module ArrayOfForms
-        module FewModelsEmpty
-          class Form < FormObj
-            attribute :name, model_attribute: :team_name
-            attribute :year
-            attribute :cars, array: true do
-              attribute :model
-              attribute :driver
-              attribute :engine do
-                attribute :power
-                attribute :volume
-              end
-            end
-            attribute :sponsors, array: true, model_attribute: 'finance.:sponsors' do
-              attribute :title
-              attribute :money
-            end
-            attribute :chassis, array: true, hash: true, model: :chassis do
-              attribute :suspension do
-                attribute :front
-                attribute :rear
-              end
-              attribute :brakes
-            end
-            attribute :colours, array: true, model_attribute: false do
-              attribute :name
-              attribute :rgb
-            end
+  context 'Implicit declaration of form object classes' do
+    module LoadFromModelsEmpty
+      class ArrayForm < FormObj
+        attribute :name, model_attribute: :team_name
+        attribute :year
+        attribute :cars, array: true do
+          attribute :model
+          attribute :driver
+          attribute :engine do
+            attribute :power
+            attribute :volume
           end
+        end
+        attribute :sponsors, array: true, model_attribute: 'finance.:sponsors' do
+          attribute :title
+          attribute :money
+        end
+        attribute :chassis, array: true, hash: true, model: :chassis do
+          attribute :suspension do
+            attribute :front
+            attribute :rear
+          end
+          attribute :brakes
+        end
+        attribute :colours, array: true, model_attribute: false do
+          attribute :name
+          attribute :rgb
         end
       end
     end
 
-    let(:form) { LoadFromModel::ArrayOfForms::FewModelsEmpty::Form.new(default: model, chassis: nil) }
+    let(:form) { LoadFromModelsEmpty::ArrayForm.new }
 
     it_behaves_like 'a form of arrays'
   end
 
-  describe 'explicit declaration of nested forms in array' do
-    module LoadFromModel
-      module ArrayOfForms
-        module FewModelsEmpty
-          class EngineForm < FormObj
-            attribute :power
-            attribute :volume
-          end
-          class CarForm < FormObj
-            attribute :model
-            attribute :engine, class: EngineForm
-            attribute :driver
-          end
-          class SponsorForm < FormObj
-            attribute :title
-            attribute :money
-          end
-          class SuspensionForm < FormObj
-            attribute :front
-            attribute :rear
-          end
-          class ChassisForm < FormObj
-            attribute :suspension, class: SuspensionForm
-            attribute :brakes
-          end
-          class ColourForm < FormObj
-            attribute :name
-            attribute :rgb
-          end
-          class TeamForm < FormObj
-            attribute :name, model_attribute: :team_name
-            attribute :year
-            attribute :cars, array: true, class: CarForm
-            attribute :sponsors, array: true, model_attribute: 'finance.:sponsors', class: SponsorForm
-            attribute :chassis, array: true, hash: true, class: ChassisForm, model: :chassis
-            attribute :colours, array: true, model_attribute: false, class: ColourForm
-          end
+  context 'Explicit declaration of form object classes' do
+    module LoadFromModelsEmpty
+      class ArrayForm < FormObj
+        class EngineForm < FormObj
+          attribute :power
+          attribute :volume
+        end
+        class CarForm < FormObj
+          attribute :model
+          attribute :engine, class: EngineForm
+          attribute :driver
+        end
+        class SponsorForm < FormObj
+          attribute :title
+          attribute :money
+        end
+        class SuspensionForm < FormObj
+          attribute :front
+          attribute :rear
+        end
+        class ChassisForm < FormObj
+          attribute :suspension, class: SuspensionForm
+          attribute :brakes
+        end
+        class ColourForm < FormObj
+          attribute :name
+          attribute :rgb
+        end
+        class TeamForm < FormObj
+          attribute :name, model_attribute: :team_name
+          attribute :year
+          attribute :cars, array: true, class: CarForm
+          attribute :sponsors, array: true, model_attribute: 'finance.:sponsors', class: SponsorForm
+          attribute :chassis, array: true, hash: true, class: ChassisForm, model: :chassis
+          attribute :colours, array: true, model_attribute: false, class: ColourForm
         end
       end
     end
 
-    let(:form) { LoadFromModel::ArrayOfForms::FewModelsEmpty::TeamForm.new(default: model, chassis: nil) }
+    let(:form) { LoadFromModelsEmpty::ArrayForm::TeamForm.new }
 
     it_behaves_like 'a form of arrays'
   end

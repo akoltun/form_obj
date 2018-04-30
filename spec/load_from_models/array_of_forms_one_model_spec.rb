@@ -1,4 +1,4 @@
-RSpec.describe FormObj, concept: true do
+RSpec.describe 'load_from_model: Array of Form Objects - One Model' do
   let(:engine) { Struct.new(:power, :volume) }
   let(:car) { Struct.new(:model, :driver, :engine) }
   let(:cars) {[
@@ -18,16 +18,14 @@ RSpec.describe FormObj, concept: true do
   let(:colour) { Struct.new(:name, :rgb) }
 
   module LoadFromModel
-    module ArrayOfForms
-      module OneModel
-        class Model < Array
-          attr_accessor :team_name, :year, :cars, :finance, :chassis
-        end
+    class ArrayForm < FormObj
+      class Model < ::Array
+        attr_accessor :team_name, :year, :cars, :finance, :chassis
       end
     end
   end
 
-  let(:model) { LoadFromModel::ArrayOfForms::OneModel::Model.new }
+  let(:model) { LoadFromModel::ArrayForm::Model.new }
   before do
     model.team_name = 'Ferrari'
     model.year = 1950
@@ -38,12 +36,12 @@ RSpec.describe FormObj, concept: true do
     model.push(colour.new('red', 0xFF0000), colour.new('green', 0x00FF00), colour.new('blue', 0x0000FF))
 
     5.times { form.cars.create }
-
-    form.load_from_model(model)
   end
 
   shared_examples 'a form of arrays' do
     it 'has all attributes correctly set up' do
+      form.load_from_model(model)
+
       expect(form.name).to eq model.team_name
       expect(form.year).to eq model.year
 
@@ -98,50 +96,45 @@ RSpec.describe FormObj, concept: true do
     end
   end
 
-  describe 'array of nested forms' do
+  context 'Implicit declaration of form object classes' do
     module LoadFromModel
-      module ArrayOfForms
-        module OneModel
-          class Form < FormObj
-            attribute :name, model_attribute: :team_name
-            attribute :year
-            attribute :cars, array: true do
-              attribute :model
-              attribute :driver
-              attribute :engine do
-                attribute :power
-                attribute :volume
-              end
-            end
-            attribute :sponsors, array: true, model_attribute: 'finance.:sponsors' do
-              attribute :title
-              attribute :money
-            end
-            attribute :chassis, array: true, hash: true do
-              attribute :suspension do
-                attribute :front
-                attribute :rear
-              end
-              attribute :brakes
-            end
-            attribute :colours, array: true, model_attribute: false do
-              attribute :name
-              attribute :rgb
-            end
+      class ArrayForm < FormObj
+        attribute :name, model_attribute: :team_name
+        attribute :year
+        attribute :cars, array: true do
+          attribute :model
+          attribute :driver
+          attribute :engine do
+            attribute :power
+            attribute :volume
           end
+        end
+        attribute :sponsors, array: true, model_attribute: 'finance.:sponsors' do
+          attribute :title
+          attribute :money
+        end
+        attribute :chassis, array: true, hash: true do
+          attribute :suspension do
+            attribute :front
+            attribute :rear
+          end
+          attribute :brakes
+        end
+        attribute :colours, array: true, model_attribute: false do
+          attribute :name
+          attribute :rgb
         end
       end
     end
 
-    let(:form) { LoadFromModel::ArrayOfForms::OneModel::Form.new }
+    let(:form) { LoadFromModel::ArrayForm.new }
 
     it_behaves_like 'a form of arrays'
   end
 
-  describe 'explicit declaration of nested forms in array' do
+  context 'Explicit declaration of form object classes' do
     module LoadFromModel
-      module ArrayOfForms
-        module OneModel
+      class ArrayForm < FormObj
           class EngineForm < FormObj
             attribute :power
             attribute :volume
@@ -175,11 +168,10 @@ RSpec.describe FormObj, concept: true do
             attribute :chassis, array: true, hash: true, class: ChassisForm
             attribute :colours, array: true, model_attribute: false, class: ColourForm
           end
-        end
       end
     end
 
-    let(:form) { LoadFromModel::ArrayOfForms::OneModel::TeamForm.new }
+    let(:form) { LoadFromModel::ArrayForm::TeamForm.new }
 
     it_behaves_like 'a form of arrays'
   end

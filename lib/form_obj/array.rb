@@ -13,7 +13,7 @@ class FormObj
     end
 
     def create
-      self << (item = item_class.new({}, hash: @item_hash))
+      self << (item = item_class.new(hash: @item_hash))
       item
     end
 
