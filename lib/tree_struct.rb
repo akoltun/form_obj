@@ -24,7 +24,7 @@ class TreeStruct
   public
 
   def self.array_class
-    ::TreeStruct::Array
+    Array
   end
 
   def self.nested_class

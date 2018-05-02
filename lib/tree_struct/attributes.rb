@@ -1,3 +1,5 @@
+require 'tree_struct'
+
 class TreeStruct
   class Attributes
     def initialize(items = [])

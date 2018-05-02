@@ -1,4 +1,5 @@
 require 'typed_array'
+require 'tree_struct'
 
 class TreeStruct
   class Array < TypedArray

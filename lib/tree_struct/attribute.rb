@@ -1,3 +1,5 @@
+require 'tree_struct'
+
 class TreeStruct
   class Attribute
     attr_reader :name

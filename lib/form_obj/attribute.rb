@@ -1,25 +1,20 @@
-class FormObj
-  class Attribute
-    attr_reader :name, :subform, :model, :model_attributes, :model_class
+require 'tree_struct'
+require 'tree_struct/attribute'
 
-    def initialize(name, subform = false, model: :default, model_attribute: nil, model_class: nil, hash: false, array: false)
-      @subform = subform
-      @array = array
-      @hash = hash
+class FormObj < TreeStruct
+  class Attribute < ::TreeStruct::Attribute
+    def initialize(name, array: false, class: nil, default: nil, parent:, primary_key: nil, &block)
+      super(name, array: array, class: binding.local_variable_get(:class), default: default, parent: parent, &block)
 
-      @model_attributes = model_attribute === false ? [] : (model_attribute || name).to_s.split('.')
-      @name = name.to_s.start_with?(':') ? name.to_s[1..-1] : name.to_s
+      @nested_class.instance_variable_set(:@model_name, ActiveModel::Name.new(@nested_class, nil, name.to_s)) if !@nested_class && block_given?
 
-      @model = model
-      @model_class = model_class.is_a?(Enumerable) ? model_class : [model_class || (hash ? Hash : name.to_s.camelize)]
-    end
-
-    def hash?
-      @hash
-    end
-
-    def array?
-      @array
+      if primary_key
+        if @nested_class
+          @nested_class.primary_key = primary_key
+        else
+          parent.primary_key = name.to_sym
+        end
+      end
     end
   end
 end
