@@ -3,6 +3,7 @@ PATH
   specs:
     form_obj (0.1.0)
       activemodel (>= 3.2)
+      activesupport (>= 3.2)
       typed_array (>= 1.0.0)
 
 GEM

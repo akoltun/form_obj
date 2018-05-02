@@ -34,6 +34,7 @@ well as serialized to a hash which reflects a model. ActiveModel::Errors could b
   spec.require_paths = ["lib"]
 
   spec.add_runtime_dependency "typed_array", ">= 1.0.0"
+  spec.add_runtime_dependency "activesupport", ">= 3.2"
   spec.add_runtime_dependency "activemodel", ">= 3.2"
 
   spec.add_development_dependency "bundler", "~> 1.16"
