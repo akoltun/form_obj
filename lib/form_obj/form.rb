@@ -85,5 +85,10 @@ module FormObj
 
       self
     end
+
+    def saved
+      @persisted = true
+      self
+    end
   end
 end
