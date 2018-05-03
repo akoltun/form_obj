@@ -5,7 +5,7 @@ require 'tree_struct'
 require 'result_obj'
 require 'active_model'
 
-class FormObj
+class FormObjMappable
   class UnknownAttributeError < RuntimeError; end
   class WrongHashAttributeValue < RuntimeError; end
   class WrongArrayAttributeValue < RuntimeError; end

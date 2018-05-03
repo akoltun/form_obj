@@ -21,7 +21,7 @@ RSpec.describe 'to_hash: Nested Form Object' do
 
   describe 'Implicit declaration of form object classes' do
     module ToHash
-      class ImplicitNestedForm < FormObj
+      class NestedForm < FormObj::Form
         attribute :name
         attribute :car do
           attribute :model
@@ -35,7 +35,7 @@ RSpec.describe 'to_hash: Nested Form Object' do
       end
     end
 
-    let(:form) { ToHash::ImplicitNestedForm.new }
+    let(:form) { ToHash::NestedForm.new }
     before do
       form.name = 'Ferrari'
       form.year = 1950
@@ -50,17 +50,17 @@ RSpec.describe 'to_hash: Nested Form Object' do
 
   context 'Explicit declaration of form object classes' do
     module ToHash
-      module ExplicitNested
-        class EngineForm < FormObj
+      class NestedForm < FormObj::Form
+        class EngineForm < FormObj::Form
           attribute :power
           attribute :volume
         end
-        class CarForm < FormObj
+        class CarForm < FormObj::Form
           attribute :model
           attribute :engine, class: EngineForm
           attribute :driver
         end
-        class TeamForm < FormObj
+        class TeamForm < FormObj::Form
           attribute :name
           attribute :car, class: CarForm
           attribute :year
@@ -69,7 +69,7 @@ RSpec.describe 'to_hash: Nested Form Object' do
     end
 
     context 'dot notation' do
-      let(:form) { ToHash::ExplicitNested::TeamForm.new }
+      let(:form) { ToHash::NestedForm::TeamForm.new }
       before do
         form.name = 'Ferrari'
         form.year = 1950
@@ -83,9 +83,9 @@ RSpec.describe 'to_hash: Nested Form Object' do
     end
 
     context 'explicit class creation notation' do
-      let(:form) { ToHash::ExplicitNested::TeamForm.new }
-      let(:car_form) { ToHash::ExplicitNested::CarForm.new }
-      let(:engine_form) { ToHash::ExplicitNested::EngineForm.new }
+      let(:form) { ToHash::NestedForm::TeamForm.new }
+      let(:car_form) { ToHash::NestedForm::CarForm.new }
+      let(:engine_form) { ToHash::NestedForm::EngineForm.new }
       before do
         engine_form.power = 335
         engine_form.volume = 4.1

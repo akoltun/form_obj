@@ -33,7 +33,7 @@ RSpec.describe 'update_attributes: Nested Form Object' do
 
   describe 'Implicit declaration of form object classes' do
     module UpdateAttributes
-      class ImplicitNestedForm < FormObj
+      class NestedForm < FormObj::Form
         attribute :name
         attribute :car do
           attribute :model
@@ -47,7 +47,7 @@ RSpec.describe 'update_attributes: Nested Form Object' do
       end
     end
 
-    let(:form) { UpdateAttributes::ImplicitNestedForm.new }
+    let(:form) { UpdateAttributes::NestedForm.new }
 
     context 'nested forms present already' do
       before do
@@ -74,24 +74,24 @@ RSpec.describe 'update_attributes: Nested Form Object' do
 
   context 'Explicit declaration of form object classes' do
     module UpdateAttributes
-      module ExplicitNested
-        class EngineForm < FormObj
+      class NestedForm < FormObj::Form
+        class EngineForm < FormObj::Form
           attribute :power
           attribute :volume
         end
-        class CarForm < FormObj
+        class CarForm < FormObj::Form
           attribute :model
           attribute :engine, class: EngineForm
           attribute :driver
         end
-        class TeamForm < FormObj
+        class TeamForm < FormObj::Form
           attribute :name
           attribute :car, class: CarForm
           attribute :year
         end
       end
     end
-    let(:form) { UpdateAttributes::ExplicitNested::TeamForm.new }
+    let(:form) { UpdateAttributes::NestedForm::TeamForm.new }
 
     context 'nested forms present already' do
       context 'implicit creation of nested form object instances (via dot notation)' do
@@ -107,8 +107,8 @@ RSpec.describe 'update_attributes: Nested Form Object' do
         it_behaves_like 'updated form'
       end
       context 'explicit creation of nested form object instances' do
-        let(:car_form) { UpdateAttributes::ExplicitNested::CarForm.new }
-        let(:engine_form) { UpdateAttributes::ExplicitNested::EngineForm.new }
+        let(:car_form) { UpdateAttributes::NestedForm::CarForm.new }
+        let(:engine_form) { UpdateAttributes::NestedForm::EngineForm.new }
         before do
           engine_form.power = 335
           engine_form.volume = 4.1

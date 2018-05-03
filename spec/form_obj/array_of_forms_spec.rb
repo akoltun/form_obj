@@ -1,5 +1,5 @@
-RSpec.describe 'Array of TreeStruct' do
-  shared_examples 'nested TreeStruct' do
+RSpec.describe 'Array of Form Objects' do
+  shared_examples 'array of Form Objects' do
     it 'has assigned values' do
       expect(tree_struct.name).to eq 'Ferrari'
       expect(tree_struct.year).to eq 1950
@@ -23,7 +23,7 @@ RSpec.describe 'Array of TreeStruct' do
   end
 
   context 'Implicit declaration of tree_struct objects' do
-    class ArrayTreeStruct < TreeStruct
+    class ArrayForm < FormObj::Form
       attribute :name
       attribute :year
       attribute :cars, array: true do
@@ -36,7 +36,7 @@ RSpec.describe 'Array of TreeStruct' do
       end
     end
 
-    let(:tree_struct) { ArrayTreeStruct.new }
+    let(:tree_struct) { ArrayForm.new }
     before do
       tree_struct.name = 'Ferrari'
       tree_struct.year = 1950
@@ -55,29 +55,29 @@ RSpec.describe 'Array of TreeStruct' do
     end
 
     it { expect(tree_struct.cars.size).to eq 2 }
-    it_behaves_like 'nested TreeStruct'
+    it_behaves_like 'array of Form Objects'
   end
 
   context 'Explicit declaration of tree_struct objects' do
-    class ArrayTreeStruct < TreeStruct
-      class EngineTreeStruct < TreeStruct
+    class ArrayForm < FormObj::Form
+      class EngineForm < FormObj::Form
         attribute :power
         attribute :volume
       end
-      class CarTreeStruct < TreeStruct
+      class CarForm < FormObj::Form
         attribute :model
         attribute :driver
-        attribute :engine, class: EngineTreeStruct
+        attribute :engine, class: EngineForm
       end
-      class TeamTreeStruct < TreeStruct
+      class TeamForm < FormObj::Form
         attribute :name
         attribute :year
-        attribute :cars, array: true, class: CarTreeStruct
+        attribute :cars, array: true, class: CarForm
       end
     end
 
     context 'implicit creation of array of tree_struct objects (via dot notation)' do
-      let(:tree_struct) { ArrayTreeStruct::TeamTreeStruct.new }
+      let(:tree_struct) { ArrayForm::TeamForm.new }
       before do
         tree_struct.name = 'Ferrari'
         tree_struct.year = 1950
@@ -96,26 +96,26 @@ RSpec.describe 'Array of TreeStruct' do
       end
 
       it { expect(tree_struct.cars.size).to eq 2 }
-      it_behaves_like 'nested TreeStruct'
+      it_behaves_like 'array of Form Objects'
     end
 
     context 'explicit creation of array of tree_struct objects' do
-      let(:tree_struct) { ArrayTreeStruct::TeamTreeStruct.new }
+      let(:tree_struct) { ArrayForm::TeamForm.new }
       before do
-        engine1 = ArrayTreeStruct::EngineTreeStruct.new
+        engine1 = ArrayForm::EngineForm.new
         engine1.power = 335
         engine1.volume = 4.1
 
-        car1 = ArrayTreeStruct::CarTreeStruct.new
+        car1 = ArrayForm::CarForm.new
         car1.model = '340 F1'
         car1.driver = 'Ascari'
         car1.engine = engine1
 
-        engine2 = ArrayTreeStruct::EngineTreeStruct.new
+        engine2 = ArrayForm::EngineForm.new
         engine2.power = 300
         engine2.volume = 3.3
 
-        car2 = ArrayTreeStruct::CarTreeStruct.new
+        car2 = ArrayForm::CarForm.new
         car2.model = '275 F1'
         car2.driver = 'Villoresi'
         car2.engine = engine2
@@ -127,7 +127,7 @@ RSpec.describe 'Array of TreeStruct' do
       end
 
       it { expect(tree_struct.cars.size).to eq 2 }
-      it_behaves_like 'nested TreeStruct'
+      it_behaves_like 'array of Form Objects'
     end
   end
 end

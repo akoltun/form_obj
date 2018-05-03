@@ -28,7 +28,7 @@ RSpec.describe 'to_hash: Array of Form Objects' do
 
   context 'Implicit declaration of form objects' do
     module ToHash
-      class ImplicitArrayForm < FormObj
+      class ArrayForm < FormObj::Form
         attribute :name
         attribute :cars, array: true do
           attribute :model
@@ -42,7 +42,7 @@ RSpec.describe 'to_hash: Array of Form Objects' do
       end
     end
 
-    let(:form) { ToHash::ImplicitArrayForm.new }
+    let(:form) { ToHash::ArrayForm.new }
     before do
       form.name = 'Ferrari'
       form.year = 1950
@@ -65,17 +65,17 @@ RSpec.describe 'to_hash: Array of Form Objects' do
 
   context 'Explicit declaration of form objects' do
     module ToHash
-      module ExplicitArray
-        class EngineForm < FormObj
+      class ArrayForm < FormObj::Form
+        class EngineForm < FormObj::Form
           attribute :power
           attribute :volume
         end
-        class CarForm < FormObj
+        class CarForm < FormObj::Form
           attribute :model
           attribute :engine, class: EngineForm
           attribute :driver
         end
-        class TeamForm < FormObj
+        class TeamForm < FormObj::Form
           attribute :name
           attribute :cars, array: true, class: CarForm
           attribute :year
@@ -84,7 +84,7 @@ RSpec.describe 'to_hash: Array of Form Objects' do
     end
 
     context 'dot notation' do
-      let(:form) { ToHash::ExplicitArray::TeamForm.new }
+      let(:form) { ToHash::ArrayForm::TeamForm.new }
       before do
         form.name = 'Ferrari'
         form.year = 1950
@@ -106,22 +106,22 @@ RSpec.describe 'to_hash: Array of Form Objects' do
     end
 
     context 'explicit class creation notation' do
-      let(:form) { ToHash::ExplicitArray::TeamForm.new }
+      let(:form) { ToHash::ArrayForm::TeamForm.new }
       before do
-        engine1 = ToHash::ExplicitArray::EngineForm.new
+        engine1 = ToHash::ArrayForm::EngineForm.new
         engine1.power = 335
         engine1.volume = 4.1
 
-        car1 = ToHash::ExplicitArray::CarForm.new
+        car1 = ToHash::ArrayForm::CarForm.new
         car1.model = '340 F1'
         car1.driver = 'Ascari'
         car1.engine = engine1
 
-        engine2 = ToHash::ExplicitArray::EngineForm.new
+        engine2 = ToHash::ArrayForm::EngineForm.new
         engine2.power = 300
         engine2.volume = 3.3
 
-        car2 = ToHash::ExplicitArray::CarForm.new
+        car2 = ToHash::ArrayForm::CarForm.new
         car2.model = '275 F1'
         car2.driver = 'Villoresi'
         car2.engine = engine2

@@ -1,5 +1,3 @@
-require 'tree_struct'
-
-class FormObj < TreeStruct
+module FormObj
   VERSION = "0.1.0"
 end

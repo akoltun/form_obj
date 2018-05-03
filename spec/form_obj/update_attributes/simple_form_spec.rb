@@ -2,7 +2,7 @@ RSpec.describe 'update_attributes: Simple Form Object' do
   include_context 'renderable'
 
   module UpdateAttributes
-    class SimpleForm < FormObj
+    class SimpleForm < FormObj::Form
       attribute :name
       attribute :year
     end

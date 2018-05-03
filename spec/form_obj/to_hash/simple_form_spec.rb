@@ -1,6 +1,6 @@
 RSpec.describe 'to_hash: Simple Form Object' do
   module ToHash
-    class SimpleForm < FormObj
+    class SimpleForm < FormObj::Form
       attribute :name
       attribute :year
     end

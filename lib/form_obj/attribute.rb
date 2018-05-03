@@ -1,7 +1,6 @@
 require 'tree_struct'
-require 'tree_struct/attribute'
 
-class FormObj < TreeStruct
+module FormObj
   class Attribute < ::TreeStruct::Attribute
     def initialize(name, array: false, class: nil, default: nil, parent:, primary_key: nil, &block)
       super(name, array: array, class: binding.local_variable_get(:class), default: default, parent: parent, &block)

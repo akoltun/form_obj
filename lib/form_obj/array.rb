@@ -1,7 +1,6 @@
 require 'tree_struct'
-require 'tree_struct/array'
 
-class FormObj < TreeStruct
+module FormObj
   class Array < ::TreeStruct::Array
     def update_attributes(vals)
       ids_exists = []

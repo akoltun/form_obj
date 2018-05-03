@@ -1,49 +1,30 @@
 RSpec.describe 'Nested Form Object' do
-  include_context 'renderable'
-
-  subject do
-    form_for form, url: '/form' do |f|
-      concat f.text_field :name
-      concat f.text_field :year
-      concat(f.fields_for(:car) do |fc|
-        concat fc.text_field :model
-        concat fc.text_field :driver
-        concat(fc.fields_for(:engine) do |fce|
-          concat fce.text_field :power
-          concat fce.text_field :volume
-        end)
-      end)
-    end
-  end
-
-  shared_examples 'rendered form' do
-    it 'form_for renders input element for :name' do
-      is_expected.to match /<input( \w+="[^"]+")* name="\w+\[name\]"( \w+="[^"]+")* \/>/
+  shared_examples 'nested Form Object' do
+    it 'has assigned values' do
+      expect(form.name).to eq 'Ferrari'
+      expect(form.year).to eq 1950
+      expect(form.car.model).to eq '340 F1'
+      expect(form.car.driver).to eq 'Ascari'
+      expect(form.car.engine.power).to eq 335
+      expect(form.car.engine.volume).to eq 4.1
     end
 
-    it 'form_for renders input element for :year' do
-      is_expected.to match /<input( \w+="[^"]+")* name="\w+\[year\]"( \w+="[^"]+")* \/>/
-    end
+    it "doesn't have another attributes" do
+      expect {
+        form.another_attribute
+      }.to raise_error NoMethodError
 
-    it 'form_for renders input element for :model' do
-      is_expected.to match /<input( \w+="[^"]+")* name="\w+\[car\]\[model\]"( \w+="[^"]+")* \/>/
-    end
+      expect {
+        form.car.another_attribute
+      }.to raise_error NoMethodError
 
-    it 'form_for renders input element for :driver' do
-      is_expected.to match /<input( \w+="[^"]+")* name="\w+\[car\]\[driver\]"( \w+="[^"]+")* \/>/
-    end
-
-    it 'form_for renders input element for :power' do
-      is_expected.to match /<input( \w+="[^"]+")* name="\w+\[car\]\[engine\]\[power\]"( \w+="[^"]+")* \/>/
-    end
-
-    it 'form_for renders input element for :volume' do
-      is_expected.to match /<input( \w+="[^"]+")* name="\w+\[car\]\[engine\]\[volume\]"( \w+="[^"]+")* \/>/
+      expect {
+        form.car.engine.another_attribute
+      }.to raise_error NoMethodError
     end
   end
 
   context 'Implicit declaration of form objects' do
-
     class NestedForm < FormObj::Form
       attribute :name
       attribute :year
@@ -67,7 +48,7 @@ RSpec.describe 'Nested Form Object' do
       form.car.engine.volume = 4.1
     end
 
-    it_behaves_like 'rendered form'
+    it_behaves_like 'nested Form Object'
   end
 
   context 'Explicit declaration of form objects' do
@@ -90,7 +71,7 @@ RSpec.describe 'Nested Form Object' do
     end
     let(:form) { NestedForm::TeamForm.new }
 
-    context 'implicit creation of nested form object instances (via dot notation)' do
+    context 'implicit creation of nested form instances (via dot notation)' do
       before do
         form.name = 'Ferrari'
         form.year = 1950
@@ -100,10 +81,10 @@ RSpec.describe 'Nested Form Object' do
         form.car.engine.volume = 4.1
       end
 
-      it_behaves_like 'rendered form'
+      it_behaves_like 'nested Form Object'
     end
 
-    context 'explicit creation of nested form object instances' do
+    context 'explicit creation of nested form instances' do
       let(:car_form) { NestedForm::CarForm.new }
       let(:engine_form) { NestedForm::EngineForm.new }
       before do
@@ -119,7 +100,7 @@ RSpec.describe 'Nested Form Object' do
         form.car = car_form
       end
 
-      it_behaves_like 'rendered form'
+      it_behaves_like 'nested Form Object'
     end
   end
 end

@@ -1,5 +1,5 @@
 RSpec.describe 'Simple Form Object' do
-  class SimpleForm < FormObj
+  class SimpleForm < FormObj::Form
     attribute :name
     attribute :year
   end
