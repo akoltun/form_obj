@@ -5,5 +5,9 @@ module FormObj
     def find(name)
       @items.find { |item| item.name == name.to_sym }
     end
+
+    def each(&block)
+      @items.each(&block)
+    end
   end
 end

@@ -1,9 +1,7 @@
 require 'tree_struct'
-# require "form_obj/version"
 require 'form_obj/attributes'
 require 'form_obj/attribute'
 require 'form_obj/array'
-# require 'result_obj'
 require 'active_model'
 
 module FormObj
