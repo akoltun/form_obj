@@ -3,12 +3,11 @@ require 'form_obj/mappable/model_attribute'
 module FormObj
   module Mappable
     class Attribute < FormObj::Attribute
-      attr_reader :model, :model_class
+      attr_reader :model_attribute
 
       def initialize(name, array: false, class: nil, default: nil, hash: false, model: :default, model_attribute: nil, model_class: nil, parent:, primary_key: nil, &block)
-        @model = model
-        @model_class = model_class.is_a?(::Enumerable) ? model_class : [model_class || (hash ? ::Hash : name.to_s.camelize)]
-        @model_attribute = ModelAttribute.new(model_attribute, name)
+        @hash = hash
+        @model_attribute = ModelAttribute.new(model: model, names: model_attribute, classes: model_class, default_name: name, array: array, hash: hash, subform: binding.local_variable_get(:class) || block_given?)
 
         if block_given?
           new_block = Proc.new do
@@ -22,16 +21,10 @@ module FormObj
         @nested_class.hash = hash if @nested_class
       end
 
-      def hash=(value)
-        @model_attribute.hash = value
-      end
+      private
 
-      def read_from_model?
-        @model_attribute.present?
-      end
-
-      def read_from_model(model)
-        @model_attribute.read_from_model(model)
+      def create_array
+        @parent.array_class.new(@nested_class, model_attribute: @model_attribute)
       end
     end
   end
