@@ -21,6 +21,10 @@ module FormObj
         @nested_class.hash = hash if @nested_class
       end
 
+      def array?
+        @array
+      end
+
       private
 
       def create_array

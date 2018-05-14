@@ -74,6 +74,12 @@ module FormObj
           raise PrimaryKeyMappingError.new('Primary key should not be mapped to non-mapped attribute')
         end
       end
+
+      def to_model_hash(value)
+        # hash[@model] = {} if hash[@model].nil?
+        # (hash[@model] ||= {})[@items.first.name] = @items[1..-1].reverse.reduce(value) { |value, item| item.to_hash(value) }
+        @items.reverse.reduce(value) { |value, item| item.to_hash(value) }
+      end
     end
   end
 end

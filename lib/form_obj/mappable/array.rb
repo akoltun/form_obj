@@ -56,6 +56,21 @@ module FormObj
       def model_primary_key
         self.item_class.model_primary_key
       end
+
+      # def to_models_hash(hash)
+      #   model_array = hash[:default]
+      #   self.each do |item|
+      #     model_array << item.to_models_hash(hash.merge(default: {}))[:default]
+      #   end
+      #
+      #   self.class._attributes.each { |attribute| attribute_to_models_hash(attribute: attribute, models_hash: hash) }
+      #   hash
+      # end
+
+      def export_to_model_hash(models)
+        self.each { |item| models[:default] << item.export_to_model_hash(models.merge(default: {}))[:default] }
+        models
+      end
     end
   end
 end

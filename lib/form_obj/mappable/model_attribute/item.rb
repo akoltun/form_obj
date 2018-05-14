@@ -58,6 +58,10 @@ module FormObj
           end
         end
 
+        def to_hash(value)
+          { @name => value }
+        end
+
         private
 
         def hash_attribute_name(model, name)
