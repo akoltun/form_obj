@@ -59,43 +59,24 @@ module FormObj
 
     def to_models_hash(models = {})
       self.class._attributes.each do |attribute|
-        # value = case
-        #         when attribute.array? then []
-        #         when attribute.subform? && attribute.model_attribute.write_to_model? then {}
-        #         when attribute.subform? && !attribute.model_attribute.write_to_model? then models[attribute.model_attribute.model] || {}
-        #         else send(attribute.name)
-        #         end
+        val = if attribute.subform?
+                if attribute.array?
+                  []
+                else
+                  attribute.model_attribute.write_to_model? ? {} : (models[attribute.model_attribute.model] ||= {})
+                end
+              else
+                send(attribute.name)
+              end
 
+        value = if attribute.subform? && !attribute.model_attribute.write_to_model?
+                  attribute.array? ? { self: val } : {}
+                else
+                  attribute.model_attribute.to_model_hash(val)
+                end
 
-        if attribute.subform?
-          nested_models = if attribute.array?
-                            value = []
-                            val = if attribute.model_attribute.write_to_model?
-                                    attribute.model_attribute.to_model_hash(value)
-                                  else
-                                    { self: value }
-                                  end
-                            (models[attribute.model_attribute.model] ||= {}).merge!(val)
-                            models.merge(default: value)
-
-                          else
-                            value = {}
-                            if attribute.model_attribute.write_to_model?
-                              val = attribute.model_attribute.to_model_hash(value)
-                              (models[attribute.model_attribute.model] ||= {}).merge!(val)
-                              models.merge(default: value)
-                            else
-                              models.merge(default: models[attribute.model_attribute.model] ||= {})
-                            end
-                          end
-
-          send(attribute.name).to_models_hash(nested_models)
-
-        elsif attribute.model_attribute.write_to_model?
-          value = send(attribute.name)
-          val = attribute.model_attribute.to_model_hash(value)
-          (models[attribute.model_attribute.model] ||= {}).merge!(val)
-        end
+        (models[attribute.model_attribute.model] ||= {}).merge!(value)
+        send(attribute.name).to_models_hash(models.merge(default: val)) if attribute.subform?
       end
       models
     end
