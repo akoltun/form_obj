@@ -81,6 +81,20 @@ module FormObj
       models
     end
 
+    def copy_errors_from_model(model)
+      copy_errors_from_models(default: model)
+    end
+
+    def copy_errors_from_models(models)
+      self.class._attributes.each do |attribute|
+        if attribute.subform?
+        else
+          @errors[attribute.name].push(*attribute.model_attribute.read_errors_from_models(models))
+        end
+      end
+      self
+    end
+
     private
 
     def load_attribute_from_model(attribute, models)

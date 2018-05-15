@@ -78,6 +78,16 @@ module FormObj
       def to_model_hash(value)
         @items.reverse.reduce(value) { |value, item| item.to_hash(value) }
       end
+
+      def read_errors_from_model(model)
+        @items.last.try(:read_errors_from_model,
+                        @items[0..-2].reduce(model) { |last_model, item| item.read_from_model(last_model, create_nested_model_if_nil: false) }
+        )
+      end
+
+      def read_errors_from_models(models)
+        read_errors_from_model(models[@model])
+      end
     end
   end
 end

@@ -62,6 +62,10 @@ module FormObj
           { @name => value }
         end
 
+        def read_errors_from_model(model)
+          @hash_item ? [] : model.errors[@name]
+        end
+
         private
 
         def hash_attribute_name(model, name)
