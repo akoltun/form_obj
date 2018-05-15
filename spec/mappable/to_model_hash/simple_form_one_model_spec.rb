@@ -7,6 +7,7 @@ RSpec.describe 'to_model_hash: Simple Form Object - One Model' do
 
       attribute :name, model_attribute: :team_name
       attribute :year
+      attribute :month, model_attribute: false
       attribute :engine_power, model_attribute: 'car.:engine.power'
     end
   end
@@ -16,6 +17,7 @@ RSpec.describe 'to_model_hash: Simple Form Object - One Model' do
   before do
     form.name = 'Ferrari'
     form.year = 1950
+    form.month = 'April'
     form.engine_power = 335
   end
 

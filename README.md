@@ -45,7 +45,7 @@ into a from object.
    2. [Array of Form Objects](32-array-of-form-objects)
 4. [Map Form Object to Models](4-map-form-objects-to-models)
    1. [Multiple Models Example](41-multiple-models-example)
-   2. [Skip Attribute Mapping (not implemented yet)](42-skip-attribute-mapping)
+   2. [Skip Attribute Mapping](42-skip-attribute-mapping)
       1. [Map Nested Form Object Attribute to Parent Level Model Attribute](421-map-nested-form-object-attribute-to-parent-level-model-attribute)
    3. [Map Nested Form Object to A Hash Model](43-map-nested-form-object-to-a-hash-model)
 5. [Load Form Object from Models](5-load-form-object-from-models)
@@ -428,7 +428,7 @@ Suppose `multi_form = MultiForm.new` and `default`, `car` to be instances of two
 | `multi_form.year` | `default.year` |
 | `multi_form.engine_power` | `car[:engine].power` |
 
-#### 4.2. Skip Attribute Mapping (not implemented yet)
+#### 4.2. Skip Attribute Mapping
 
 Use `model_attribute: false` in order to avoid attribute mapping to the model.
 

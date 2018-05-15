@@ -71,11 +71,11 @@ module FormObj
 
         value = if attribute.subform? && !attribute.model_attribute.write_to_model?
                   attribute.array? ? { self: val } : {}
-                else
+                elsif attribute.subform? || attribute.model_attribute.write_to_model?
                   attribute.model_attribute.to_model_hash(val)
                 end
 
-        (models[attribute.model_attribute.model] ||= {}).merge!(value)
+        (models[attribute.model_attribute.model] ||= {}).merge!(value) if attribute.subform? || attribute.model_attribute.write_to_model?
         send(attribute.name).to_models_hash(models.merge(default: val)) if attribute.subform?
       end
       models
@@ -88,7 +88,7 @@ module FormObj
     def copy_errors_from_models(models)
       self.class._attributes.each do |attribute|
         if attribute.subform?
-        else
+        elsif attribute.model_attribute.write_to_model? # Use :write_to_model? instead of :read_to_model? because validation errors appears after writing to model
           @errors[attribute.name].push(*attribute.model_attribute.read_errors_from_models(models))
         end
       end
