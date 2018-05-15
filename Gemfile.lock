@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    form_obj (0.2.0)
+    form_obj (0.3.0)
       activemodel (>= 3.2)
       activesupport (>= 3.2)
       tree_struct (>= 1.0.2)
