@@ -1,4 +1,4 @@
-RSpec.describe 'to_model_hash: Simple Form Object - Few Models' do
+RSpec.describe 'to_models_hash: Simple Form Object - Few Models' do
   module ToModelsHash
     class SimpleForm < FormObj::Form
       include FormObj::Mappable
@@ -18,15 +18,27 @@ RSpec.describe 'to_model_hash: Simple Form Object - Few Models' do
   end
 
   it 'correctly presents all attributes in the hash' do
+    expect(form.to_models_hash).to eq Hash[
+                                          default: {
+                                              team_name: 'Ferrari',
+                                              year: 1950,
+                                          },
+                                          car: {
+                                              engine: {
+                                                  power: 335
+                                              }
+                                          }
+                                      ]
+
     expect(form.to_model_hash).to eq Hash[
                                          team_name: 'Ferrari',
                                          year: 1950,
                                      ]
 
     expect(form.to_model_hash(:car)).to eq Hash[
-                                                   engine: {
-                                                       power: 335
-                                                   }
-                                               ]
+                                               engine: {
+                                                   power: 335
+                                               }
+                                           ]
   end
 end

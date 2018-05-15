@@ -1,4 +1,4 @@
-RSpec.describe 'to_model_hash: Nested Form Objects - Few Models' do
+RSpec.describe 'to_models_hash: Nested Form Objects - Few Models' do
   shared_context 'initialize form' do
     before do
       form.name = 'Ferrari'
@@ -15,6 +15,30 @@ RSpec.describe 'to_model_hash: Nested Form Objects - Few Models' do
 
   shared_examples 'hashable form' do
     it 'correctly presents all attributes in the hash' do
+      expect(form.to_models_hash).to eq Hash[
+                                            default: {
+                                                team_name: 'Ferrari',
+                                                year: 1950,
+                                                car: {
+                                                    car_model: '340 F1',
+                                                    driver: 'Ascari',
+                                                    engine: {
+                                                        power: 335,
+                                                        volume: 4.1
+                                                    }
+                                                },
+                                            },
+                                            chassis: {
+                                                suspension: {
+                                                    front: 'independant',
+                                                    rear: 'de Dion'
+                                                },
+                                                brakes: :drum
+
+                                            }
+                                        ]
+
+
       expect(form.to_model_hash).to eq Hash[
                                            team_name: 'Ferrari',
                                            year: 1950,

@@ -1,4 +1,4 @@
-RSpec.describe 'to_model_hash: Array of Form Objects - Few Models' do
+RSpec.describe 'to_models_hash: Array of Form Objects - Few Models' do
   shared_context 'initialize form' do
     before do
       form.name = 'Ferrari'
@@ -52,62 +52,70 @@ RSpec.describe 'to_model_hash: Array of Form Objects - Few Models' do
 
   shared_examples 'hashable form' do
     it 'correctly presents all attributes in the hash' do
-      expect(form.to_model_hash).to eq Hash[
-                                           team_name: 'Ferrari',
-                                           year: 1950,
-                                           cars: [{
-                                                      car_model: '340 F1',
-                                                      driver: 'Ascari',
-                                                      engine: {
-                                                          power: 335,
-                                                          volume: 4.1
-                                                      }
-                                                  }, {
-                                                      car_model: '275 F1',
-                                                      driver: 'Villoresi',
-                                                      engine: {
-                                                          power: 300,
-                                                          volume: 3.3
-                                                      }
-                                                  }],
-                                           finance: {
-                                               sponsors: [{
-                                                              title: 'Shell',
-                                                              money: 1000000
-                                                          }, {
-                                                              title: 'Pirelli',
-                                                              money: 500000
-                                                          }]
-                                           },
-                                           self: [{
-                                                      name: 'red',
-                                                      rgb: 0xFF0000
-                                                  }, {
-                                                      name: 'green',
-                                                      rgb: 0x00FF00
-                                                  }, {
-                                                      name: 'blue',
-                                                      rgb: 0x0000FF
-                                                  }]
-                                       ]
+      expected_default_hash = {
+          team_name: 'Ferrari',
+          year: 1950,
+          cars: [{
+                     car_model: '340 F1',
+                     driver: 'Ascari',
+                     engine: {
+                         power: 335,
+                         volume: 4.1
+                     }
+                 }, {
+                     car_model: '275 F1',
+                     driver: 'Villoresi',
+                     engine: {
+                         power: 300,
+                         volume: 3.3
+                     }
+                 }],
+          finance: {
+              sponsors: [{
+                             title: 'Shell',
+                             money: 1000000
+                         }, {
+                             title: 'Pirelli',
+                             money: 500000
+                         }]
+          },
+          self: [{
+                     name: 'red',
+                     rgb: 0xFF0000
+                 }, {
+                     name: 'green',
+                     rgb: 0x00FF00
+                 }, {
+                     name: 'blue',
+                     rgb: 0x0000FF
+                 }]
+      }
 
-      expect(form.to_model_hash(:chassis)).to eq Hash[
-                                                     chassis: [{
-                                                                   id: 1,
-                                                                   suspension: {
-                                                                       front: 'independant',
-                                                                       rear: 'de Dion'
-                                                                   },
-                                                                   brakes: :drum
-                                                               }, {
-                                                                   id: 2,
-                                                                   suspension: {
-                                                                       front: 'dependant',
-                                                                       rear: 'de Lion'
-                                                                   },
-                                                                   brakes: :disc
-                                                               }],
-                                                 ]
+      expected_chassis_hash = {
+          chassis: [{
+                        id: 1,
+                        suspension: {
+                            front: 'independant',
+                            rear: 'de Dion'
+                        },
+                        brakes: :drum
+                    }, {
+                        id: 2,
+                        suspension: {
+                            front: 'dependant',
+                            rear: 'de Lion'
+                        },
+                        brakes: :disc
+                    }],
+      }
+
+      expect(form.to_models_hash).to eq Hash[
+                                            default: expected_default_hash,
+                                            chassis: expected_chassis_hash
+                                        ]
+
+      expect(form.to_model_hash).to eq expected_default_hash
+      expect(form.to_model_hash(:chassis)).to eq expected_chassis_hash
     end
   end
 
