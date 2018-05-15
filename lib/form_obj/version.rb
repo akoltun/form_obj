@@ -1,3 +1,3 @@
-class FormObj
+module FormObj
   VERSION = "0.1.0"
 end

@@ -23,6 +23,8 @@ Or install it yourself as:
 
 **WARNING!!!** The gem is still under development. Expecting braking changes.<br/>
 
+Form Object `FormObj::Form` is inherited from `TreeStruct` (https://github.com/akoltun/tree_struct).
+
 ### Table of Contents
 
 1. [Definition](#1-definition)
@@ -76,7 +78,7 @@ Use it in form builder.
 Use blocks to define nested forms.
 
 ```ruby
-class NestedForm < FormObj
+class NestedForm < FormObj::Form
   attribute :name
   attribute :year
   attribute :car do
@@ -93,16 +95,16 @@ end
 Or explicitly define nested form class.
 
 ```ruby
-class EngineForm < FormObj
+class EngineForm < FormObj::Form
   attribute :power
   attribute :volume
 end
-class CarForm < FormObj
+class CarForm < FormObj::Form
   attribute :model
   attribute :driver
   attribute :engine, class: EngineForm
 end
-class NestedForm < FormObj
+class NestedForm < FormObj::Form
   attribute :name
   attribute :year
   attribute :car, class: CarForm
@@ -142,7 +144,7 @@ Use nested forms in form builder.
 Specify attribute parameter `array: true` in order to define an array of form objects
 
 ```ruby
-class ArrayForm < FormObj
+class ArrayForm < FormObj::Form
   attribute :name
   attribute :year
   attribute :cars, array: true do
@@ -159,16 +161,16 @@ end
 or
 
 ```ruby
-class EngineForm < FormObj
+class EngineForm < FormObj::Form
   attribute :power
   attribute :volume
 end
-class CarForm < FormObj
+class CarForm < FormObj::Form
   attribute :model
   attribute :driver
   attribute :engine, class: EngineForm
 end
-class ArrayForm < FormObj
+class ArrayForm < FormObj::Form
   attribute :name
   attribute :year
   attribute :cars, array: true, class: CarForm
@@ -242,7 +244,7 @@ Primary key can be specified either on the attribute level or on the form level.
 If it is not specified the :id field is supposed to be a primary key.
 
 ```ruby
-class ArrayForm < FormObj
+class ArrayForm < FormObj::Form
   attribute :name
   attribute :year
   attribute :cars, array: true do
@@ -257,7 +259,7 @@ end
 ``` 
 
 ```ruby
-class ArrayForm < FormObj
+class ArrayForm < FormObj::Form
   attribute :name
   attribute :year
   attribute :cars, array: true, primary_key: :model do     # <- primary key is specified on form level
@@ -382,7 +384,7 @@ By default each form object attribute is mapped to the model attribute with the 
 Use dot notation to map model attribute to nested model. Use colon to specify "hash" attribute.
 
 ```ruby
-class SingleForm < FormObj
+class SingleForm < FormObj::Form
   attribute :name, model_attribute: :team_name
   attribute :year
   attribute :engine_power, model_attribute: 'car.:engine.power'
@@ -400,7 +402,7 @@ Suppose `single_form = SingleForm.new` and `model` to be an instance of a model.
 #### 4.1. Multiple Models Example
 
 ```ruby
-class MultiForm < FormObj
+class MultiForm < FormObj::Form
   attribute :name, model_attribute: :team_name
   attribute :year
   attribute :engine_power, model: :car, model_attribute: ':engine.power'
@@ -420,7 +422,7 @@ Suppose `multi_form = MultiForm.new` and `default`, `car` to be instances of two
 Use `model_attribute: false` in order to avoid attribute mapping to the model.
 
 ```ruby
-class SimpleForm < FormObj
+class SimpleForm < FormObj::Form
   attribute :name, model_attribute: :team_name
   attribute :year
   attribute :engine_power, model_attribute: false
@@ -440,7 +442,7 @@ Suppose `form = SimpleForm.new` and `model` to be an instance of a model.
 Use `model_attribute: false` for nested form object in order to map its attributes to the parent level of the model.
 
 ```ruby
-class NestedForm < FormObj
+class NestedForm < FormObj::Form
   attribute :name, model_attribute: :team_name
   attribute :year
   attribute :car, model_attribute: false do   # nesting only in form object but not in a model
@@ -470,7 +472,7 @@ Suppose `form = NestedForm.new` and `model` to be an instance of a model.
 Use `hash: true` in order to map a nested form object to a hash as a model.
 
 ```ruby
-class NestedForm < FormObj
+class NestedForm < FormObj::Form
   attribute :name, model_attribute: :team_name
   attribute :year
   attribute :car, hash: true do   # nesting only in form object but not in a model
@@ -501,7 +503,7 @@ Use `load_from_models` to load form object attributes from mapped models.
 Method returns self so one can chain calls.
 
 ```ruby
-class MultiForm < FormObj
+class MultiForm < FormObj::Form
   attribute :name, model_attribute: :team_name
   attribute :year
   attribute :engine_power, model: :car, model_attribute: ':engine.power'
@@ -526,7 +528,7 @@ Use `save_to_models` to save form object attributes to mapped models.
 Method returns self so one can chain calls.
 
 ```ruby
-class MultiForm < FormObj
+class MultiForm < FormObj::Form
   attribute :name, model_attribute: :team_name
   attribute :year
   attribute :engine_power, model: :car, model_attribute: ':engine.power'
@@ -561,7 +563,7 @@ Use `:model_class` parameter to specify it.
 Form object will try to guess the name of the class from the name of the attribute if this parameter is absent.
 
 ```ruby
-class ArrayForm < FormObj
+class ArrayForm < FormObj::Form
   attribute :name
   attribute :year
   attribute :cars, array: true, model_class: Car do
@@ -575,7 +577,7 @@ If corresponding `:model_attribute` parameter uses dot notations to reference
 nested models the value of `:model_class` parameter should be an array of corresponding model classes.
 
 ```ruby
-class ArrayForm < FormObj
+class ArrayForm < FormObj::Form
   attribute :name
   attribute :year
   attribute :cars, array: true, model_attribute: 'equipment.cars', model_class: [Equipment, Car] do
@@ -590,7 +592,7 @@ end
 Use `to_model_hash` to get hash representation of model which mapped to the form object.
 
 ```ruby
-class MultiForm < FormObj
+class MultiForm < FormObj::Form
   attribute :name, model_attribute: :team_name
   attribute :year
   attribute :engine_power, model: :car, model_attribute: ':engine.power'
@@ -609,7 +611,7 @@ The `:default` model is considered if it is not specified.
 If array of form objects mapped to the parent model (`model_attribute: false`) it is serialized to `:self` key.
 
 ```ruby
-class ArrayForm < FormObj
+class ArrayForm < FormObj::Form
   attribute :name
   attribute :year
   attribute :cars, array: true, model_attribute: false do
@@ -659,7 +661,7 @@ Form Object is just a Ruby class. By default it includes (could be changed in fu
 So add ActiveModel validations directly to Form Object class definition.
 
 ```ruby
-class MultiForm < FormObj
+class MultiForm < FormObj::Form
   attribute :name, model_attribute: :team_name
   attribute :year
   attribute :engine_power, model: :car, model_attribute: ':engine.power'
@@ -733,7 +735,7 @@ end
 ```
 ```ruby
 # app/form_objects/team_form.rb
-class TeamForm < FormObj
+class TeamForm < FormObj::Form
   attribute :id
   attribute :name, model_attribute: :team_name
   attribute :year
@@ -834,7 +836,7 @@ end
 | Parameter | Condition | Default value | Description |
 | --- |:---:|:---:| --- |
 | array | block* or `:class`** | `false` | This attribute is an array of form objects. The structure of array element form object is described either in the block or in the separate class referenced by `:class` parameter |
-| class | - | - | This attribute is either nested form object or array of form objects. The value of this parameter is the class (not a name of the class!!!) of this form object. |
+| class | - | - | This attribute is either nested form object or array of form objects. The value of this parameter is the class of this form object or the name of the class. |
 | hash | block* or `:class`** | `false` | This attribute is either nested form object or array of form objects. This form object is mapped to a model of the class `Hash` so all its attributes should be accessed by `[:<attribute_name>]` instead of `.<attribute_name>` | 
 | model | - | `:default` | The name of the model to which this attribute is mapped |
 | model_attribute | - | `<attribute_name>` | The name of the model attribute to which this form object attribute is mapped. Dot notation is used in order to map to nested model, ex. `"car.engine.power"`. Colon is used in front of the name if the model is hash, ex. `"car.:engine.power"` - means call to `#car` returns `Hash` so the model attribute should be accessed like `car[:engine].power`. `false` value means that attribute is not mapped. If attribute describes nested form object and has `model_attribute: false` the attributes of nested form will be called on the parent (upper level) model. If attribute describes array of form objects and has `model_attribute: false` the methods to access array elements (`:[]` etc.) will be called on the parent (upper level) model. |
