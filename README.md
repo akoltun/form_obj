@@ -1,7 +1,7 @@
 # FormObj
 
-Form Object allows to describe complicated data structure (nesting, arrays) and use it with Rails-cmpatible form builders.
-Form Object can serialize and deserialize itself to/from model and hash.
+Form Object allows to define a complicated data structure (using nesting, arrays) and use it with Rails-compatible form builders.
+A Form Object can be serialized and deserialized to a model and/or a hash.
 
 ## Installation
 
@@ -21,16 +21,15 @@ Or install it yourself as:
 
 ## Usage
 
-**WARNING!!!** The gem is still under development. Expecting braking changes.<br/>
+**WARNING!!!** The gem is still under development. Expect braking changes.<br/>
 
-Form Object `FormObj::Form` is inherited from `TreeStruct` (https://github.com/akoltun/tree_struct).
-So on top of all `TreeStruct` functionality `FormObj::Obj` adds `update_attributes` method for mass update of attributes 
- (similar to ActuveRecord) and syntax sugar to easily use ActiveModel::Validations and ActiveModel::Errors with `TreeStruct`.
+Form Object `FormObj::Form` inherits from `TreeStruct` (https://github.com/akoltun/tree_struct).
+On top of the `TreeStruct` functionality `FormObj::Form` adds an `update_attributes` method for mass update of attributes 
+ (similar to ActiveRecord) and syntax sugar to easily use ActiveModel::Validations and ActiveModel::Errors with `TreeStruct`.
 
-`Mappable` module included in `FormObj::Form` oblect allows to map form object to a model, 
-load attributes from and attributes to it, represent form object as model hash (similar to `to_hash` method but
-includes only attributes mapped to the model and with model attributes names) and copy errors from the model(s) 
-into a from object. 
+The `Mappable` module included in `FormObj::Form` allows to map a form object to a model, load attributes from the model,
+sync attributes to the model, represent a form object as a model hash (similar to the `to_hash` method but using the
+attribute names as mapped to the model) and copy errors from the model(s) to the from object. 
 
 ### Table of Contents
 
@@ -68,7 +67,7 @@ class SimpleForm < FormObj::Form
 end
 ```
 
-Use it in form builder.
+Use it in a form builder.
 
 ```erb
 <%= form_for(@simple_form) do |f| %>
@@ -184,7 +183,7 @@ class ArrayForm < FormObj::Form
 end
 ```
 
-Add new elements in the array by using method :create on which adds a new it.
+Add new elements in the array by using method :create.
 
 ```ruby
 array_form = ArrayForm.new
@@ -242,13 +241,13 @@ nested_form.car.engine.volume     # => 3.0
 
 #### 2.2. Array of Form Objects
 
-Updating array of form objects will compare the existing array and the new one.
+Updating an array of form objects will compare the existing array with the new one.
 New array elements will be added, existing array elements will be updated, absent array elements will be deleted 
-(deleting behaviour is the subject of changes in future releases - only elements with flag `_destroy == true` will be deleted).
+(deleting behavior is the subject of changes in future releases - only elements with flag `_destroy == true` will be deleted).
 
 In order to compare old and new array its elements have to be identified via the primary key.
 Primary key can be specified either on the attribute level or on the form level.
-If it is not specified the :id field is supposed to be a primary key.
+If it is not specified the :id field is supposed to be the primary key.
 
 ```ruby
 class ArrayForm < FormObj::Form
@@ -333,7 +332,7 @@ array_form.cars[1].engine.volume    # => nil    - this value is nil because this
 
 ### 3. Serialize to Hash
 
-Call `to_hash()` method in order to get hash representation of the form object
+Call `to_hash()` method in order to get a hash representation of the form object
 
 ```ruby
 simple_form.to_hash     # => {
@@ -383,12 +382,12 @@ array_form.to_hash      # => {
                         # => }
 ```
 
-### 4. Map Form Object to Models
+### 4. Map Form Object to/from Models
 
-Include `Mappable` mix-in and map form object attributes to one or few models by using `:model` and `:model_attribute` parameters.
+Include `Mappable` mix-in and map form object attributes to one or more models by using `:model` and `:model_attribute` parameters.
 By default each form object attribute is mapped to the model attribute with the same name of the `:default` model. 
 
-Use dot notation to map model attribute to nested model. Use colon to specify "hash" attribute.
+Use dot notation to map model attribute to a nested model. Use colon to specify a "hash" attribute.
 
 ```ruby
 class SingleForm < FormObj::Form
@@ -452,6 +451,7 @@ Suppose `form = SimpleForm.new` and `model` to be an instance of a model.
 
 ##### 4.2.1. Map Nested Form Object Attribute to Parent Level Model Attribute
 
+TODO: replace `model_attribute` by `model`
 Use `model_attribute: false` for nested form object in order to map its attributes to the parent level of the model.
 
 ```ruby
@@ -543,6 +543,7 @@ Use `load_from_models(default: model)` or `load_from_model(model)` to load from 
 
 ### 6. Save Form Object to Models
 
+TODO: replace `save_to_models(models)` to  `sync_to_models(models)`.
 Use `save_to_models(models)` to save form object attributes to mapped models.
 Method returns self so one can chain calls.
 
