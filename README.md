@@ -1,5 +1,8 @@
 # FormObj
 
+[![Gem Version](https://badge.fury.io/rb/form_obj.svg)](https://badge.fury.io/rb/form_obj)
+[![Build Status](https://travis-ci.com/akoltun/form_obj.svg?branch=master)](https://travis-ci.com/akoltun/form_obj)
+
 Form Object allows to define a complicated data structure (using nesting, arrays) and use it with Rails-compatible form builders.
 A Form Object can be serialized and deserialized to a model and/or a hash.
 

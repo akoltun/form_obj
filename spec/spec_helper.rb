@@ -3,6 +3,7 @@ require "form_obj"
 require 'action_view'
 require 'action_pack'
 require 'action_controller'
+require 'active_support/core_ext/hash' # Used by form builder
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure
@@ -20,7 +21,11 @@ RSpec.configure do |config|
 end
 
 RSpec.shared_context 'renderable' do
-  include ActionController::RecordIdentifier
+  if Gem::Version.new(ActionPack::VERSION::STRING) >= Gem::Version.new('4.0')
+    include ActionView::RecordIdentifier
+  else
+    include ActionController::RecordIdentifier
+  end
   include ActionView::Context
   include ActionView::Helpers::FormHelper
 

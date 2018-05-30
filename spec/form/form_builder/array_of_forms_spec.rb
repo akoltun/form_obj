@@ -5,7 +5,7 @@ RSpec.describe 'Array of Form Objects' do
     form_for form, url: '/form' do |f|
       concat f.text_field :name
       form.cars.each do |car|
-        concat(f.fields_for(:cars, car, index: nil) do |fc|
+        concat(f.fields_for(:cars, car, index: '') do |fc|
           concat fc.text_field :model
           concat(fc.fields_for(:engine) do |fce|
             concat fce.text_field :power
