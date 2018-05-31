@@ -122,7 +122,7 @@ end
 
 Use nested forms in form builder.
 
-```ruby
+```erb
 <%= form_for(@nested_form) do |f| %>
   <%= f.label :name %>
   <%= f.text_field :name %>
@@ -189,16 +189,52 @@ end
 Add new elements in the array by using method :create.
 
 ```ruby
-array_form = ArrayForm.new
-array_form.size 				# => 0
-array_form.cars.create
-array_form.size 				# => 1
+@array_form = ArrayForm.new
+@array_form.cars.size 				# => 0
+@array_form.cars.create
+@array_form.cars.size 				# => 1
+```
+
+Use array of nested forms in the form builder.
+
+```erb
+<%= form_for(@array_form) do |f| %>
+  <%= f.label :name %>
+  <%= f.text_field :name %>
+
+  <%= f.label :year %>
+  <%= f.text_field :year %>
+
+  <% f.cars.each do |car| %>
+    <%= f.fields_for(:cars, car, index: '') do |fc| %>
+      <%= fc.label :model %>
+      <%= fc.text_field :model %>
+
+      <%= fc.label :driver %>
+      <%= fc.text_field :driver %>
+
+      <%= fc.field_for(:engine) do |fce| %>
+        <%= fce.label :power %>
+        <%= fce.text_field :power %>
+
+        <%= fce.label :volume %>
+        <%= fce.text_field :volume %>
+      <% end %>
+    <% end %>
+  <% end %>
+<% end %>
 ```
 
 ### 2. Update Attributes
 
 Update form object attributes with the parameter hash received from the browser. 
-Method `update_attributes(new_attrs_hash)` returns self so one can chain calls.
+Method `update_attributes(new_attrs_hash, options)` returns self so one can chain calls.
+
+`options` hash can have `:raise_if_not_found` key which has `true` value by default.
+If `new_attrs_hash` has key that does not correspond to any attributes 
+and `raise_if_not_found` is `true` than `UnknownAttributeError` will be generated.
+`raise_if_not_found` equals to `false` prevents error generation 
+and non existent attribute will be just ignored.
 
 ```ruby
 simple_form = SimpleForm.new
