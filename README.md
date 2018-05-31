@@ -122,7 +122,7 @@ end
 
 Use nested forms in form builder.
 
-```ruby
+```erb
 <%= form_for(@nested_form) do |f| %>
   <%= f.label :name %>
   <%= f.text_field :name %>
@@ -197,7 +197,7 @@ Add new elements in the array by using method :create.
 
 Use array of nested forms in the form builder.
 
-```erbruby
+```erb
 <%= form_for(@array_form) do |f| %>
   <%= f.label :name %>
   <%= f.text_field :name %>
@@ -228,7 +228,13 @@ Use array of nested forms in the form builder.
 ### 2. Update Attributes
 
 Update form object attributes with the parameter hash received from the browser. 
-Method `update_attributes(new_attrs_hash)` returns self so one can chain calls.
+Method `update_attributes(new_attrs_hash, options)` returns self so one can chain calls.
+
+`options` hash can have `:raise_if_not_found` key which has `true` value by default.
+If `new_attrs_hash` has key that does not correspond to any attributes 
+and `raise_if_not_found` is `true` than `UnknownAttributeError` will be generated.
+`raise_if_not_found` equals to `false` prevents error generation 
+and non existent attribute will be just ignored.
 
 ```ruby
 simple_form = SimpleForm.new
