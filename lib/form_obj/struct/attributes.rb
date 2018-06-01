@@ -6,7 +6,11 @@ module FormObj
       end
 
       def add(attribute)
-        self.class.new(@items + [attribute])
+        if @items.map(&:name).include? attribute.name
+          self.class.new(@items.map { |item| item.name == attribute.name ? attribute : item })
+        else
+          self.class.new(@items + [attribute])
+        end
       end
 
       def map(*args, &block)
