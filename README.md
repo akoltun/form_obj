@@ -6,6 +6,14 @@
 Form Object allows to define a complicated data structure (using nesting, arrays) and use it with Rails-compatible form builders.
 A Form Object can be serialized and deserialized to a model and/or a hash.
 
+## Compatibility and Dependency Requirements
+
+Ruby: 2.2.8+
+ActiveSupport: 3.2+
+ActiveModel: 3.2+
+
+The gem is tested against all ruby versions and all versions of its dependencies.
+
 ## Installation
 
 Add this line to your application's Gemfile:
