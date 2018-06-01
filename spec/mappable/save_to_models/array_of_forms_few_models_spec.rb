@@ -3,7 +3,7 @@ RSpec.describe 'save_to_models: Array of Form Objects - Few Models' do
     class ArrayForm < FormObj::Form
       Engine = Struct.new(:power, :volume, :secret)
       Suspension = Struct.new(:front, :rear, :secret)
-      Car = Struct.new(:car_model, :driver, :engine, :secret)
+      Car = Struct.new(:car_code, :driver, :engine, :secret)
       Sponsor = Struct.new(:title, :money, :secret)
       Colour = Struct.new(:name, :rgb, :secret)
       Chassis = Struct.new(:chassis)
@@ -23,13 +23,13 @@ RSpec.describe 'save_to_models: Array of Form Objects - Few Models' do
       form.year = 1950
 
       car = form.cars.create
-      car.model = '340 F1'
+      car.code = '340 F1'
       car.driver = 'Ascari'
       car.engine.power = 335
       car.engine.volume = 4.1
 
       car = form.cars.create
-      car.model = '275 F1'
+      car.code = '275 F1'
       car.driver = 'Villoresi'
       car.engine.power = 300
       car.engine.volume = 3.3
@@ -76,14 +76,14 @@ RSpec.describe 'save_to_models: Array of Form Objects - Few Models' do
       expect(model.year).to                 eq 1950
 
       expect(model.cars.size).to eq 2
-      expect(model.cars.map { |c| c[:car_model] }).to match_array(['340 F1', '275 F1'])
+      expect(model.cars.map { |c| c[:car_code] }).to match_array(['340 F1', '275 F1'])
 
-      car = model.cars.find { |c| c[:car_model] == '340 F1' }
+      car = model.cars.find { |c| c[:car_code] == '340 F1' }
       expect(car.driver).to             eq 'Ascari'
       expect(car.engine.power).to       eq 335
       expect(car.engine.volume).to      eq 4.1
 
-      car = model.cars.find { |c| c[:car_model] == '275 F1' }
+      car = model.cars.find { |c| c[:car_code] == '275 F1' }
       expect(car.driver).to             eq 'Villoresi'
       expect(car.engine.power).to       eq 300
       expect(car.engine.volume).to      eq 3.3
@@ -132,8 +132,8 @@ RSpec.describe 'save_to_models: Array of Form Objects - Few Models' do
 
       attribute :name, model_attribute: :team_name
         attribute :year
-        attribute :cars, array: true, model_class: Car, primary_key: :model do
-          attribute :model, model_attribute: :car_model
+        attribute :cars, array: true, model_class: Car, primary_key: :code do
+          attribute :code, model_attribute: :car_code
           attribute :driver
           attribute :engine, model_class: Engine do
             attribute :power
@@ -248,7 +248,7 @@ RSpec.describe 'save_to_models: Array of Form Objects - Few Models' do
         class CarForm < FormObj::Form
           include FormObj::Mappable
 
-          attribute :model, model_attribute: :car_model
+          attribute :code, model_attribute: :car_code
           attribute :engine, class: EngineForm, model_class: Engine
           attribute :driver
         end
@@ -282,7 +282,7 @@ RSpec.describe 'save_to_models: Array of Form Objects - Few Models' do
 
           attribute :name, model_attribute: :team_name
           attribute :year
-          attribute :cars, array: true, class: CarForm, model_class: Car, primary_key: :model
+          attribute :cars, array: true, class: CarForm, model_class: Car, primary_key: :code
           attribute :sponsors, array: true, model_attribute: 'finance.:sponsors', class: SponsorForm, model_class: [Hash, Sponsor], primary_key: :title
           attribute :chassis, array: true, hash: true, class: ChassisForm, model: :chassis
           attribute :colours, array: true, model_attribute: false, class: ColourForm, model_class: Colour, primary_key: :name

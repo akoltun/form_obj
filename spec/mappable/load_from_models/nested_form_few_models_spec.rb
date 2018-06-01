@@ -1,6 +1,6 @@
 RSpec.describe 'load_from_models: Nested Form Objects - Few Models' do
   let(:engine) { Struct.new(:power, :volume).new(335, 4.1) }
-  let(:car) {{ model: '340 F1', driver: 'Ascari', engine: engine }}
+  let(:car) {{ code: '340 F1', driver: 'Ascari', engine: engine }}
   let(:model) { Struct.new(:team_name, :year, :car).new('Ferrari', 1950, car) }
   let(:suspension) { Struct.new(:front, :rear).new('independant', 'de Dion') }
   let(:chassis) { Struct.new(:suspension, :brakes).new(suspension, :drum) }
@@ -13,7 +13,7 @@ RSpec.describe 'load_from_models: Nested Form Objects - Few Models' do
         attribute :name, model_attribute: :team_name
         attribute :year
         attribute :car, hash: true do
-          attribute :model
+          attribute :code
           attribute :engine do
             attribute :power
             attribute :volume
@@ -37,7 +37,7 @@ RSpec.describe 'load_from_models: Nested Form Objects - Few Models' do
 
       expect(form.name).to eq model.team_name
       expect(form.year).to eq model.year
-      expect(form.car.model).to eq model.car[:model]
+      expect(form.car.code).to eq model.car[:code]
       expect(form.car.driver).to eq model.car[:driver]
       expect(form.car.engine.power).to eq model.car[:engine].power
       expect(form.car.engine.volume).to eq model.car[:engine].volume
@@ -63,7 +63,7 @@ RSpec.describe 'load_from_models: Nested Form Objects - Few Models' do
         class CarForm < FormObj::Form
           include FormObj::Mappable
 
-          attribute :model
+          attribute :code
           attribute :engine, class: EngineForm
           attribute :driver
         end
@@ -94,7 +94,7 @@ RSpec.describe 'load_from_models: Nested Form Objects - Few Models' do
 
       expect(form.name).to eq model.team_name
       expect(form.year).to eq model.year
-      expect(form.car.model).to eq model.car[:model]
+      expect(form.car.code).to eq model.car[:code]
       expect(form.car.driver).to eq model.car[:driver]
       expect(form.car.engine.power).to eq model.car[:engine].power
       expect(form.car.engine.volume).to eq model.car[:engine].volume

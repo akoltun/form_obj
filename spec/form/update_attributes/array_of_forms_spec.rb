@@ -5,13 +5,13 @@ RSpec.describe 'update_attributes: Array of Form Objects' do
         year: 1966,
         cars: [
             {
-                model: 'M2B',
+                code: 'M2B',
                 driver: 'Bruce McLaren',
                 engine: {
                     volume: 3.0
                 }
             }, {
-                model: 'M7A',
+                code: 'M7A',
                 driver: 'Denis Hulme',
                 engine: {
                     power: 415,
@@ -38,12 +38,12 @@ RSpec.describe 'update_attributes: Array of Form Objects' do
 
             expect(form.cars.size).to             eq 2
 
-            expect(form.cars[0].model).to         eq 'M2B'
+            expect(form.cars[0].code).to         eq 'M2B'
             expect(form.cars[0].driver).to        eq 'Bruce McLaren'
             expect(form.cars[0].engine.power).to  be_nil
             expect(form.cars[0].engine.volume).to eq 3.0
 
-            expect(form.cars[1].model).to         eq 'M7A'
+            expect(form.cars[1].code).to         eq 'M7A'
             expect(form.cars[1].driver).to        eq 'Denis Hulme'
             expect(form.cars[1].engine.power).to  eq 415
             expect(form.cars[1].engine.volume).to be_nil
@@ -60,7 +60,7 @@ RSpec.describe 'update_attributes: Array of Form Objects' do
             form.year = 1950
 
             car = form.cars.create
-            car.model = '340 F1'
+            car.code = '340 F1'
             car.driver = 'Ascari'
             car.engine.power = 335
             car.engine.volume = 4.1
@@ -74,12 +74,12 @@ RSpec.describe 'update_attributes: Array of Form Objects' do
 
             expect(form.cars.size).to             eq 2
 
-            expect(form.cars[0].model).to         eq 'M2B'
+            expect(form.cars[0].code).to         eq 'M2B'
             expect(form.cars[0].driver).to        eq 'Bruce McLaren'
             expect(form.cars[0].engine.power).to  be_nil
             expect(form.cars[0].engine.volume).to eq 3.0
 
-            expect(form.cars[1].model).to         eq 'M7A'
+            expect(form.cars[1].code).to         eq 'M7A'
             expect(form.cars[1].driver).to        eq 'Denis Hulme'
             expect(form.cars[1].engine.power).to  eq 415
             expect(form.cars[1].engine.volume).to be_nil
@@ -96,13 +96,13 @@ RSpec.describe 'update_attributes: Array of Form Objects' do
             form.year = 1950
 
             car = form.cars.create
-            car.model = '340 F1'
+            car.code = '340 F1'
             car.driver = 'Ascari'
             car.engine.power = 335
             car.engine.volume = 4.1
 
             car = form.cars.create
-            car.model = '275 F1'
+            car.code = '275 F1'
             car.driver = 'Villoresi'
             car.engine.power = 300
             car.engine.volume = 3.3
@@ -116,12 +116,12 @@ RSpec.describe 'update_attributes: Array of Form Objects' do
 
             expect(form.cars.size).to             eq 2
 
-            expect(form.cars[0].model).to         eq 'M2B'
+            expect(form.cars[0].code).to         eq 'M2B'
             expect(form.cars[0].driver).to        eq 'Bruce McLaren'
             expect(form.cars[0].engine.power).to  be_nil
             expect(form.cars[0].engine.volume).to eq 3.0
 
-            expect(form.cars[1].model).to         eq 'M7A'
+            expect(form.cars[1].code).to         eq 'M7A'
             expect(form.cars[1].driver).to        eq 'Denis Hulme'
             expect(form.cars[1].engine.power).to  eq 415
             expect(form.cars[1].engine.volume).to be_nil
@@ -138,19 +138,19 @@ RSpec.describe 'update_attributes: Array of Form Objects' do
             form.year = 1950
 
             car = form.cars.create
-            car.model = '340 F1'
+            car.code = '340 F1'
             car.driver = 'Alberto Ascari'
             car.engine.power = 335
             car.engine.volume = 4.1
 
             car = form.cars.create
-            car.model = '275 F1'
+            car.code = '275 F1'
             car.driver = 'Luigi Villoresi'
             car.engine.power = 300
             car.engine.volume = 3.3
 
             car = form.cars.create
-            car.model = '375 F1'
+            car.code = '375 F1'
             car.driver = 'Jose Gonzalez'
             car.engine.power = 350
             car.engine.volume = 4.5
@@ -164,12 +164,12 @@ RSpec.describe 'update_attributes: Array of Form Objects' do
 
             expect(form.cars.size).to             eq 2
 
-            expect(form.cars[0].model).to         eq 'M2B'
+            expect(form.cars[0].code).to         eq 'M2B'
             expect(form.cars[0].driver).to        eq 'Bruce McLaren'
             expect(form.cars[0].engine.power).to  be_nil
             expect(form.cars[0].engine.volume).to eq 3.0
 
-            expect(form.cars[1].model).to         eq 'M7A'
+            expect(form.cars[1].code).to         eq 'M7A'
             expect(form.cars[1].driver).to        eq 'Denis Hulme'
             expect(form.cars[1].engine.power).to  eq 415
             expect(form.cars[1].engine.volume).to be_nil
@@ -188,7 +188,7 @@ RSpec.describe 'update_attributes: Array of Form Objects' do
             form.year = 1950
 
             car = form.cars.create
-            car.model = 'M7A'
+            car.code = 'M7A'
             car.driver = 'Ascari'
             car.engine.power = 335
             car.engine.volume = 4.1
@@ -202,12 +202,12 @@ RSpec.describe 'update_attributes: Array of Form Objects' do
 
             expect(form.cars.size).to             eq 2
 
-            expect(form.cars[0].model).to         eq 'M2B'
+            expect(form.cars[0].code).to         eq 'M2B'
             expect(form.cars[0].driver).to        eq 'Bruce McLaren'
             expect(form.cars[0].engine.power).to  be_nil
             expect(form.cars[0].engine.volume).to eq 3.0
 
-            expect(form.cars[1].model).to         eq 'M7A'
+            expect(form.cars[1].code).to         eq 'M7A'
             expect(form.cars[1].driver).to        eq 'Denis Hulme'
             expect(form.cars[1].engine.power).to  eq 415
             expect(form.cars[1].engine.volume).to eq 4.1
@@ -224,19 +224,19 @@ RSpec.describe 'update_attributes: Array of Form Objects' do
             form.year = 1950
 
             car = form.cars.create
-            car.model = '340 F1'
+            car.code = '340 F1'
             car.driver = 'Alberto Ascari'
             car.engine.power = 335
             car.engine.volume = 4.1
 
             car = form.cars.create
-            car.model = 'M2B'
+            car.code = 'M2B'
             car.driver = 'Luigi Villoresi'
             car.engine.power = 300
             car.engine.volume = 3.3
 
             car = form.cars.create
-            car.model = '375 F1'
+            car.code = '375 F1'
             car.driver = 'Jose Gonzalez'
             car.engine.power = 350
             car.engine.volume = 4.5
@@ -250,12 +250,12 @@ RSpec.describe 'update_attributes: Array of Form Objects' do
 
             expect(form.cars.size).to             eq 2
 
-            expect(form.cars[0].model).to         eq 'M2B'
+            expect(form.cars[0].code).to         eq 'M2B'
             expect(form.cars[0].driver).to        eq 'Bruce McLaren'
             expect(form.cars[0].engine.power).to  eq 300
             expect(form.cars[0].engine.volume).to eq 3.0
 
-            expect(form.cars[1].model).to         eq 'M7A'
+            expect(form.cars[1].code).to         eq 'M7A'
             expect(form.cars[1].driver).to        eq 'Denis Hulme'
             expect(form.cars[1].engine.power).to  eq 415
             expect(form.cars[1].engine.volume).to be_nil
@@ -275,7 +275,7 @@ RSpec.describe 'update_attributes: Array of Form Objects' do
             attribute :name
             attribute :year
             attribute :cars, array: true do
-              attribute :model, primary_key: true
+              attribute :code, primary_key: true
               attribute :driver
               attribute :engine do
                 attribute :power
@@ -297,8 +297,8 @@ RSpec.describe 'update_attributes: Array of Form Objects' do
           class ArrayForm < FormObj::Form
             attribute :name
             attribute :year
-            attribute :cars, array: true, primary_key: :model do
-              attribute :model
+            attribute :cars, array: true, primary_key: :code do
+              attribute :code
               attribute :driver
               attribute :engine do
                 attribute :power
@@ -325,7 +325,7 @@ RSpec.describe 'update_attributes: Array of Form Objects' do
               attribute :volume
             end
             class CarForm < FormObj::Form
-              attribute :model, primary_key: true
+              attribute :code, primary_key: true
               attribute :engine, class: EngineForm
               attribute :driver
             end
@@ -346,7 +346,7 @@ RSpec.describe 'update_attributes: Array of Form Objects' do
         engine1.volume = 4.1
 
         car1 = UpdateAttributes::PrimaryKeyAttributeLevel::ArrayForm::CarForm.new
-        car1.model = '340 F1'
+        car1.code = '340 F1'
         car1.driver = 'Ascari'
         car1.engine = engine1
 
@@ -355,7 +355,7 @@ RSpec.describe 'update_attributes: Array of Form Objects' do
         engine2.volume = 3.3
 
         car2 = UpdateAttributes::PrimaryKeyAttributeLevel::ArrayForm::CarForm.new
-        car2.model = '275 F1'
+        car2.code = '275 F1'
         car2.driver = 'Villoresi'
         car2.engine = engine2
 
@@ -380,12 +380,12 @@ RSpec.describe 'update_attributes: Array of Form Objects' do
 
             expect(form.cars.size).to             eq 2
 
-            expect(form.cars[0].model).to         eq 'M2B'
+            expect(form.cars[0].code).to         eq 'M2B'
             expect(form.cars[0].driver).to        eq 'Bruce McLaren'
             expect(form.cars[0].engine.power).to  be_nil
             expect(form.cars[0].engine.volume).to eq 3.0
 
-            expect(form.cars[1].model).to         eq 'M7A'
+            expect(form.cars[1].code).to         eq 'M7A'
             expect(form.cars[1].driver).to        eq 'Denis Hulme'
             expect(form.cars[1].engine.power).to  eq 415
             expect(form.cars[1].engine.volume).to be_nil
@@ -403,7 +403,7 @@ RSpec.describe 'update_attributes: Array of Form Objects' do
             engine1.volume = 4.1
 
             car1 = UpdateAttributes::PrimaryKeyAttributeLevel::ArrayForm::CarForm.new
-            car1.model = '340 F1'
+            car1.code = '340 F1'
             car1.driver = 'Ascari'
             car1.engine = engine1
 
@@ -420,12 +420,12 @@ RSpec.describe 'update_attributes: Array of Form Objects' do
 
             expect(form.cars.size).to             eq 2
 
-            expect(form.cars[0].model).to         eq 'M2B'
+            expect(form.cars[0].code).to         eq 'M2B'
             expect(form.cars[0].driver).to        eq 'Bruce McLaren'
             expect(form.cars[0].engine.power).to  be_nil
             expect(form.cars[0].engine.volume).to eq 3.0
 
-            expect(form.cars[1].model).to         eq 'M7A'
+            expect(form.cars[1].code).to         eq 'M7A'
             expect(form.cars[1].driver).to        eq 'Denis Hulme'
             expect(form.cars[1].engine.power).to  eq 415
             expect(form.cars[1].engine.volume).to be_nil
@@ -443,7 +443,7 @@ RSpec.describe 'update_attributes: Array of Form Objects' do
             engine1.volume = 4.1
 
             car1 = UpdateAttributes::PrimaryKeyAttributeLevel::ArrayForm::CarForm.new
-            car1.model = '340 F1'
+            car1.code = '340 F1'
             car1.driver = 'Ascari'
             car1.engine = engine1
 
@@ -452,7 +452,7 @@ RSpec.describe 'update_attributes: Array of Form Objects' do
             engine2.volume = 3.3
 
             car2 = UpdateAttributes::PrimaryKeyAttributeLevel::ArrayForm::CarForm.new
-            car2.model = '275 F1'
+            car2.code = '275 F1'
             car2.driver = 'Villoresi'
             car2.engine = engine2
 
@@ -470,12 +470,12 @@ RSpec.describe 'update_attributes: Array of Form Objects' do
 
             expect(form.cars.size).to             eq 2
 
-            expect(form.cars[0].model).to         eq 'M2B'
+            expect(form.cars[0].code).to         eq 'M2B'
             expect(form.cars[0].driver).to        eq 'Bruce McLaren'
             expect(form.cars[0].engine.power).to  be_nil
             expect(form.cars[0].engine.volume).to eq 3.0
 
-            expect(form.cars[1].model).to         eq 'M7A'
+            expect(form.cars[1].code).to         eq 'M7A'
             expect(form.cars[1].driver).to        eq 'Denis Hulme'
             expect(form.cars[1].engine.power).to  eq 415
             expect(form.cars[1].engine.volume).to be_nil
@@ -493,7 +493,7 @@ RSpec.describe 'update_attributes: Array of Form Objects' do
             engine1.volume = 4.1
 
             car1 = UpdateAttributes::PrimaryKeyAttributeLevel::ArrayForm::CarForm.new
-            car1.model = '340 F1'
+            car1.code = '340 F1'
             car1.driver = 'Ascari'
             car1.engine = engine1
 
@@ -502,7 +502,7 @@ RSpec.describe 'update_attributes: Array of Form Objects' do
             engine2.volume = 3.3
 
             car2 = UpdateAttributes::PrimaryKeyAttributeLevel::ArrayForm::CarForm.new
-            car2.model = '275 F1'
+            car2.code = '275 F1'
             car2.driver = 'Villoresi'
             car2.engine = engine2
 
@@ -511,7 +511,7 @@ RSpec.describe 'update_attributes: Array of Form Objects' do
             engine3.volume = 4.5
 
             car3 = UpdateAttributes::PrimaryKeyAttributeLevel::ArrayForm::CarForm.new
-            car3.model = '375 F1'
+            car3.code = '375 F1'
             car3.driver = 'Jose Gonzalez'
             car3.engine = engine3
 
@@ -530,12 +530,12 @@ RSpec.describe 'update_attributes: Array of Form Objects' do
 
             expect(form.cars.size).to             eq 2
 
-            expect(form.cars[0].model).to         eq 'M2B'
+            expect(form.cars[0].code).to         eq 'M2B'
             expect(form.cars[0].driver).to        eq 'Bruce McLaren'
             expect(form.cars[0].engine.power).to  be_nil
             expect(form.cars[0].engine.volume).to eq 3.0
 
-            expect(form.cars[1].model).to         eq 'M7A'
+            expect(form.cars[1].code).to         eq 'M7A'
             expect(form.cars[1].driver).to        eq 'Denis Hulme'
             expect(form.cars[1].engine.power).to  eq 415
             expect(form.cars[1].engine.volume).to be_nil
@@ -555,7 +555,7 @@ RSpec.describe 'update_attributes: Array of Form Objects' do
             engine1.volume = 4.1
 
             car1 = UpdateAttributes::PrimaryKeyAttributeLevel::ArrayForm::CarForm.new
-            car1.model = 'M7A'
+            car1.code = 'M7A'
             car1.driver = 'Ascari'
             car1.engine = engine1
 
@@ -572,12 +572,12 @@ RSpec.describe 'update_attributes: Array of Form Objects' do
 
             expect(form.cars.size).to             eq 2
 
-            expect(form.cars[0].model).to         eq 'M2B'
+            expect(form.cars[0].code).to         eq 'M2B'
             expect(form.cars[0].driver).to        eq 'Bruce McLaren'
             expect(form.cars[0].engine.power).to  be_nil
             expect(form.cars[0].engine.volume).to eq 3.0
 
-            expect(form.cars[1].model).to         eq 'M7A'
+            expect(form.cars[1].code).to         eq 'M7A'
             expect(form.cars[1].driver).to        eq 'Denis Hulme'
             expect(form.cars[1].engine.power).to  eq 415
             expect(form.cars[1].engine.volume).to eq 4.1
@@ -595,7 +595,7 @@ RSpec.describe 'update_attributes: Array of Form Objects' do
             engine1.volume = 4.1
 
             car1 = UpdateAttributes::PrimaryKeyAttributeLevel::ArrayForm::CarForm.new
-            car1.model = '340 F1'
+            car1.code = '340 F1'
             car1.driver = 'Ascari'
             car1.engine = engine1
 
@@ -604,7 +604,7 @@ RSpec.describe 'update_attributes: Array of Form Objects' do
             engine2.volume = 3.3
 
             car2 = UpdateAttributes::PrimaryKeyAttributeLevel::ArrayForm::CarForm.new
-            car2.model = 'M2B'
+            car2.code = 'M2B'
             car2.driver = 'Villoresi'
             car2.engine = engine2
 
@@ -613,7 +613,7 @@ RSpec.describe 'update_attributes: Array of Form Objects' do
             engine3.volume = 4.5
 
             car3 = UpdateAttributes::PrimaryKeyAttributeLevel::ArrayForm::CarForm.new
-            car3.model = '375 F1'
+            car3.code = '375 F1'
             car3.driver = 'Jose Gonzalez'
             car3.engine = engine3
 
@@ -632,12 +632,12 @@ RSpec.describe 'update_attributes: Array of Form Objects' do
 
             expect(form.cars.size).to             eq 2
 
-            expect(form.cars[0].model).to         eq 'M2B'
+            expect(form.cars[0].code).to         eq 'M2B'
             expect(form.cars[0].driver).to        eq 'Bruce McLaren'
             expect(form.cars[0].engine.power).to  eq 300
             expect(form.cars[0].engine.volume).to eq 3.0
 
-            expect(form.cars[1].model).to         eq 'M7A'
+            expect(form.cars[1].code).to         eq 'M7A'
             expect(form.cars[1].driver).to        eq 'Denis Hulme'
             expect(form.cars[1].engine.power).to  eq 415
             expect(form.cars[1].engine.volume).to be_nil
@@ -659,13 +659,13 @@ RSpec.describe 'update_attributes: Array of Form Objects' do
               attribute :volume
             end
             class CarForm < FormObj::Form
-              attribute :model
+              attribute :code
               attribute :engine, class: EngineForm
               attribute :driver
             end
             class TeamForm < FormObj::Form
               attribute :name
-              attribute :cars, array: true, class: CarForm, primary_key: :model
+              attribute :cars, array: true, class: CarForm, primary_key: :code
               attribute :year
             end
           end
@@ -680,7 +680,7 @@ RSpec.describe 'update_attributes: Array of Form Objects' do
         engine1.volume = 4.1
 
         car1 = UpdateAttributes::PrimaryKeyFormLevel::ArrayForm::CarForm.new
-        car1.model = '340 F1'
+        car1.code = '340 F1'
         car1.driver = 'Ascari'
         car1.engine = engine1
 
@@ -689,7 +689,7 @@ RSpec.describe 'update_attributes: Array of Form Objects' do
         engine2.volume = 3.3
 
         car2 = UpdateAttributes::PrimaryKeyFormLevel::ArrayForm::CarForm.new
-        car2.model = '275 F1'
+        car2.code = '275 F1'
         car2.driver = 'Villoresi'
         car2.engine = engine2
 
@@ -714,12 +714,12 @@ RSpec.describe 'update_attributes: Array of Form Objects' do
 
             expect(form.cars.size).to             eq 2
 
-            expect(form.cars[0].model).to         eq 'M2B'
+            expect(form.cars[0].code).to         eq 'M2B'
             expect(form.cars[0].driver).to        eq 'Bruce McLaren'
             expect(form.cars[0].engine.power).to  be_nil
             expect(form.cars[0].engine.volume).to eq 3.0
 
-            expect(form.cars[1].model).to         eq 'M7A'
+            expect(form.cars[1].code).to         eq 'M7A'
             expect(form.cars[1].driver).to        eq 'Denis Hulme'
             expect(form.cars[1].engine.power).to  eq 415
             expect(form.cars[1].engine.volume).to be_nil
@@ -737,7 +737,7 @@ RSpec.describe 'update_attributes: Array of Form Objects' do
             engine1.volume = 4.1
 
             car1 = UpdateAttributes::PrimaryKeyFormLevel::ArrayForm::CarForm.new
-            car1.model = '340 F1'
+            car1.code = '340 F1'
             car1.driver = 'Ascari'
             car1.engine = engine1
 
@@ -754,12 +754,12 @@ RSpec.describe 'update_attributes: Array of Form Objects' do
 
             expect(form.cars.size).to             eq 2
 
-            expect(form.cars[0].model).to         eq 'M2B'
+            expect(form.cars[0].code).to         eq 'M2B'
             expect(form.cars[0].driver).to        eq 'Bruce McLaren'
             expect(form.cars[0].engine.power).to  be_nil
             expect(form.cars[0].engine.volume).to eq 3.0
 
-            expect(form.cars[1].model).to         eq 'M7A'
+            expect(form.cars[1].code).to         eq 'M7A'
             expect(form.cars[1].driver).to        eq 'Denis Hulme'
             expect(form.cars[1].engine.power).to  eq 415
             expect(form.cars[1].engine.volume).to be_nil
@@ -777,7 +777,7 @@ RSpec.describe 'update_attributes: Array of Form Objects' do
             engine1.volume = 4.1
 
             car1 = UpdateAttributes::PrimaryKeyFormLevel::ArrayForm::CarForm.new
-            car1.model = '340 F1'
+            car1.code = '340 F1'
             car1.driver = 'Ascari'
             car1.engine = engine1
 
@@ -786,7 +786,7 @@ RSpec.describe 'update_attributes: Array of Form Objects' do
             engine2.volume = 3.3
 
             car2 = UpdateAttributes::PrimaryKeyFormLevel::ArrayForm::CarForm.new
-            car2.model = '275 F1'
+            car2.code = '275 F1'
             car2.driver = 'Villoresi'
             car2.engine = engine2
 
@@ -804,12 +804,12 @@ RSpec.describe 'update_attributes: Array of Form Objects' do
 
             expect(form.cars.size).to             eq 2
 
-            expect(form.cars[0].model).to         eq 'M2B'
+            expect(form.cars[0].code).to         eq 'M2B'
             expect(form.cars[0].driver).to        eq 'Bruce McLaren'
             expect(form.cars[0].engine.power).to  be_nil
             expect(form.cars[0].engine.volume).to eq 3.0
 
-            expect(form.cars[1].model).to         eq 'M7A'
+            expect(form.cars[1].code).to         eq 'M7A'
             expect(form.cars[1].driver).to        eq 'Denis Hulme'
             expect(form.cars[1].engine.power).to  eq 415
             expect(form.cars[1].engine.volume).to be_nil
@@ -827,7 +827,7 @@ RSpec.describe 'update_attributes: Array of Form Objects' do
             engine1.volume = 4.1
 
             car1 = UpdateAttributes::PrimaryKeyFormLevel::ArrayForm::CarForm.new
-            car1.model = '340 F1'
+            car1.code = '340 F1'
             car1.driver = 'Ascari'
             car1.engine = engine1
 
@@ -836,7 +836,7 @@ RSpec.describe 'update_attributes: Array of Form Objects' do
             engine2.volume = 3.3
 
             car2 = UpdateAttributes::PrimaryKeyFormLevel::ArrayForm::CarForm.new
-            car2.model = '275 F1'
+            car2.code = '275 F1'
             car2.driver = 'Villoresi'
             car2.engine = engine2
 
@@ -845,7 +845,7 @@ RSpec.describe 'update_attributes: Array of Form Objects' do
             engine3.volume = 4.5
 
             car3 = UpdateAttributes::PrimaryKeyFormLevel::ArrayForm::CarForm.new
-            car3.model = '375 F1'
+            car3.code = '375 F1'
             car3.driver = 'Jose Gonzalez'
             car3.engine = engine3
 
@@ -864,12 +864,12 @@ RSpec.describe 'update_attributes: Array of Form Objects' do
 
             expect(form.cars.size).to             eq 2
 
-            expect(form.cars[0].model).to         eq 'M2B'
+            expect(form.cars[0].code).to         eq 'M2B'
             expect(form.cars[0].driver).to        eq 'Bruce McLaren'
             expect(form.cars[0].engine.power).to  be_nil
             expect(form.cars[0].engine.volume).to eq 3.0
 
-            expect(form.cars[1].model).to         eq 'M7A'
+            expect(form.cars[1].code).to         eq 'M7A'
             expect(form.cars[1].driver).to        eq 'Denis Hulme'
             expect(form.cars[1].engine.power).to  eq 415
             expect(form.cars[1].engine.volume).to be_nil
@@ -889,7 +889,7 @@ RSpec.describe 'update_attributes: Array of Form Objects' do
             engine1.volume = 4.1
 
             car1 = UpdateAttributes::PrimaryKeyFormLevel::ArrayForm::CarForm.new
-            car1.model = 'M7A'
+            car1.code = 'M7A'
             car1.driver = 'Ascari'
             car1.engine = engine1
 
@@ -906,12 +906,12 @@ RSpec.describe 'update_attributes: Array of Form Objects' do
 
             expect(form.cars.size).to             eq 2
 
-            expect(form.cars[0].model).to         eq 'M2B'
+            expect(form.cars[0].code).to         eq 'M2B'
             expect(form.cars[0].driver).to        eq 'Bruce McLaren'
             expect(form.cars[0].engine.power).to  be_nil
             expect(form.cars[0].engine.volume).to eq 3.0
 
-            expect(form.cars[1].model).to         eq 'M7A'
+            expect(form.cars[1].code).to         eq 'M7A'
             expect(form.cars[1].driver).to        eq 'Denis Hulme'
             expect(form.cars[1].engine.power).to  eq 415
             expect(form.cars[1].engine.volume).to eq 4.1
@@ -929,7 +929,7 @@ RSpec.describe 'update_attributes: Array of Form Objects' do
             engine1.volume = 4.1
 
             car1 = UpdateAttributes::PrimaryKeyFormLevel::ArrayForm::CarForm.new
-            car1.model = '340 F1'
+            car1.code = '340 F1'
             car1.driver = 'Ascari'
             car1.engine = engine1
 
@@ -938,7 +938,7 @@ RSpec.describe 'update_attributes: Array of Form Objects' do
             engine2.volume = 3.3
 
             car2 = UpdateAttributes::PrimaryKeyFormLevel::ArrayForm::CarForm.new
-            car2.model = 'M2B'
+            car2.code = 'M2B'
             car2.driver = 'Villoresi'
             car2.engine = engine2
 
@@ -947,7 +947,7 @@ RSpec.describe 'update_attributes: Array of Form Objects' do
             engine3.volume = 4.5
 
             car3 = UpdateAttributes::PrimaryKeyFormLevel::ArrayForm::CarForm.new
-            car3.model = '375 F1'
+            car3.code = '375 F1'
             car3.driver = 'Jose Gonzalez'
             car3.engine = engine3
 
@@ -966,12 +966,12 @@ RSpec.describe 'update_attributes: Array of Form Objects' do
 
             expect(form.cars.size).to             eq 2
 
-            expect(form.cars[0].model).to         eq 'M2B'
+            expect(form.cars[0].code).to         eq 'M2B'
             expect(form.cars[0].driver).to        eq 'Bruce McLaren'
             expect(form.cars[0].engine.power).to  eq 300
             expect(form.cars[0].engine.volume).to eq 3.0
 
-            expect(form.cars[1].model).to         eq 'M7A'
+            expect(form.cars[1].code).to         eq 'M7A'
             expect(form.cars[1].driver).to        eq 'Denis Hulme'
             expect(form.cars[1].engine.power).to  eq 415
             expect(form.cars[1].engine.volume).to be_nil

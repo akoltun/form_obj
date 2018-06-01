@@ -6,7 +6,7 @@ RSpec.describe 'Array of Form Objects' do
       concat f.text_field :name
       form.cars.each do |car|
         concat(f.fields_for(:cars, car, index: '') do |fc|
-          concat fc.text_field :model
+          concat fc.text_field :code
           concat(fc.fields_for(:engine) do |fce|
             concat fce.text_field :power
             concat fce.text_field :volume
@@ -27,8 +27,8 @@ RSpec.describe 'Array of Form Objects' do
       is_expected.to match /<input( \w+="[^"]+")* name="\w+\[year\]"( \w+="[^"]+")* \/>/
     end
 
-    it 'form_for renders input element for :model' do
-      is_expected.to match /<input( \w+="[^"]+")* name="\w+\[cars\]\[\]\[model\]"( \w+="[^"]+")* \/>/
+    it 'form_for renders input element for :code' do
+      is_expected.to match /<input( \w+="[^"]+")* name="\w+\[cars\]\[\]\[code\]"( \w+="[^"]+")* \/>/
     end
 
     it 'form_for renders input element for :driver' do
@@ -50,7 +50,7 @@ RSpec.describe 'Array of Form Objects' do
       attribute :name
       attribute :year
       attribute :cars, array: true do
-        attribute :model
+        attribute :code
         attribute :driver
         attribute :engine do
           attribute :power
@@ -65,13 +65,13 @@ RSpec.describe 'Array of Form Objects' do
       form.year = 1950
 
       car = form.cars.create
-      car.model = '340 F1'
+      car.code = '340 F1'
       car.driver = 'Ascari'
       car.engine.power = 335
       car.engine.volume = 4.1
 
       car = form.cars.create
-      car.model = '275 F1'
+      car.code = '275 F1'
       car.driver = 'Villoresi'
       car.engine.power = 300
       car.engine.volume = 3.3
@@ -89,7 +89,7 @@ RSpec.describe 'Array of Form Objects' do
         attribute :volume
       end
       class CarForm < FormObj::Form
-        attribute :model
+        attribute :code
         attribute :driver
         attribute :engine, class: EngineForm
       end
@@ -107,13 +107,13 @@ RSpec.describe 'Array of Form Objects' do
         form.year = 1950
 
         car = form.cars.create
-        car.model = '340 F1'
+        car.code = '340 F1'
         car.driver = 'Ascari'
         car.engine.power = 335
         car.engine.volume = 4.1
 
         car = form.cars.create
-        car.model = '275 F1'
+        car.code = '275 F1'
         car.driver = 'Villoresi'
         car.engine.power = 300
         car.engine.volume = 3.3
@@ -131,7 +131,7 @@ RSpec.describe 'Array of Form Objects' do
         engine1.volume = 4.1
 
         car1 = ArrayForm::CarForm.new
-        car1.model = '340 F1'
+        car1.code = '340 F1'
         car1.driver = 'Ascari'
         car1.engine = engine1
 
@@ -140,7 +140,7 @@ RSpec.describe 'Array of Form Objects' do
         engine2.volume = 3.3
 
         car2 = ArrayForm::CarForm.new
-        car2.model = '275 F1'
+        car2.code = '275 F1'
         car2.driver = 'Villoresi'
         car2.engine = engine2
 

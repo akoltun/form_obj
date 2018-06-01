@@ -4,12 +4,12 @@ RSpec.describe 'Array of Form Objects' do
       expect(tree_struct.name).to eq 'Ferrari'
       expect(tree_struct.year).to eq 1950
       
-      expect(tree_struct.cars[0].model).to eq '340 F1'
+      expect(tree_struct.cars[0].code).to eq '340 F1'
       expect(tree_struct.cars[0].driver).to eq 'Ascari'
       expect(tree_struct.cars[0].engine.power).to eq 335
       expect(tree_struct.cars[0].engine.volume).to eq 4.1
 
-      expect(tree_struct.cars[1].model).to eq '275 F1'
+      expect(tree_struct.cars[1].code).to eq '275 F1'
       expect(tree_struct.cars[1].driver).to eq 'Villoresi'
       expect(tree_struct.cars[1].engine.power).to eq 300
       expect(tree_struct.cars[1].engine.volume).to eq 3.3
@@ -27,7 +27,7 @@ RSpec.describe 'Array of Form Objects' do
       attribute :name
       attribute :year
       attribute :cars, array: true do
-        attribute :model
+        attribute :code
         attribute :driver
         attribute :engine do
           attribute :power
@@ -42,13 +42,13 @@ RSpec.describe 'Array of Form Objects' do
       tree_struct.year = 1950
 
       car = tree_struct.cars.create
-      car.model = '340 F1'
+      car.code = '340 F1'
       car.driver = 'Ascari'
       car.engine.power = 335
       car.engine.volume = 4.1
 
       car = tree_struct.cars.create
-      car.model = '275 F1'
+      car.code = '275 F1'
       car.driver = 'Villoresi'
       car.engine.power = 300
       car.engine.volume = 3.3
@@ -65,7 +65,7 @@ RSpec.describe 'Array of Form Objects' do
         attribute :volume
       end
       class CarForm < FormObj::Form
-        attribute :model
+        attribute :code
         attribute :driver
         attribute :engine, class: EngineForm
       end
@@ -83,13 +83,13 @@ RSpec.describe 'Array of Form Objects' do
         tree_struct.year = 1950
 
         car = tree_struct.cars.create
-        car.model = '340 F1'
+        car.code = '340 F1'
         car.driver = 'Ascari'
         car.engine.power = 335
         car.engine.volume = 4.1
 
         car = tree_struct.cars.create
-        car.model = '275 F1'
+        car.code = '275 F1'
         car.driver = 'Villoresi'
         car.engine.power = 300
         car.engine.volume = 3.3
@@ -107,7 +107,7 @@ RSpec.describe 'Array of Form Objects' do
         engine1.volume = 4.1
 
         car1 = ArrayForm::CarForm.new
-        car1.model = '340 F1'
+        car1.code = '340 F1'
         car1.driver = 'Ascari'
         car1.engine = engine1
 
@@ -116,7 +116,7 @@ RSpec.describe 'Array of Form Objects' do
         engine2.volume = 3.3
 
         car2 = ArrayForm::CarForm.new
-        car2.model = '275 F1'
+        car2.code = '275 F1'
         car2.driver = 'Villoresi'
         car2.engine = engine2
 

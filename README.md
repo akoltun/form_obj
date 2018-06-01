@@ -91,7 +91,7 @@ class NestedForm < FormObj::Form
   attribute :name
   attribute :year
   attribute :car do
-    attribute :model
+    attribute :code
     attribute :driver
     attribute :engine do
       attribute :power
@@ -109,7 +109,7 @@ class EngineForm < FormObj::Form
   attribute :volume
 end
 class CarForm < FormObj::Form
-  attribute :model
+  attribute :code
   attribute :driver
   attribute :engine, class: EngineForm
 end
@@ -131,8 +131,8 @@ Use nested forms in form builder.
   <%= f.text_field :year %>
 
   <%= f.fields_for(:car) do |fc| %>
-    <%= fc.label :model %>
-    <%= fc.text_field :model %>
+    <%= fc.label :code %>
+    <%= fc.text_field :code %>
 
     <%= fc.label :driver %>
     <%= fc.text_field :driver %>
@@ -157,7 +157,7 @@ class ArrayForm < FormObj::Form
   attribute :name
   attribute :year
   attribute :cars, array: true do
-    attribute :model
+    attribute :code
     attribute :driver
     attribute :engine do
       attribute :power
@@ -175,7 +175,7 @@ class EngineForm < FormObj::Form
   attribute :volume
 end
 class CarForm < FormObj::Form
-  attribute :model
+  attribute :code
   attribute :driver
   attribute :engine, class: EngineForm
 end
@@ -207,8 +207,8 @@ Use array of nested forms in the form builder.
 
   <% f.cars.each do |car| %>
     <%= f.fields_for(:cars, car, index: '') do |fc| %>
-      <%= fc.label :model %>
-      <%= fc.text_field :model %>
+      <%= fc.label :code %>
+      <%= fc.text_field :code %>
 
       <%= fc.label :driver %>
       <%= fc.text_field :driver %>
@@ -254,7 +254,7 @@ simple_form.year      # => 1966
 nested_form = NestedForm.new
 nested_form.name = 'Ferrari'
 nested_form.year = 1950
-nested_form.car.model = '340 F1'
+nested_form.car.code = '340 F1'
 nested_form.car.driver = 'Ascari'
 nested_form.car.engine.power = 335
 nested_form.car.engine.volume = 4.1
@@ -262,7 +262,7 @@ nested_form.update_attributes(
                                 name: 'McLaren',
                                 year: 1966,
                                 car: {
-                                  model: 'M2B',
+                                  code: 'M2B',
                                   driver: 'Bruce McLaren',
                                   engine: {
                                     power: 300,
@@ -272,7 +272,7 @@ nested_form.update_attributes(
                              )
 nested_form.name                  # => "McLaren"
 nested_form.year                  # => 1966
-nested_form.car.model             # => "M2B"
+nested_form.car.code              # => "M2B"
 nested_form.car.driver            # => "Bruce McLaren"
 nested_form.car.engine.power      # => 300
 nested_form.car.engine.volume     # => 3.0
@@ -293,7 +293,7 @@ class ArrayForm < FormObj::Form
   attribute :name
   attribute :year
   attribute :cars, array: true do
-    attribute :model, primary_key: true     # <- primary key is specified on attribute level
+    attribute :code, primary_key: true     # <- primary key is specified on attribute level
     attribute :driver
     attribute :engine do
       attribute :power
@@ -307,8 +307,8 @@ end
 class ArrayForm < FormObj::Form
   attribute :name
   attribute :year
-  attribute :cars, array: true, primary_key: :model do     # <- primary key is specified on form level
-    attribute :model
+  attribute :cars, array: true, primary_key: :code do     # <- primary key is specified on form level
+    attribute :code
     attribute :driver
     attribute :engine do
       attribute :power
@@ -324,13 +324,13 @@ array_form.name = 'Ferrari'
 array_form.year = 1950
 
 car1 = array_form.cars.create
-car1.model = '340 F1'
+car1.code = '340 F1'
 car1.driver = 'Ascari'
 car1.engine.power = 335
 car1.engine.volume = 4.1
 
 car2 = array_form.cars.create
-car2.model = 'M2B'
+car2.code = 'M2B'
 car2.driver = 'Villoresi'
 car2.engine.power = 300
 car2.engine.volume = 3.3
@@ -340,13 +340,13 @@ array_form.update_attributes(
                               year: 1966,
                               cars: [
                                   {
-                                      model: 'M2B',
+                                      code: 'M2B',
                                       driver: 'Bruce McLaren',
                                       engine: {
                                           volume: 3.0
                                       }
                                   }, {
-                                      model: 'M7A',
+                                      code: 'M7A',
                                       driver: 'Denis Hulme',
                                       engine: {
                                           power: 415,
@@ -358,12 +358,12 @@ array_form.update_attributes(
 array_form.name                     # => "McLaren"
 array_form.year                     # => 1966
 
-array_form.cars[0].model            # => "M2B"
+array_form.cars[0].code             # => "M2B"
 array_form.cars[0].driver           # => "Bruce McLaren"
 array_form.cars[0].engine.power     # => 300    - this value was not updated in update_attributes
 array_form.cars[0].engine.volume    # => 3.0
 
-array_form.cars[1].model            # => "M7A"
+array_form.cars[1].code             # => "M7A"
 array_form.cars[1].driver           # => "Denis Hulme"
 array_form.cars[1].engine.power     # => 415
 array_form.cars[1].engine.volume    # => nil    - this value is nil because this car was created in updated_attributes
@@ -387,7 +387,7 @@ nested_form.to_hash     # => {
                         # =>    :name => "McLaren",
                         # =>    :year => 1966,
                         # =>    :car  => {
-                        # =>      :model => "340 F1",
+                        # =>      :code => "340 F1",
                         # =>      :driver => "Ascari",
                         # =>      :engine => {
                         # =>        :power => 335,
@@ -404,14 +404,14 @@ array_form.to_hash      # => {
                         # =>    :name => "McLaren",
                         # =>    :year => 1966,
                         # =>    :cars => [{
-                        # =>      :model => "M2B",
+                        # =>      :code => "M2B",
                         # =>      :driver => "Bruce McLaren",
                         # =>      :engine => {
                         # =>        :power => 300,
                         # =>        :volume => 3.0
                         # =>      }
                         # =>    }, {
-                        # =>      :model => "M7A",
+                        # =>      :code => "M7A",
                         # =>      :driver => "Denis Hulme",
                         # =>      :engine => {
                         # =>        :power => 415,
@@ -500,7 +500,7 @@ class NestedForm < FormObj::Form
   attribute :name, model_attribute: :team_name
   attribute :year
   attribute :car, model_attribute: false do   # nesting only in form object but not in a model
-    attribute :model
+    attribute :code
     attribute :driver
     attribute :engine do
       attribute :power
@@ -516,7 +516,7 @@ Suppose `form = NestedForm.new` and `model` to be an instance of a model.
 | --------------------- | --------------- |
 | `form.name` | `model.team_name` |
 | `form.year` | `model.year` |
-| `form.car.model` | `model.model` |
+| `form.car.code` | `model.code` |
 | `form.car.driver` | `model.driver` |
 | `form.car.engine.power` | `model.engine.power` |
 | `form.car.engine.volume` | `model.engine.volume` |
@@ -532,7 +532,7 @@ class NestedForm < FormObj::Form
   attribute :name, model_attribute: :team_name
   attribute :year
   attribute :car, hash: true do   # nesting only in form object but not in a model
-    attribute :model
+    attribute :code
     attribute :driver
     attribute :engine do
       attribute :power
@@ -548,7 +548,7 @@ Suppose `form = NestedForm.new` and `model` to be an instance of a model.
 | --------------------- | --------------- |
 | `form.name` | `model.team_name` |
 | `form.year` | `model.year` |
-| `form.car.model` | `model.car[:model]` |
+| `form.car.code` | `model.car[:code]` |
 | `form.car.driver` | `model.car[:driver]` |
 | `form.car.engine.power` | `model.car[:engine].power` |
 | `form.car.engine.volume` | `model.car[:engine].volume` |
@@ -630,7 +630,7 @@ class ArrayForm < FormObj::Form
   attribute :name
   attribute :year
   attribute :cars, array: true, model_class: Car do
-    attribute :model, primary_key: true     # <- primary key is specified on attribute level
+    attribute :code, primary_key: true     # <- primary key is specified on attribute level
     attribute :driver
   end
 end
@@ -646,7 +646,7 @@ class ArrayForm < FormObj::Form
   attribute :name
   attribute :year
   attribute :cars, array: true, model_attribute: 'equipment.cars', model_class: [Equipment, Car] do
-    attribute :model, primary_key: true     # <- primary key is specified on attribute level
+    attribute :code, primary_key: true     # <- primary key is specified on attribute level
     attribute :driver
   end
 end
@@ -691,7 +691,7 @@ class ArrayForm < FormObj::Form
   attribute :name
   attribute :year
   attribute :cars, array: true, model_attribute: false do
-    attribute :model, primary_key: true
+    attribute :code, primary_key: true
     attribute :driver
   end
 end
@@ -701,10 +701,10 @@ array_form.update_attributes(
     name: 'McLaren', 
     year: 1966, 
     cars: [{
-      model: 'M2B', 
+      code: 'M2B', 
       driver: 'Bruce McLaren'
     }, {
-      model: 'M7A',
+      code: 'M7A',
       driver: 'Denis Hulme'
     }]
 )
@@ -713,10 +713,10 @@ array_form.to_model_hash    # => {
                             # =>    :team_name => "McLaren", 
                             # =>    :year => 1966,
                             # =>    :self => {
-                            # =>      :model => "M2B",
+                            # =>      :code => "M2B",
                             # =>      :driver => "Bruce McLaren"
                             # =>    }, {    
-                            # =>      :model => "M7A",
+                            # =>      :code => "M7A",
                             # =>      :driver => "Denis Hulme"
                             # =>    }  
                             # => }
@@ -797,7 +797,7 @@ class CreateCar < ActiveRecord::Migration
   def change
     create_table :cars do |t|
       t.references :team    
-      t.string :model
+      t.string :code
       t.text :engine
     end
   end
@@ -821,10 +821,10 @@ class TeamForm < FormObj::Form
   attribute :year
   attribute :cars, array: true do
     attribute :id
-    attribute :model
+    attribute :code
     attribute :engine_power, model_attribute: 'engine.:power'
     
-    validates :model, presence: true
+    validates :code, presence: true
   end
   
   validates :name, :year, presence: true
@@ -884,7 +884,7 @@ end
 <p>Cars:</p>
 <ul>
   <% @team.cars.each do |car| %>
-    <li><%= car.model %> (<%= car.engine[:power] %> hp)</li>    
+    <li><%= car.code %> (<%= car.engine[:power] %> hp)</li>    
   <% end %>
 </ul>
 ```
@@ -904,7 +904,7 @@ end
   <%= f.text_field :year %>
   
   <%= f.fields_for :cars do |cf| %>
-    <%= cf.text_field :model %>
+    <%= cf.text_field :code %>
     <%= cf.link_to_remove 'Remove the Car' %> 
   <% end %>
   <%= f.link_to_add 'Add a Car', :cars %>

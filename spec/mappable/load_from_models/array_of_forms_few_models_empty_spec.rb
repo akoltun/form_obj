@@ -59,7 +59,7 @@ RSpec.describe 'load_from_models: Array of Form Objects - Few Empty Models' do
         attribute :name, model_attribute: :team_name
         attribute :year
         attribute :cars, array: true do
-          attribute :model
+          attribute :code
           attribute :driver
           attribute :engine do
             attribute :power
@@ -101,7 +101,7 @@ RSpec.describe 'load_from_models: Array of Form Objects - Few Empty Models' do
         class CarForm < FormObj::Form
           include FormObj::Mappable
 
-          attribute :model
+          attribute :code
           attribute :engine, class: EngineForm
           attribute :driver
         end
