@@ -35,7 +35,9 @@ Or install it yourself as:
 **WARNING!!!** The gem is still under development. Expect braking changes.<br/>
 
 Class `FormObj::Struct` allows to describe complicated data structure.
+
 Class `FormObj::Form` inherits from `FormObj::Struct` and adds form builder compatibility and includes ActiveModel validations.
+
 Module `FormObj::Mappable` being included into `FormObj::Form` descendants allows to map a form object to a model 
 in order to be able to exchange attributes value between them:
 * load attributes value from the model,
