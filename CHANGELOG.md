@@ -6,12 +6,14 @@
 
 **Closed issues:**
 
+- Merge tree\_struct gem [\#13](https://github.com/akoltun/form_obj/issues/13)
 - Rename car model in the documentation and tests into something else [\#9](https://github.com/akoltun/form_obj/issues/9)
 - Add form builder usage example [\#6](https://github.com/akoltun/form_obj/issues/6)
 - Add description of :raise\_if\_not\_found parameter [\#4](https://github.com/akoltun/form_obj/issues/4)
 
 **Merged pull requests:**
 
+- Merge tree struct gem [\#21](https://github.com/akoltun/form_obj/pull/21) ([akoltun](https://github.com/akoltun))
 - Update all dependencies to last versions [\#20](https://github.com/akoltun/form_obj/pull/20) ([akoltun](https://github.com/akoltun))
 - Rename attribute model in test and docs [\#19](https://github.com/akoltun/form_obj/pull/19) ([akoltun](https://github.com/akoltun))
 - Documentation update [\#18](https://github.com/akoltun/form_obj/pull/18) ([akoltun](https://github.com/akoltun))
