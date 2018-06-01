@@ -4,8 +4,17 @@
 
 [Full Changelog](https://github.com/akoltun/form_obj/compare/v0.3.0...HEAD)
 
+**Closed issues:**
+
+- Rename car model in the documentation and tests into something else [\#9](https://github.com/akoltun/form_obj/issues/9)
+- Add form builder usage example [\#6](https://github.com/akoltun/form_obj/issues/6)
+- Add description of :raise\_if\_not\_found parameter [\#4](https://github.com/akoltun/form_obj/issues/4)
+
 **Merged pull requests:**
 
+- Update all dependencies to last versions [\#20](https://github.com/akoltun/form_obj/pull/20) ([akoltun](https://github.com/akoltun))
+- Rename attribute model in test and docs [\#19](https://github.com/akoltun/form_obj/pull/19) ([akoltun](https://github.com/akoltun))
+- Documentation update [\#18](https://github.com/akoltun/form_obj/pull/18) ([akoltun](https://github.com/akoltun))
 - Updated the documentation [\#1](https://github.com/akoltun/form_obj/pull/1) ([wimcnice](https://github.com/wimcnice))
 
 ## [v0.3.0](https://github.com/akoltun/form_obj/tree/v0.3.0) (2018-05-15)
