@@ -13,7 +13,7 @@ RSpec.describe 'save_to_models: Simple Form Object - Few Models' do
       class SimpleForm < FormObj::Form
         Engine = Struct.new(:power)
 
-        include FormObj::Mappable
+        include FormObj::ModelMapper
 
         attribute :name, model_attribute: :team_name, model: :team
         attribute :year, model: :team
@@ -58,7 +58,7 @@ RSpec.describe 'save_to_models: Simple Form Object - Few Models' do
       class SimpleForm < FormObj::Form
         Engine = Struct.new(:power)
 
-        include FormObj::Mappable
+        include FormObj::ModelMapper
 
         attribute :name, model_attribute: :team_name
         attribute :year

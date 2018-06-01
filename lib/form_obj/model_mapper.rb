@@ -1,10 +1,10 @@
 require 'form_obj/form'
-require 'form_obj/mappable/attribute'
-require 'form_obj/mappable/array'
-require 'form_obj/mappable/model_primary_key'
+require 'form_obj/model_mapper/attribute'
+require 'form_obj/model_mapper/array'
+require 'form_obj/model_mapper/model_primary_key'
 
 module FormObj
-  module Mappable
+  module ModelMapper
     class PrimaryKeyMappingError < RuntimeError; end
 
     def self.included(base)
@@ -13,11 +13,11 @@ module FormObj
 
     module ClassMethods
       def attribute_class
-        Mappable::Attribute
+        ModelMapper::Attribute
       end
 
       def array_class
-        Mappable::Array
+        ModelMapper::Array
       end
 
       def hash=(value)
@@ -25,7 +25,7 @@ module FormObj
       end
 
       def model_primary_key
-        Mappable::ModelPrimaryKey.new(self._attributes.find(self.primary_key).model_attribute)
+        ModelMapper::ModelPrimaryKey.new(self._attributes.find(self.primary_key).model_attribute)
       end
     end
 

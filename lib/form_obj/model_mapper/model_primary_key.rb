@@ -1,5 +1,5 @@
 module FormObj
-  module Mappable
+  module ModelMapper
     class ModelPrimaryKey
       def initialize(model_attribute)
         @model_attribute = model_attribute

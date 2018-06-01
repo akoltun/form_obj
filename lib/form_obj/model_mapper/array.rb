@@ -1,5 +1,5 @@
 module FormObj
-  module Mappable
+  module ModelMapper
     class Array < FormObj::Form::Array
       def initialize(item_class, model_attribute:)
         @model_attribute = model_attribute

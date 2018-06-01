@@ -128,7 +128,7 @@ RSpec.describe 'save_to_models: Array of Form Objects - Few Models' do
   context 'Implicit declaration of form object classes' do
     module SaveToModels
       class ArrayForm < FormObj::Form
-      include FormObj::Mappable
+      include FormObj::ModelMapper
 
       attribute :name, model_attribute: :team_name
         attribute :year
@@ -240,45 +240,45 @@ RSpec.describe 'save_to_models: Array of Form Objects - Few Models' do
     module SaveToModels
       class ArrayForm < FormObj::Form
         class EngineForm < FormObj::Form
-          include FormObj::Mappable
+          include FormObj::ModelMapper
 
           attribute :power
           attribute :volume
         end
         class CarForm < FormObj::Form
-          include FormObj::Mappable
+          include FormObj::ModelMapper
 
           attribute :code, model_attribute: :car_code
           attribute :engine, class: EngineForm, model_class: Engine
           attribute :driver
         end
         class SponsorForm < FormObj::Form
-          include FormObj::Mappable
+          include FormObj::ModelMapper
 
           attribute :title
           attribute :money
         end
         class SuspensionForm < FormObj::Form
-          include FormObj::Mappable
+          include FormObj::ModelMapper
 
           attribute :front
           attribute :rear
         end
         class ChassisForm < FormObj::Form
-          include FormObj::Mappable
+          include FormObj::ModelMapper
 
           attribute :id
           attribute :suspension, class: SuspensionForm, model_class: Suspension
           attribute :brakes
         end
         class ColourForm < FormObj::Form
-          include FormObj::Mappable
+          include FormObj::ModelMapper
 
           attribute :name
           attribute :rgb
         end
         class TeamForm < FormObj::Form
-          include FormObj::Mappable
+          include FormObj::ModelMapper
 
           attribute :name, model_attribute: :team_name
           attribute :year

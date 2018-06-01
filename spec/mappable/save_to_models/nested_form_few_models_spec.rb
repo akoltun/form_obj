@@ -49,7 +49,7 @@ RSpec.describe 'save_to_models: Nested Form Objects - Few Models' do
   context 'Implicit declaration of form object classes' do
     module SaveToModels
       class NestedForm < FormObj::Form
-        include FormObj::Mappable
+        include FormObj::ModelMapper
 
         attribute :name, model_attribute: :team_name
         attribute :year
@@ -102,20 +102,20 @@ RSpec.describe 'save_to_models: Nested Form Objects - Few Models' do
     module SaveToModels
       class NestedForm < FormObj::Form
         class EngineForm < FormObj::Form
-          include FormObj::Mappable
+          include FormObj::ModelMapper
 
           attribute :power
           attribute :volume
         end
         class CarForm < FormObj::Form
-          include FormObj::Mappable
+          include FormObj::ModelMapper
 
           attribute :code
           attribute :engine, class: EngineForm, model_class: Engine
           attribute :driver
         end
         class ChassisForm < FormObj::Form
-          include FormObj::Mappable
+          include FormObj::ModelMapper
 
           attribute :suspension, model_class: Suspension do
             attribute :front
@@ -124,7 +124,7 @@ RSpec.describe 'save_to_models: Nested Form Objects - Few Models' do
           attribute :brakes
         end
         class TeamForm < FormObj::Form
-          include FormObj::Mappable
+          include FormObj::ModelMapper
 
           attribute :name, model_attribute: :team_name
           attribute :car, class: CarForm, hash: true

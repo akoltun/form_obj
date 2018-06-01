@@ -4,7 +4,7 @@ RSpec.describe 'save_to_model: Simple Form Object - One Model - Implicit Model C
   module SaveToModel
     module ImplicitModelClass
       class SimpleForm < FormObj::Form
-        include FormObj::Mappable
+        include FormObj::ModelMapper
 
         attribute :name, model_attribute: :team_name
         attribute :year

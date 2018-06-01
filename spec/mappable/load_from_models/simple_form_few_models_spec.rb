@@ -6,7 +6,7 @@ RSpec.describe 'load_from_models: Simple Form Object - Few Models' do
   context 'without default model' do
     module LoadFromModels
       class SimpleForm < FormObj::Form
-        include FormObj::Mappable
+        include FormObj::ModelMapper
 
         attribute :name, model_attribute: :team_name, model: :team
         attribute :year, model: :team
@@ -31,7 +31,7 @@ RSpec.describe 'load_from_models: Simple Form Object - Few Models' do
   context 'with default model' do
     module LoadFromModelsWithDefault
       class SimpleForm < FormObj::Form
-        include FormObj::Mappable
+        include FormObj::ModelMapper
 
         attribute :name, model_attribute: :team_name
         attribute :year

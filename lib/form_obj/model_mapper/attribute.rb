@@ -1,7 +1,7 @@
-require 'form_obj/mappable/model_attribute'
+require 'form_obj/model_mapper/model_attribute'
 
 module FormObj
-  module Mappable
+  module ModelMapper
     class Attribute < FormObj::Form::Attribute
       attr_reader :model_attribute
 
@@ -11,7 +11,7 @@ module FormObj
 
         if block_given?
           new_block = Proc.new do
-            include FormObj::Mappable
+            include FormObj::ModelMapper
             class_eval &block
           end
         end
