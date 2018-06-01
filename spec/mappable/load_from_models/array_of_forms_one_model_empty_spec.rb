@@ -24,16 +24,16 @@ RSpec.describe 'load_from_model: Array of Form Objects - One Empty Model' do
       expect(form.name).to eq model.team_name
       expect(form.year).to eq model.year
 
-      expect(form.cars).to be_a FormObj::Mappable::Array
+      expect(form.cars).to be_a FormObj::ModelMapper::Array
       expect(form.cars.size).to eq 0
 
-      expect(form.sponsors).to be_a FormObj::Mappable::Array
+      expect(form.sponsors).to be_a FormObj::ModelMapper::Array
       expect(form.sponsors.size).to eq 0
 
-      expect(form.chassis).to be_a FormObj::Mappable::Array
+      expect(form.chassis).to be_a FormObj::ModelMapper::Array
       expect(form.chassis.size).to eq 0
 
-      expect(form.colours).to be_a FormObj::Mappable::Array
+      expect(form.colours).to be_a FormObj::ModelMapper::Array
       expect(form.colours.size).to eq 3
 
       expect(form.colours[0].name).to eq model[0].name
@@ -51,7 +51,7 @@ RSpec.describe 'load_from_model: Array of Form Objects - One Empty Model' do
   context 'Implicit declaration of form object classes' do
     module LoadFromModelEmpty
       class ArrayForm < FormObj::Form
-      include FormObj::Mappable
+      include FormObj::ModelMapper
 
         attribute :name, model_attribute: :team_name
         attribute :year
@@ -67,7 +67,7 @@ RSpec.describe 'load_from_model: Array of Form Objects - One Empty Model' do
           attribute :title
           attribute :money
         end
-        attribute :chassis, array: true, hash: true do
+        attribute :chassis, array: true, model_hash: true do
           attribute :suspension do
             attribute :front
             attribute :rear
@@ -90,50 +90,50 @@ RSpec.describe 'load_from_model: Array of Form Objects - One Empty Model' do
     module LoadFromModelEmpty
       class ArrayForm < FormObj::Form
         class EngineForm < FormObj::Form
-          include FormObj::Mappable
+          include FormObj::ModelMapper
 
           attribute :power
           attribute :volume
         end
         class CarForm < FormObj::Form
-          include FormObj::Mappable
+          include FormObj::ModelMapper
 
           attribute :code
           attribute :engine, class: EngineForm
           attribute :driver
         end
         class SponsorForm < FormObj::Form
-          include FormObj::Mappable
+          include FormObj::ModelMapper
 
           attribute :title
           attribute :money
         end
         class SuspensionForm < FormObj::Form
-          include FormObj::Mappable
+          include FormObj::ModelMapper
 
           attribute :front
           attribute :rear
         end
         class ChassisForm < FormObj::Form
-          include FormObj::Mappable
+          include FormObj::ModelMapper
 
           attribute :suspension, class: SuspensionForm
           attribute :brakes
         end
         class ColourForm < FormObj::Form
-          include FormObj::Mappable
+          include FormObj::ModelMapper
 
           attribute :name
           attribute :rgb
         end
         class TeamForm < FormObj::Form
-          include FormObj::Mappable
+          include FormObj::ModelMapper
 
           attribute :name, model_attribute: :team_name
           attribute :year
           attribute :cars, array: true, class: CarForm
           attribute :sponsors, array: true, model_attribute: 'finance.:sponsors', class: SponsorForm
-          attribute :chassis, array: true, hash: true, class: ChassisForm
+          attribute :chassis, array: true, model_hash: true, class: ChassisForm
           attribute :colours, array: true, model_attribute: false, class: ColourForm
         end
       end

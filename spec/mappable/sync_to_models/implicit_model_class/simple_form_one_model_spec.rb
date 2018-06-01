@@ -1,28 +1,26 @@
-RSpec.describe 'save_to_model: Simple Form Object - One Model' do
+RSpec.describe 'sync_to_model: Simple Form Object - One Model - Implicit Model Class' do
+  Engine = Struct.new(:power)
+
   module SaveToModel
-    class SimpleForm < FormObj::Form
-      Engine = Struct.new(:power)
+    module ImplicitModelClass
+      class SimpleForm < FormObj::Form
+        include FormObj::ModelMapper
 
-      include FormObj::Mappable
-
-      attribute :name, model_attribute: :team_name
-      attribute :year
-      attribute :month, model_attribute: false
-      attribute :day, model_attribute: false
-      attribute :engine_power, model_attribute: 'car.:engine.power', model_class: [Hash, Engine]
+        attribute :name, model_attribute: :team_name
+        attribute :year
+        attribute :engine_power, model_attribute: 'car.:engine.power'
+      end
     end
   end
 
-  let(:engine) { SaveToModel::SimpleForm::Engine.new }
-  let(:model) { Struct.new(:team_name, :year, :month, :car).new }
-  let(:form) { SaveToModel::SimpleForm.new() }
+  let(:engine) { Engine.new }
+  let(:model) { Struct.new(:team_name, :year, :car).new }
+  let(:form) { SaveToModel::ImplicitModelClass::SimpleForm.new() }
 
   shared_context 'fill in a form' do
     before do
       form.name = 'Ferrari'
       form.year = 1950
-      form.month = 'April'
-      form.day = 1               # will not raise error if attribute is not existent in the model
       form.engine_power = 335
     end
   end
@@ -31,14 +29,13 @@ RSpec.describe 'save_to_model: Simple Form Object - One Model' do
     it 'creates non-existent models and correctly saves all attributes' do
       expect(model.team_name).to          eq form.name
       expect(model.year).to               eq form.year
-      expect(model.month).to              be_nil
       expect(model.car[:engine].power).to eq form.engine_power
     end
   end
 
   context 'nested models do not exists' do
     include_context 'fill in a form'
-    before { form.save_to_model(model) }
+    before { form.sync_to_model(model) }
 
     it_behaves_like 'a form that can be saved'
   end
@@ -48,7 +45,7 @@ RSpec.describe 'save_to_model: Simple Form Object - One Model' do
     before { model.car = car }
 
     include_context 'fill in a form'
-    before { form.save_to_model(model) }
+    before { form.sync_to_model(model) }
 
     it_behaves_like 'a form that can be saved'
     it "doesn't create existing nested models" do
@@ -61,7 +58,7 @@ RSpec.describe 'save_to_model: Simple Form Object - One Model' do
     before { model.car = car }
 
     include_context 'fill in a form'
-    before { form.save_to_model(model) }
+    before { form.sync_to_model(model) }
 
     it_behaves_like 'a form that can be saved'
     it "doesn't create existing nested models" do

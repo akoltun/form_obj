@@ -6,11 +6,11 @@ RSpec.describe 'load_from_model: Nested Form Objects - One Empty Model' do
   context 'Implicit declaration of form object classes' do
     module LoadFromModelEmpty
       class NestedForm < FormObj::Form
-        include FormObj::Mappable
+        include FormObj::ModelMapper
 
         attribute :name, model_attribute: :team_name
         attribute :year
-        attribute :car, hash: true do
+        attribute :car, model_hash: true do
           attribute :code
           attribute :engine do
             attribute :power
@@ -53,20 +53,20 @@ RSpec.describe 'load_from_model: Nested Form Objects - One Empty Model' do
     module LoadFromModelEmpty
       class NestedForm < FormObj::Form
         class EngineForm < FormObj::Form
-          include FormObj::Mappable
+          include FormObj::ModelMapper
 
           attribute :power
           attribute :volume
         end
         class CarForm < FormObj::Form
-          include FormObj::Mappable
+          include FormObj::ModelMapper
 
           attribute :code
           attribute :engine, class: EngineForm
           attribute :driver
         end
         class ChassisForm < FormObj::Form
-          include FormObj::Mappable
+          include FormObj::ModelMapper
 
           attribute :suspension do
             attribute :front
@@ -75,10 +75,10 @@ RSpec.describe 'load_from_model: Nested Form Objects - One Empty Model' do
           attribute :brakes
         end
         class TeamForm < FormObj::Form
-          include FormObj::Mappable
+          include FormObj::ModelMapper
 
           attribute :name, model_attribute: :team_name
-          attribute :car, class: CarForm, hash: true
+          attribute :car, class: CarForm, model_hash: true
           attribute :year
           attribute :chassis, class: ChassisForm, model_attribute: false
         end

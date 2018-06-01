@@ -3,7 +3,7 @@ RSpec.describe 'to_model_hash: Simple Form Object - One Model' do
 
   module ToModelHash
     class SimpleForm < FormObj::Form
-      include FormObj::Mappable
+      include FormObj::ModelMapper
 
       attribute :name, model_attribute: :team_name
       attribute :year

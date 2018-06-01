@@ -113,7 +113,7 @@ RSpec.describe 'to_model_hash: Array of Form Objects - One Model' do
   context 'Implicit declaration of form objects' do
     module ToModelHash
       class ArrayForm < FormObj::Form
-        include FormObj::Mappable
+        include FormObj::ModelMapper
 
         attribute :name, model_attribute: :team_name
         attribute :year
@@ -129,7 +129,7 @@ RSpec.describe 'to_model_hash: Array of Form Objects - One Model' do
           attribute :title
           attribute :money
         end
-        attribute :chassis, array: true, hash: true do
+        attribute :chassis, array: true, model_hash: true do
           attribute :id
           attribute :suspension do
             attribute :front
@@ -154,51 +154,51 @@ RSpec.describe 'to_model_hash: Array of Form Objects - One Model' do
     module ToModelHash
       class ArrayForm < FormObj::Form
         class EngineForm < FormObj::Form
-          include FormObj::Mappable
+          include FormObj::ModelMapper
 
           attribute :power
           attribute :volume
         end
         class CarForm < FormObj::Form
-          include FormObj::Mappable
+          include FormObj::ModelMapper
 
           attribute :code, model_attribute: :car_code
           attribute :engine, class: EngineForm
           attribute :driver
         end
         class SponsorForm < FormObj::Form
-          include FormObj::Mappable
+          include FormObj::ModelMapper
 
           attribute :title
           attribute :money
         end
         class SuspensionForm < FormObj::Form
-          include FormObj::Mappable
+          include FormObj::ModelMapper
 
           attribute :front
           attribute :rear
         end
         class ChassisForm < FormObj::Form
-          include FormObj::Mappable
+          include FormObj::ModelMapper
 
           attribute :id
           attribute :suspension, class: SuspensionForm
           attribute :brakes
         end
         class ColourForm < FormObj::Form
-          include FormObj::Mappable
+          include FormObj::ModelMapper
 
           attribute :name
           attribute :rgb
         end
         class TeamForm < FormObj::Form
-          include FormObj::Mappable
+          include FormObj::ModelMapper
 
           attribute :name, model_attribute: :team_name
           attribute :year
           attribute :cars, array: true, class: CarForm, primary_key: :code
           attribute :sponsors, array: true, model_attribute: 'finance.:sponsors', class: SponsorForm, primary_key: :title
-          attribute :chassis, array: true, hash: true, class: ChassisForm
+          attribute :chassis, array: true, model_hash: true, class: ChassisForm
           attribute :colours, array: true, model_attribute: false, class: ColourForm, primary_key: :name
         end
       end

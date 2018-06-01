@@ -6,7 +6,7 @@ RSpec.describe 'copy_errors_from_models: Simple Form Object - Few Models' do
   context 'without default model' do
     module CopyErrorsFromModels
       class SimpleForm < FormObj::Form
-        include FormObj::Mappable
+        include FormObj::ModelMapper
 
         attribute :name, model_attribute: :team_name, model: :team
         attribute :year, model: :team
@@ -31,7 +31,7 @@ RSpec.describe 'copy_errors_from_models: Simple Form Object - Few Models' do
   context 'with default model' do
     module CopyErrorsFromModelsWithDefault
       class SimpleForm < FormObj::Form
-        include FormObj::Mappable
+        include FormObj::ModelMapper
 
         attribute :name, model_attribute: :team_name
         attribute :year

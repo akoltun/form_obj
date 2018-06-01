@@ -1,18 +1,15 @@
-RSpec.describe 'save_to_model: Nested Form Objects - Few Models - Name' do
-  module SaveToModels
+RSpec.describe 'sync_to_model: Nested Form Objects - One Model - Name' do
+  Suspension = Struct.new(:front, :rear)
+  module SaveToModel
     class NestedFormName < FormObj::Form
-      Engine      = Struct.new(:power, :volume)
-      Suspension  = Struct.new(:front, :rear)
+      Engine = Struct.new(:power, :volume)
+      Suspension = Struct.new(:front, :rear)
     end
   end
 
-  let(:car) { { engine: SaveToModels::NestedFormName::Engine.new } }
-  let(:suspension) { SaveToModels::NestedFormName::Suspension.new }
-
-  let(:model) { Struct.new(:team_name, :year, :car).new }
-  let(:chassis) { Struct.new(:suspension, :brakes).new }
-
-  let(:save_to_models) { form.save_to_models(default: model, chassis: chassis) }
+  let(:engine) { SaveToModel::NestedFormName::Engine.new }
+  let(:suspension) { SaveToModel::NestedFormName::Suspension.new }
+  let(:model) { Struct.new(:team_name, :year, :car, :suspension, :brakes).new }
 
   shared_context 'initialize form' do
     before do
@@ -32,37 +29,37 @@ RSpec.describe 'save_to_model: Nested Form Objects - Few Models - Name' do
     it 'creates non-existent models and correctly saves all attributes' do
       expect(model.team_name).to            eq form.name
       expect(model.year).to                 eq form.year
-      expect(model.car[:code]).to          eq form.car.code
+      expect(model.car[:code]).to           eq form.car.code
       expect(model.car[:driver]).to         eq form.car.driver
       expect(model.car[:engine].power).to   eq form.car.engine.power
       expect(model.car[:engine].volume).to  eq form.car.engine.volume
-      expect(chassis.suspension.front).to   eq form.chassis.suspension.front
-      expect(chassis.suspension.rear).to    eq form.chassis.suspension.rear
-      expect(chassis.brakes).to             eq form.chassis.brakes
+      expect(model.suspension.front).to     eq form.chassis.suspension.front
+      expect(model.suspension.rear).to      eq form.chassis.suspension.rear
+      expect(model.brakes).to               eq form.chassis.brakes
     end
 
     it 'returns self' do
-      expect(save_to_models).to eql form
+      expect(form.sync_to_model(model)).to eql form
     end
   end
 
   context 'Implicit declaration of form object classes' do
-    module SaveToModels
+    module SaveToModel
       class NestedFormName < FormObj::Form
-        include FormObj::Mappable
+        include FormObj::ModelMapper
 
         attribute :name, model_attribute: :team_name
         attribute :year
-        attribute :car, hash: true do
+        attribute :car, model_hash: true do
           attribute :code
-          attribute :engine, model_class: 'SaveToModels::NestedFormName::Engine' do
+          attribute :engine, model_class: 'SaveToModel::NestedFormName::Engine' do
             attribute :power
             attribute :volume
           end
           attribute :driver
         end
-        attribute :chassis, model_attribute: false, model: :chassis do
-          attribute :suspension, model_class: 'SaveToModels::NestedFormName::Suspension' do
+        attribute :chassis, model_attribute: false do
+          attribute :suspension, model_class: 'SaveToModel::NestedFormName::Suspension' do
             attribute :front
             attribute :rear
           end
@@ -71,92 +68,94 @@ RSpec.describe 'save_to_model: Nested Form Objects - Few Models - Name' do
       end
     end
 
-    let(:form) { SaveToModels::NestedFormName.new }
+    let(:form) { SaveToModel::NestedFormName.new }
 
     context 'nested models are created when they do not exist yet' do
       include_context 'initialize form'
-      before { save_to_models }
+      before { form.sync_to_model(model) }
 
       it_behaves_like 'a form that can be saved'
     end
 
     context 'nested models are updated when they exists already' do
+      let(:car) {{ engine: engine }}
       before do
         model.car = car
-        chassis.suspension = suspension
+        model.suspension = suspension
       end
 
       include_context 'initialize form'
-      before { save_to_models }
+      before { form.sync_to_model(model) }
 
       it_behaves_like 'a form that can be saved'
 
       it "doesn't create new nested models" do
         expect(model.car).to eql car
-        expect(chassis.suspension).to eql suspension
+        expect(model.suspension).to eql suspension
       end
     end
   end
 
   context 'Explicit declaration of form object classes' do
-    module SaveToModels
+    module SaveToModel
       class NestedFormName < FormObj::Form
         class EngineForm < FormObj::Form
-          include FormObj::Mappable
+          include FormObj::ModelMapper
 
           attribute :power
           attribute :volume
         end
         class CarForm < FormObj::Form
-          include FormObj::Mappable
+          include FormObj::ModelMapper
 
           attribute :code
-          attribute :engine, class: EngineForm, model_class: 'SaveToModels::NestedFormName::Engine'
+          attribute :engine, class: EngineForm, model_class: 'SaveToModel::NestedFormName::Engine'
           attribute :driver
         end
         class ChassisForm < FormObj::Form
-          include FormObj::Mappable
+          include FormObj::ModelMapper
 
-          attribute :suspension, model_class: 'SaveToModels::NestedFormName::Suspension' do
+          attribute :suspension, model_class: 'SaveToModel::NestedFormName::Suspension' do
             attribute :front
             attribute :rear
           end
           attribute :brakes
         end
         class TeamForm < FormObj::Form
-          include FormObj::Mappable
+          include FormObj::ModelMapper
 
           attribute :name, model_attribute: :team_name
-          attribute :car, class: CarForm, hash: true
+          attribute :car, class: CarForm, model_hash: true
           attribute :year
-          attribute :chassis, class: ChassisForm, model_attribute: false, model: :chassis
+          attribute :chassis, class: ChassisForm, model_attribute: false
         end
       end
     end
 
-    let(:form) { SaveToModels::NestedFormName::TeamForm.new }
+    let(:form) { SaveToModel::NestedFormName::TeamForm.new }
 
     context 'nested models are created when they do not exist yet' do
       include_context 'initialize form'
-      before { save_to_models }
+      before { form.sync_to_model(model) }
 
       it_behaves_like 'a form that can be saved'
     end
 
     context 'nested models are updated when they exists already' do
+      let(:car) {{ engine: engine }}
       before do
         model.car = car
-        chassis.suspension = suspension
+        model.suspension = suspension
       end
 
       include_context 'initialize form'
-      before { save_to_models }
+      before { form.sync_to_model(model) }
 
       it_behaves_like 'a form that can be saved'
 
       it "doesn't create new nested models" do
         expect(model.car).to eql car
-        expect(chassis.suspension).to eql suspension
+        expect(model.suspension).to eql suspension
       end
     end
   end

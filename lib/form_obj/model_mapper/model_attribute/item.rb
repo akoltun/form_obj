@@ -1,7 +1,7 @@
 require 'active_support/inflector'
 
 module FormObj
-  module Mappable
+  module ModelMapper
     class ModelAttribute
       private
 

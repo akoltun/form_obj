@@ -40,11 +40,11 @@ RSpec.describe 'to_model_hash: Nested Form Objects - One Model' do
   describe 'Implicit declaration of form object classes' do
     module ToModelHash
       class NestedForm < FormObj::Form
-        include FormObj::Mappable
+        include FormObj::ModelMapper
 
         attribute :name, model_attribute: :team_name
         attribute :year
-        attribute :car, hash: true do
+        attribute :car, model_hash: true do
           attribute :code, model_attribute: :car_code
           attribute :engine do
             attribute :power
@@ -72,20 +72,20 @@ RSpec.describe 'to_model_hash: Nested Form Objects - One Model' do
     module ToModelHash
       class NestedForm < FormObj::Form
         class EngineForm < FormObj::Form
-          include FormObj::Mappable
+          include FormObj::ModelMapper
 
           attribute :power
           attribute :volume
         end
         class CarForm < FormObj::Form
-          include FormObj::Mappable
+          include FormObj::ModelMapper
 
           attribute :code, model_attribute: :car_code
           attribute :engine, class: EngineForm
           attribute :driver
         end
         class ChassisForm < FormObj::Form
-          include FormObj::Mappable
+          include FormObj::ModelMapper
 
           attribute :suspension do
             attribute :front
@@ -94,10 +94,10 @@ RSpec.describe 'to_model_hash: Nested Form Objects - One Model' do
           attribute :brakes
         end
         class TeamForm < FormObj::Form
-          include FormObj::Mappable
+          include FormObj::ModelMapper
 
           attribute :name, model_attribute: :team_name
-          attribute :car, class: CarForm, hash: true
+          attribute :car, class: CarForm, model_hash: true
           attribute :year
           attribute :chassis, class: ChassisForm, model_attribute: false
         end

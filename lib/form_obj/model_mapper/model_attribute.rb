@@ -1,8 +1,8 @@
 require 'active_support/inflector'
-require 'form_obj/mappable/model_attribute/item'
+require 'form_obj/model_mapper/model_attribute/item'
 
 module FormObj
-  module Mappable
+  module ModelMapper
     class ModelAttribute
       attr_reader :model
 

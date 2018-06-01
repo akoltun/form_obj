@@ -3,7 +3,7 @@ RSpec.describe 'copy_errors_from_model: Simple Form Object - One Model' do
 
   module CopyErrorsFromModel
     class SimpleForm < FormObj::Form
-      include FormObj::Mappable
+      include FormObj::ModelMapper
 
       attribute :name, model_attribute: :team_name
       attribute :year

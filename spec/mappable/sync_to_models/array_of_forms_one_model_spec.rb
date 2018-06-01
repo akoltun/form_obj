@@ -1,4 +1,4 @@
-RSpec.describe 'save_to_model: Array of Form Objects - One Model' do
+RSpec.describe 'sync_to_model: Array of Form Objects - One Model' do
   module SaveToModel
     class ArrayForm < FormObj::Form
       Engine = Struct.new(:power, :volume, :secret)
@@ -64,7 +64,7 @@ RSpec.describe 'save_to_model: Array of Form Objects - One Model' do
       colour.name = 'blue'
       colour.rgb = 0x0000FF
 
-      form.save_to_model(model)
+      form.sync_to_model(model)
     end
   end
 
@@ -119,14 +119,14 @@ RSpec.describe 'save_to_model: Array of Form Objects - One Model' do
     end
 
     it 'returns self' do
-      expect(form.save_to_model(model)).to eql form
+      expect(form.sync_to_model(model)).to eql form
     end
   end
 
   context 'Implicit declaration of form object classes' do
     module SaveToModel
       class ArrayForm < FormObj::Form
-        include FormObj::Mappable
+        include FormObj::ModelMapper
 
         attribute :name, model_attribute: :team_name
         attribute :year
@@ -142,7 +142,7 @@ RSpec.describe 'save_to_model: Array of Form Objects - One Model' do
           attribute :title
           attribute :money
         end
-        attribute :chassis, array: true, hash: true do
+        attribute :chassis, array: true, model_hash: true do
           attribute :id
           attribute :suspension, model_class: Suspension do
             attribute :front
@@ -238,51 +238,51 @@ RSpec.describe 'save_to_model: Array of Form Objects - One Model' do
     module SaveToModel
       class ArrayForm < FormObj::Form
         class EngineForm < FormObj::Form
-          include FormObj::Mappable
+          include FormObj::ModelMapper
 
           attribute :power
           attribute :volume
         end
         class CarForm < FormObj::Form
-          include FormObj::Mappable
+          include FormObj::ModelMapper
 
           attribute :code, model_attribute: :car_code
           attribute :engine, class: EngineForm, model_class: Engine
           attribute :driver
         end
         class SponsorForm < FormObj::Form
-          include FormObj::Mappable
+          include FormObj::ModelMapper
 
           attribute :title
           attribute :money
         end
         class SuspensionForm < FormObj::Form
-          include FormObj::Mappable
+          include FormObj::ModelMapper
 
           attribute :front
           attribute :rear
         end
         class ChassisForm < FormObj::Form
-          include FormObj::Mappable
+          include FormObj::ModelMapper
 
           attribute :id
           attribute :suspension, class: SuspensionForm, model_class: Suspension
           attribute :brakes
         end
         class ColourForm < FormObj::Form
-          include FormObj::Mappable
+          include FormObj::ModelMapper
 
           attribute :name
           attribute :rgb
         end
         class TeamForm < FormObj::Form
-          include FormObj::Mappable
+          include FormObj::ModelMapper
 
           attribute :name, model_attribute: :team_name
           attribute :year
           attribute :cars, array: true, class: CarForm, model_class: Car, primary_key: :code
           attribute :sponsors, array: true, model_attribute: 'finance.:sponsors', class: SponsorForm, model_class: [Hash, Sponsor], primary_key: :title
-          attribute :chassis, array: true, hash: true, class: ChassisForm
+          attribute :chassis, array: true, model_hash: true, class: ChassisForm
           attribute :colours, array: true, model_attribute: false, class: ColourForm, model_class: Colour, primary_key: :name
         end
       end

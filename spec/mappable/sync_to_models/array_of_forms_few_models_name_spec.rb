@@ -1,4 +1,4 @@
-RSpec.describe 'save_to_models: Array of Form Objects - Few Models - Name' do
+RSpec.describe 'sync_to_models: Array of Form Objects - Few Models - Name' do
   module SaveToModels
     class ArrayFormName < FormObj::Form
       Engine = Struct.new(:power, :volume, :secret)
@@ -66,7 +66,7 @@ RSpec.describe 'save_to_models: Array of Form Objects - Few Models - Name' do
       colour.name = 'blue'
       colour.rgb = 0x0000FF
 
-      form.save_to_models(default: model, chassis: chassis_model)
+      form.sync_to_models(default: model, chassis: chassis_model)
     end
   end
 
@@ -121,14 +121,14 @@ RSpec.describe 'save_to_models: Array of Form Objects - Few Models - Name' do
     end
 
     it 'returns self' do
-      expect(form.save_to_models(default: model, chassis: chassis_model)).to eql form
+      expect(form.sync_to_models(default: model, chassis: chassis_model)).to eql form
     end
   end
 
   context 'Implicit declaration of form object classes' do
     module SaveToModels
       class ArrayFormName < FormObj::Form
-        include FormObj::Mappable
+        include FormObj::ModelMapper
 
         attribute :name, model_attribute: :team_name
         attribute :year
@@ -144,7 +144,7 @@ RSpec.describe 'save_to_models: Array of Form Objects - Few Models - Name' do
           attribute :title
           attribute :money
         end
-        attribute :chassis, array: true, hash: true, model: :chassis do
+        attribute :chassis, array: true, model_hash: true, model: :chassis do
           attribute :id
           attribute :suspension, model_class: 'SaveToModels::ArrayFormName::Suspension' do
             attribute :front
@@ -240,51 +240,51 @@ RSpec.describe 'save_to_models: Array of Form Objects - Few Models - Name' do
     module SaveToModels
       class ArrayFormName < FormObj::Form
         class EngineForm < FormObj::Form
-          include FormObj::Mappable
+          include FormObj::ModelMapper
 
           attribute :power
           attribute :volume
         end
         class CarForm < FormObj::Form
-          include FormObj::Mappable
+          include FormObj::ModelMapper
 
           attribute :code, model_attribute: :car_code
           attribute :engine, class: EngineForm, model_class: 'SaveToModels::ArrayFormName::Engine'
           attribute :driver
         end
         class SponsorForm < FormObj::Form
-          include FormObj::Mappable
+          include FormObj::ModelMapper
 
           attribute :title
           attribute :money
         end
         class SuspensionForm < FormObj::Form
-          include FormObj::Mappable
+          include FormObj::ModelMapper
 
           attribute :front
           attribute :rear
         end
         class ChassisForm < FormObj::Form
-          include FormObj::Mappable
+          include FormObj::ModelMapper
 
           attribute :id
           attribute :suspension, class: SuspensionForm, model_class: 'SaveToModels::ArrayFormName::Suspension'
           attribute :brakes
         end
         class ColourForm < FormObj::Form
-          include FormObj::Mappable
+          include FormObj::ModelMapper
 
           attribute :name
           attribute :rgb
         end
         class TeamForm < FormObj::Form
-          include FormObj::Mappable
+          include FormObj::ModelMapper
 
           attribute :name, model_attribute: :team_name
           attribute :year
           attribute :cars, array: true, class: CarForm, model_class: 'SaveToModels::ArrayFormName::Car', primary_key: :code
           attribute :sponsors, array: true, model_attribute: 'finance.:sponsors', class: SponsorForm, model_class: ['Hash', 'SaveToModels::ArrayFormName::Sponsor'], primary_key: :title
-          attribute :chassis, array: true, hash: true, class: ChassisForm, model: :chassis
+          attribute :chassis, array: true, model_hash: true, class: ChassisForm, model: :chassis
           attribute :colours, array: true, model_attribute: false, class: ColourForm, model_class: 'SaveToModels::ArrayFormName::Colour', primary_key: :name
         end
       end

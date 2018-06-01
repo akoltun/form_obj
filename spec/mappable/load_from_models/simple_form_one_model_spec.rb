@@ -4,7 +4,7 @@ RSpec.describe 'load_from_model: Simple Form Object - One Model' do
 
   module LoadFromModel
     class SimpleForm < FormObj::Form
-      include FormObj::Mappable
+      include FormObj::ModelMapper
 
       attribute :name, model_attribute: :team_name
       attribute :year
