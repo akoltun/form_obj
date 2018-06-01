@@ -4,15 +4,26 @@
 
 [Full Changelog](https://github.com/akoltun/form_obj/compare/v0.3.0...HEAD)
 
+**Fixed bugs:**
+
+- Avoid duplication of attributes [\#12](https://github.com/akoltun/form_obj/issues/12)
+
 **Closed issues:**
 
+- Refactor definition of class methods in FormObj::Form [\#24](https://github.com/akoltun/form_obj/issues/24)
 - Merge tree\_struct gem [\#13](https://github.com/akoltun/form_obj/issues/13)
 - Rename car model in the documentation and tests into something else [\#9](https://github.com/akoltun/form_obj/issues/9)
+- Rename Mappable into ModelMapper [\#8](https://github.com/akoltun/form_obj/issues/8)
 - Add form builder usage example [\#6](https://github.com/akoltun/form_obj/issues/6)
 - Add description of :raise\_if\_not\_found parameter [\#4](https://github.com/akoltun/form_obj/issues/4)
+- Rename method save\_to\_model\(s\) into sync\_to\_model\(s\) [\#3](https://github.com/akoltun/form_obj/issues/3)
+- Rename hash: true parameter into model\_hash: true [\#2](https://github.com/akoltun/form_obj/issues/2)
 
 **Merged pull requests:**
 
+- Define class methods in FormObj::Form using class \<\< self [\#26](https://github.com/akoltun/form_obj/pull/26) ([akoltun](https://github.com/akoltun))
+- Bug fix: Avoid attribute duplication [\#25](https://github.com/akoltun/form_obj/pull/25) ([akoltun](https://github.com/akoltun))
+- Renaming [\#22](https://github.com/akoltun/form_obj/pull/22) ([akoltun](https://github.com/akoltun))
 - Merge tree struct gem [\#21](https://github.com/akoltun/form_obj/pull/21) ([akoltun](https://github.com/akoltun))
 - Update all dependencies to last versions [\#20](https://github.com/akoltun/form_obj/pull/20) ([akoltun](https://github.com/akoltun))
 - Rename attribute model in test and docs [\#19](https://github.com/akoltun/form_obj/pull/19) ([akoltun](https://github.com/akoltun))
