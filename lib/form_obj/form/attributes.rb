@@ -1,8 +1,6 @@
-require 'tree_struct'
-
 module FormObj
-  class Form < ::TreeStruct
-    class Attributes < ::TreeStruct::Attributes
+  class Form < FormObj::Struct
+    class Attributes < FormObj::Struct::Attributes
       def find(name)
         @items.find { |item| item.name == name.to_sym }
       end

@@ -1,4 +1,4 @@
-require 'tree_struct'
+require 'form_obj/struct'
 require 'form_obj/form/attributes'
 require 'form_obj/form/attribute'
 require 'form_obj/form/array'
@@ -7,7 +7,7 @@ require 'active_model'
 module FormObj
   class UnknownAttributeError < RuntimeError; end
 
-  class Form < ::TreeStruct
+  class Form < FormObj::Struct
     extend ::ActiveModel::Naming
     extend ::ActiveModel::Translation
 
@@ -24,7 +24,7 @@ module FormObj
     end
 
     def self.nested_class
-      ::TreeStruct
+      FormObj::Struct
     end
 
     def self.attribute_class

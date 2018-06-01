@@ -1,8 +1,6 @@
-require 'tree_struct'
-
 module FormObj
-  class Form < ::TreeStruct
-    class Array < ::TreeStruct::Array
+  class Form < FormObj::Struct
+    class Array < FormObj::Struct::Array
       def update_attributes(vals)
         ids_exists = []
         items_to_add = []

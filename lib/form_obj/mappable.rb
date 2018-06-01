@@ -1,3 +1,4 @@
+require 'form_obj/form'
 require 'form_obj/mappable/attribute'
 require 'form_obj/mappable/array'
 require 'form_obj/mappable/model_primary_key'
