@@ -142,7 +142,7 @@ RSpec.describe 'save_to_model: Array of Form Objects - One Model' do
           attribute :title
           attribute :money
         end
-        attribute :chassis, array: true, hash: true do
+        attribute :chassis, array: true, model_hash: true do
           attribute :id
           attribute :suspension, model_class: Suspension do
             attribute :front
@@ -282,7 +282,7 @@ RSpec.describe 'save_to_model: Array of Form Objects - One Model' do
           attribute :year
           attribute :cars, array: true, class: CarForm, model_class: Car, primary_key: :code
           attribute :sponsors, array: true, model_attribute: 'finance.:sponsors', class: SponsorForm, model_class: [Hash, Sponsor], primary_key: :title
-          attribute :chassis, array: true, hash: true, class: ChassisForm
+          attribute :chassis, array: true, model_hash: true, class: ChassisForm
           attribute :colours, array: true, model_attribute: false, class: ColourForm, model_class: Colour, primary_key: :name
         end
       end

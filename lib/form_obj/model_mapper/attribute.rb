@@ -5,9 +5,8 @@ module FormObj
     class Attribute < FormObj::Form::Attribute
       attr_reader :model_attribute
 
-      def initialize(name, array: false, class: nil, default: nil, hash: false, model: :default, model_attribute: nil, model_class: nil, parent:, primary_key: nil, &block)
-        @hash = hash
-        @model_attribute = ModelAttribute.new(model: model, names: model_attribute, classes: model_class, default_name: name, array: array, hash: hash, subform: binding.local_variable_get(:class) || block_given?)
+      def initialize(name, array: false, class: nil, default: nil, model_hash: false, model: :default, model_attribute: nil, model_class: nil, parent:, primary_key: nil, &block)
+        @model_attribute = ModelAttribute.new(model: model, names: model_attribute, classes: model_class, default_name: name, array: array, hash: model_hash, subform: binding.local_variable_get(:class) || block_given?)
 
         if block_given?
           new_block = Proc.new do
@@ -17,8 +16,8 @@ module FormObj
         end
         super(name, array: array, class: binding.local_variable_get(:class), default: default, parent: parent, primary_key: primary_key, &new_block)
 
-        @nested_class = Class.new(@nested_class) if binding.local_variable_get(:class)
-        @nested_class.hash = hash if @nested_class
+        @nested_class            = Class.new(@nested_class) if binding.local_variable_get(:class)
+        @nested_class.model_hash = model_hash if @nested_class
       end
 
       def array?

@@ -70,7 +70,7 @@ RSpec.describe 'load_from_models: Array of Form Objects - Few Empty Models' do
           attribute :title
           attribute :money
         end
-        attribute :chassis, array: true, hash: true, model: :chassis do
+        attribute :chassis, array: true, model_hash: true, model: :chassis do
           attribute :suspension do
             attribute :front
             attribute :rear
@@ -136,7 +136,7 @@ RSpec.describe 'load_from_models: Array of Form Objects - Few Empty Models' do
           attribute :year
           attribute :cars, array: true, class: CarForm
           attribute :sponsors, array: true, model_attribute: 'finance.:sponsors', class: SponsorForm
-          attribute :chassis, array: true, hash: true, class: ChassisForm, model: :chassis
+          attribute :chassis, array: true, model_hash: true, class: ChassisForm, model: :chassis
           attribute :colours, array: true, model_attribute: false, class: ColourForm
         end
       end

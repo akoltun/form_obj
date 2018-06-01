@@ -20,7 +20,7 @@ module FormObj
         ModelMapper::Array
       end
 
-      def hash=(value)
+      def model_hash=(value)
         _attributes.each { |attribute| attribute.model_attribute.hash_item = value }
       end
 

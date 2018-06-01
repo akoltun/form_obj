@@ -535,7 +535,7 @@ Suppose `form = NestedForm.new` and `model` to be an instance of a model.
 
 #### 4.3. Map Nested Form Object to A Hash Model
 
-Use `hash: true` in order to map a nested form object to a hash as a model.
+Use `model_hash: true` in order to map a nested form object to a hash as a model.
 
 ```ruby
 class NestedForm < FormObj::Form
@@ -543,7 +543,7 @@ class NestedForm < FormObj::Form
   
   attribute :name, model_attribute: :team_name
   attribute :year
-  attribute :car, hash: true do   # nesting only in form object but not in a model
+  attribute :car, model_hash: true do   # nesting only in form object but not in a model
     attribute :code
     attribute :driver
     attribute :engine do
@@ -929,7 +929,7 @@ end
 | --- |:---:|:---:|:---:| --- |
 | array | block* or `:class`** | `false` | `TreeStruct` | This attribute is an array of form objects. The structure of array element form object is described either in the block or in the separate class referenced by `:class` parameter |
 | class | - | - | `TreeStruct` | This attribute is either nested form object or array of form objects. The value of this parameter is the class of this form object or the name of the class. |
-| hash | block* or `:class`** | `false` | `FormObj::ModelMapper` | This attribute is either nested form object or array of form objects. This form object is mapped to a model of the class `Hash` so all its attributes should be accessed by `[:<attribute_name>]` instead of `.<attribute_name>` | 
+| model_hash | block* or `:class`** | `false` | `FormObj::ModelMapper` | This attribute is either nested form object or array of form objects. This form object is mapped to a model of the class `Hash` so all its attributes should be accessed by `[:<attribute_name>]` instead of `.<attribute_name>` | 
 | model | - | `:default` | `FormObj::ModelMapper` | The name of the model to which this attribute is mapped |
 | model_attribute | - | `<attribute_name>` | `FormObj::ModelMapper` | The name of the model attribute to which this form object attribute is mapped. Dot notation is used in order to map to nested model, ex. `"car.engine.power"`. Colon is used in front of the name if the model is hash, ex. `"car.:engine.power"` - means call to `#car` returns `Hash` so the model attribute should be accessed like `car[:engine].power`. `false` value means that attribute is not mapped. If attribute describes nested form object and has `model_attribute: false` the attributes of nested form will be called on the parent (upper level) model. If attribute describes array of form objects and has `model_attribute: false` the methods to access array elements (`:[]` etc.) will be called on the parent (upper level) model. |
 | model_class | block* or `:class`** or dot notation for `:model_attribute`*** | `<attribute_name>.classify` | `FormObj::ModelMapper` | The class (or the name of the class) of the mapped model. |

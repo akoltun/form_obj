@@ -129,7 +129,7 @@ RSpec.describe 'to_model_hash: Array of Form Objects - One Model' do
           attribute :title
           attribute :money
         end
-        attribute :chassis, array: true, hash: true do
+        attribute :chassis, array: true, model_hash: true do
           attribute :id
           attribute :suspension do
             attribute :front
@@ -198,7 +198,7 @@ RSpec.describe 'to_model_hash: Array of Form Objects - One Model' do
           attribute :year
           attribute :cars, array: true, class: CarForm, primary_key: :code
           attribute :sponsors, array: true, model_attribute: 'finance.:sponsors', class: SponsorForm, primary_key: :title
-          attribute :chassis, array: true, hash: true, class: ChassisForm
+          attribute :chassis, array: true, model_hash: true, class: ChassisForm
           attribute :colours, array: true, model_attribute: false, class: ColourForm, primary_key: :name
         end
       end

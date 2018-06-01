@@ -44,7 +44,7 @@ RSpec.describe 'to_model_hash: Nested Form Objects - One Model' do
 
         attribute :name, model_attribute: :team_name
         attribute :year
-        attribute :car, hash: true do
+        attribute :car, model_hash: true do
           attribute :code, model_attribute: :car_code
           attribute :engine do
             attribute :power
@@ -97,7 +97,7 @@ RSpec.describe 'to_model_hash: Nested Form Objects - One Model' do
           include FormObj::ModelMapper
 
           attribute :name, model_attribute: :team_name
-          attribute :car, class: CarForm, hash: true
+          attribute :car, class: CarForm, model_hash: true
           attribute :year
           attribute :chassis, class: ChassisForm, model_attribute: false
         end
