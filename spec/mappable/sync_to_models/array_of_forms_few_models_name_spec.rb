@@ -1,4 +1,4 @@
-RSpec.describe 'save_to_models: Array of Form Objects - Few Models - Name' do
+RSpec.describe 'sync_to_models: Array of Form Objects - Few Models - Name' do
   module SaveToModels
     class ArrayFormName < FormObj::Form
       Engine = Struct.new(:power, :volume, :secret)
@@ -66,7 +66,7 @@ RSpec.describe 'save_to_models: Array of Form Objects - Few Models - Name' do
       colour.name = 'blue'
       colour.rgb = 0x0000FF
 
-      form.save_to_models(default: model, chassis: chassis_model)
+      form.sync_to_models(default: model, chassis: chassis_model)
     end
   end
 
@@ -121,7 +121,7 @@ RSpec.describe 'save_to_models: Array of Form Objects - Few Models - Name' do
     end
 
     it 'returns self' do
-      expect(form.save_to_models(default: model, chassis: chassis_model)).to eql form
+      expect(form.sync_to_models(default: model, chassis: chassis_model)).to eql form
     end
   end
 

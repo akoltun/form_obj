@@ -1,4 +1,4 @@
-RSpec.describe 'save_to_models: Nested Form Objects - Few Models' do
+RSpec.describe 'sync_to_models: Nested Form Objects - Few Models' do
   module SaveToModels
     class NestedForm < FormObj::Form
       Engine      = Struct.new(:power, :volume)
@@ -12,7 +12,7 @@ RSpec.describe 'save_to_models: Nested Form Objects - Few Models' do
   let(:model) { Struct.new(:team_name, :year, :car).new }
   let(:chassis) { Struct.new(:suspension, :brakes).new }
 
-  let(:save_to_models) { form.save_to_models(default: model, chassis: chassis) }
+  let(:sync_to_models) { form.sync_to_models(default: model, chassis: chassis) }
 
   shared_context 'initialize form' do
     before do
@@ -42,7 +42,7 @@ RSpec.describe 'save_to_models: Nested Form Objects - Few Models' do
     end
 
     it 'returns self' do
-      expect(save_to_models).to eql form
+      expect(sync_to_models).to eql form
     end
   end
 
@@ -75,7 +75,7 @@ RSpec.describe 'save_to_models: Nested Form Objects - Few Models' do
 
     context 'nested models are created when they do not exist yet' do
       include_context 'initialize form'
-      before { save_to_models }
+      before { sync_to_models }
 
       it_behaves_like 'a form that can be saved'
     end
@@ -87,7 +87,7 @@ RSpec.describe 'save_to_models: Nested Form Objects - Few Models' do
       end
 
       include_context 'initialize form'
-      before { save_to_models }
+      before { sync_to_models }
 
       it_behaves_like 'a form that can be saved'
 
@@ -138,7 +138,7 @@ RSpec.describe 'save_to_models: Nested Form Objects - Few Models' do
 
     context 'nested models are created when they do not exist yet' do
       include_context 'initialize form'
-      before { save_to_models }
+      before { sync_to_models }
 
       it_behaves_like 'a form that can be saved'
     end
@@ -150,7 +150,7 @@ RSpec.describe 'save_to_models: Nested Form Objects - Few Models' do
       end
 
       include_context 'initialize form'
-      before { save_to_models }
+      before { sync_to_models }
 
       it_behaves_like 'a form that can be saved'
 

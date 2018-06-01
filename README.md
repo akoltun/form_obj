@@ -592,10 +592,9 @@ multi_form.to_hash    # => {
 
 Use `load_from_models(default: model)` or `load_from_model(model)` to load from single model.
 
-### 6. Save Form Object to Models
+### 6. Sync Form Object to Models
 
-TODO: replace `save_to_models(models)` to  `sync_to_models(models)`.
-Use `save_to_models(models)` to save form object attributes to mapped models.
+Use `sync_to_models(models)` to sync form object attributes to mapped models.
 Method returns self so one can chain calls.
 
 ```ruby
@@ -612,18 +611,18 @@ car_model = { engine: Struct.new(:power).new(335) }
 
 multi_form = MultiForm.new
 multi_form.update_attributes(name: 'McLaren', year: 1966, engine_power: 415)
-multi_form.save_to_models(default: default_model, car: car_model)
+multi_form.sync_to_models(default: default_model, car: car_model)
 
 default_model.name          # => "McLaren"
 default_model.year          # => 1966
 car_model[:engine].power    # => 415 
 ``` 
 
-Use `save_to_models(default: model)` or `save_to_model(model)` to save to single model.
+Use `sync_to_models(default: model)` or `sync_to_model(model)` to sync to single model.
 
-Neither `save_to_models` nor `save_to_model` calls `save` method on the model(s).
+Neither `sync_to_models` nor `sync_to_model` calls `save` method on the model(s).
 Also they don't call `valid?` method on the model(s). 
-Instead they just assign form object attributes values to mapped model attributes
+Instead they just assign form object attributes value to mapped model attributes
 using `<attribute_name>=` accessors on the model(s).
 
 It is completely up to developer to do any additional validations on the model(s) and save it(them).
@@ -861,7 +860,7 @@ class TeamsController < ApplicationController
     @team = TeamForm.new.update_attributes(params[:team])
     
     if @team.valid?
-      @team.save_to_model(model = Team.new) 
+      @team.sync_to_model(model = Team.new) 
       if model.save
         return redirect_to team_path(model), notice: 'Team has been created'
       else
@@ -877,7 +876,7 @@ class TeamsController < ApplicationController
     @team.update_attributes(params[:team])
     
     if @team.valid?
-      @team.save_to_model(model)
+      @team.sync_to_model(model)
       if model.save
         return redirect_to team_path(model), notice: 'Team has been updated'
       else

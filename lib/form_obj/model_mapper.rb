@@ -39,12 +39,12 @@ module FormObj
       self
     end
 
-    def save_to_model(model)
-      save_to_models(default: model)
+    def sync_to_model(model)
+      sync_to_models(default: model)
     end
 
-    def save_to_models(models)
-      self.class._attributes.each { |attribute | save_attribute_to_model(attribute, models) }
+    def sync_to_models(models)
+      self.class._attributes.each { |attribute | sync_attribute_to_model(attribute, models) }
       self.persisted = true
       self
     end
@@ -110,12 +110,12 @@ module FormObj
       end
     end
 
-    def save_attribute_to_model(attribute, models)
+    def sync_attribute_to_model(attribute, models)
       if attribute.subform?
         if attribute.model_attribute.write_to_model?
-          self.send(attribute.name).save_to_models(models.merge(default: attribute.model_attribute.read_from_models(models, create_nested_model_if_nil: true)))
+          self.send(attribute.name).sync_to_models(models.merge(default: attribute.model_attribute.read_from_models(models, create_nested_model_if_nil: true)))
         else
-          self.send(attribute.name).save_to_models(models.merge(default: models[attribute.model_attribute.model]))
+          self.send(attribute.name).sync_to_models(models.merge(default: models[attribute.model_attribute.model]))
         end
       elsif attribute.model_attribute.write_to_model?
         attribute.model_attribute.write_to_models(models, self.send(attribute.name))

@@ -1,4 +1,4 @@
-RSpec.describe 'save_to_models: Simple Form Object - Few Models' do
+RSpec.describe 'sync_to_models: Simple Form Object - Few Models - Name' do
   let(:team) { Struct.new(:team_name, :year).new }
   let(:car) { {} }
 
@@ -10,21 +10,21 @@ RSpec.describe 'save_to_models: Simple Form Object - Few Models' do
 
   context 'without default model' do
     module SaveToModels
-      class SimpleForm < FormObj::Form
+      class SimpleFormName < FormObj::Form
         Engine = Struct.new(:power)
 
         include FormObj::ModelMapper
 
         attribute :name, model_attribute: :team_name, model: :team
         attribute :year, model: :team
-        attribute :engine_power, model: :car, model_attribute: ':engine.power', model_class: Engine
+        attribute :engine_power, model: :car, model_attribute: ':engine.power', model_class: 'SaveToModels::SimpleFormName::Engine'
       end
     end
-    let(:form) { SaveToModels::SimpleForm.new }
+    let(:form) { SaveToModels::SimpleFormName.new }
 
     context 'nested models are created when they do not exist yet' do
       it 'has all attributes correctly saved' do
-        form.save_to_models(team: team, car: car)
+        form.sync_to_models(team: team, car: car)
 
         expect(team.team_name).to     eq form.name
         expect(team.year).to          eq form.year
@@ -32,7 +32,7 @@ RSpec.describe 'save_to_models: Simple Form Object - Few Models' do
       end
 
       it 'returns self' do
-        expect(form.save_to_models(team: team, car: car)).to eql form
+        expect(form.sync_to_models(team: team, car: car)).to eql form
       end
     end
 
@@ -40,7 +40,7 @@ RSpec.describe 'save_to_models: Simple Form Object - Few Models' do
       let(:car) {{ engine: Struct.new(:power).new }}
 
       it 'has all attributes correctly saved' do
-        form.save_to_models(team: team, car: car)
+        form.sync_to_models(team: team, car: car)
 
         expect(team.team_name).to     eq form.name
         expect(team.year).to          eq form.year
@@ -48,28 +48,28 @@ RSpec.describe 'save_to_models: Simple Form Object - Few Models' do
       end
 
       it 'returns self' do
-        expect(form.save_to_models(team: team, car: car)).to eql form
+        expect(form.sync_to_models(team: team, car: car)).to eql form
       end
     end
   end
 
   context 'with default model' do
     module SaveToModelsWithDefault
-      class SimpleForm < FormObj::Form
+      class SimpleFormName < FormObj::Form
         Engine = Struct.new(:power)
 
         include FormObj::ModelMapper
 
         attribute :name, model_attribute: :team_name
         attribute :year
-        attribute :engine_power, model: :car, model_attribute: ':engine.power', model_class: Engine
+        attribute :engine_power, model: :car, model_attribute: ':engine.power', model_class: 'SaveToModelsWithDefault::SimpleFormName::Engine'
       end
     end
-    let(:form) { SaveToModelsWithDefault::SimpleForm.new }
+    let(:form) { SaveToModelsWithDefault::SimpleFormName.new }
 
     context 'nested models are created when they do not exist yet' do
       it 'has all attributes correctly saved' do
-        form.save_to_models(default: team, car: car)
+        form.sync_to_models(default: team, car: car)
 
         expect(team.team_name).to     eq form.name
         expect(team.year).to          eq form.year
@@ -77,7 +77,7 @@ RSpec.describe 'save_to_models: Simple Form Object - Few Models' do
       end
 
       it 'returns self' do
-        expect(form.save_to_models(default: team, car: car)).to eql form
+        expect(form.sync_to_models(default: team, car: car)).to eql form
       end
     end
 
@@ -85,7 +85,7 @@ RSpec.describe 'save_to_models: Simple Form Object - Few Models' do
       let(:car) {{ engine: Struct.new(:power).new }}
 
       it 'has all attributes correctly saved' do
-        form.save_to_models(default: team, car: car)
+        form.sync_to_models(default: team, car: car)
 
         expect(team.team_name).to     eq form.name
         expect(team.year).to          eq form.year
@@ -93,7 +93,7 @@ RSpec.describe 'save_to_models: Simple Form Object - Few Models' do
       end
 
       it 'returns self' do
-        expect(form.save_to_models(default: team, car: car)).to eql form
+        expect(form.sync_to_models(default: team, car: car)).to eql form
       end
     end
   end

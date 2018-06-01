@@ -14,14 +14,14 @@ module FormObj
         self
       end
 
-      def save_to_models(models)
+      def sync_to_models(models)
         model_array = models[:default]
         ids_exists = []
         items_to_add = []
 
         self.each do |item|
           if model = find_model(model_array, id = item.primary_key)
-            item.save_to_models(models.merge(default: model))
+            item.sync_to_models(models.merge(default: model))
             ids_exists << id
           else
             items_to_add << item
@@ -33,7 +33,7 @@ module FormObj
 
         items_to_add.each do |item|
           model_array << model = @model_attribute.create_model # || model_array.create_model
-          item.save_to_models(models.merge(default: model))
+          item.sync_to_models(models.merge(default: model))
         end
       end
 

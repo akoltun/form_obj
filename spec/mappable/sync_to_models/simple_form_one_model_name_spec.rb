@@ -1,4 +1,4 @@
-RSpec.describe 'save_to_model: Simple Form Object - One Model Name' do
+RSpec.describe 'sync_to_model: Simple Form Object - One Model Name' do
   module SaveToModel
     class SimpleFormName < FormObj::Form
       Engine = Struct.new(:power)
@@ -33,7 +33,7 @@ RSpec.describe 'save_to_model: Simple Form Object - One Model Name' do
 
   context 'nested models do not exists' do
     include_context 'fill in a form'
-    before { form.save_to_models(default: model) }
+    before { form.sync_to_models(default: model) }
 
     it_behaves_like 'a form that can be saved'
   end
@@ -43,7 +43,7 @@ RSpec.describe 'save_to_model: Simple Form Object - One Model Name' do
     before { model.car = car }
 
     include_context 'fill in a form'
-    before { form.save_to_model(model) }
+    before { form.sync_to_model(model) }
 
     it_behaves_like 'a form that can be saved'
     it "doesn't create existing nested models" do
@@ -56,7 +56,7 @@ RSpec.describe 'save_to_model: Simple Form Object - One Model Name' do
     before { model.car = car }
 
     include_context 'fill in a form'
-    before { form.save_to_model(model) }
+    before { form.sync_to_model(model) }
 
     it_behaves_like 'a form that can be saved'
     it "doesn't create existing nested models" do

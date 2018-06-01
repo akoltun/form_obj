@@ -1,21 +1,19 @@
-RSpec.describe 'save_to_models: Array of Form Objects - Few Models' do
-  module SaveToModels
+RSpec.describe 'sync_to_model: Array of Form Objects - One Model' do
+  module SaveToModel
     class ArrayForm < FormObj::Form
       Engine = Struct.new(:power, :volume, :secret)
       Suspension = Struct.new(:front, :rear, :secret)
       Car = Struct.new(:car_code, :driver, :engine, :secret)
       Sponsor = Struct.new(:title, :money, :secret)
       Colour = Struct.new(:name, :rgb, :secret)
-      Chassis = Struct.new(:chassis)
 
       class Model < ::Array
-        attr_accessor :team_name, :year, :cars, :finance
+        attr_accessor :team_name, :year, :cars, :finance, :chassis
       end
     end
   end
 
-  let(:model) { SaveToModels::ArrayForm::Model.new }
-  let(:chassis_model) { SaveToModels::ArrayForm::Chassis.new }
+  let(:model) { SaveToModel::ArrayForm::Model.new }
 
   shared_context 'init form and save to models' do
     before do
@@ -66,7 +64,7 @@ RSpec.describe 'save_to_models: Array of Form Objects - Few Models' do
       colour.name = 'blue'
       colour.rgb = 0x0000FF
 
-      form.save_to_models(default: model, chassis: chassis_model)
+      form.sync_to_model(model)
     end
   end
 
@@ -96,17 +94,17 @@ RSpec.describe 'save_to_models: Array of Form Objects - Few Models' do
       expect(model.finance[:sponsors][1].title).to eq 'Pirelli'
       expect(model.finance[:sponsors][1].money).to eq 500000
 
-      expect(chassis_model.chassis.size).to eq 2
+      expect(model.chassis.size).to eq 2
 
-      expect(chassis_model.chassis[0][:id]).to eq 1
-      expect(chassis_model.chassis[0][:suspension].front).to eq 'independant'
-      expect(chassis_model.chassis[0][:suspension].rear).to eq 'de Dion'
-      expect(chassis_model.chassis[0][:brakes]).to eq :drum
+      expect(model.chassis[0][:id]).to eq 1
+      expect(model.chassis[0][:suspension].front).to eq 'independant'
+      expect(model.chassis[0][:suspension].rear).to eq 'de Dion'
+      expect(model.chassis[0][:brakes]).to eq :drum
 
-      expect(chassis_model.chassis[1][:id]).to eq 2
-      expect(chassis_model.chassis[1][:suspension].front).to eq 'dependant'
-      expect(chassis_model.chassis[1][:suspension].rear).to eq 'de Lion'
-      expect(chassis_model.chassis[1][:brakes]).to eq :disc
+      expect(model.chassis[1][:id]).to eq 2
+      expect(model.chassis[1][:suspension].front).to eq 'dependant'
+      expect(model.chassis[1][:suspension].rear).to eq 'de Lion'
+      expect(model.chassis[1][:brakes]).to eq :disc
 
       expect(model.size).to eq 3
 
@@ -121,16 +119,16 @@ RSpec.describe 'save_to_models: Array of Form Objects - Few Models' do
     end
 
     it 'returns self' do
-      expect(form.save_to_models(default: model, chassis: chassis_model)).to eql form
+      expect(form.sync_to_model(model)).to eql form
     end
   end
 
   context 'Implicit declaration of form object classes' do
-    module SaveToModels
+    module SaveToModel
       class ArrayForm < FormObj::Form
-      include FormObj::ModelMapper
+        include FormObj::ModelMapper
 
-      attribute :name, model_attribute: :team_name
+        attribute :name, model_attribute: :team_name
         attribute :year
         attribute :cars, array: true, model_class: Car, primary_key: :code do
           attribute :code, model_attribute: :car_code
@@ -144,7 +142,7 @@ RSpec.describe 'save_to_models: Array of Form Objects - Few Models' do
           attribute :title
           attribute :money
         end
-        attribute :chassis, array: true, model_hash: true, model: :chassis do
+        attribute :chassis, array: true, model_hash: true do
           attribute :id
           attribute :suspension, model_class: Suspension do
             attribute :front
@@ -159,7 +157,7 @@ RSpec.describe 'save_to_models: Array of Form Objects - Few Models' do
       end
     end
 
-    let(:form) { SaveToModels::ArrayForm.new }
+    let(:form) { SaveToModel::ArrayForm.new }
 
     context 'completely empty model' do
       include_context 'init form and save to models'
@@ -173,11 +171,11 @@ RSpec.describe 'save_to_models: Array of Form Objects - Few Models' do
         expect(model.finance[:sponsors][0].secret).to be_nil
         expect(model.finance[:sponsors][1].secret).to be_nil
 
-        expect(chassis_model.chassis[0]).not_to have_key :secret
-        expect(chassis_model.chassis[1]).not_to have_key :secret
+        expect(model.chassis[0]).not_to have_key :secret
+        expect(model.chassis[1]).not_to have_key :secret
 
-        expect(chassis_model.chassis[0][:suspension].secret).to be_nil
-        expect(chassis_model.chassis[1][:suspension].secret).to be_nil
+        expect(model.chassis[0][:suspension].secret).to be_nil
+        expect(model.chassis[1][:suspension].secret).to be_nil
 
         expect(model[0].secret).to be_nil
         expect(model[1].secret).to be_nil
@@ -191,25 +189,25 @@ RSpec.describe 'save_to_models: Array of Form Objects - Few Models' do
         model.year = 1966
 
         model.cars = [
-            SaveToModels::ArrayForm::Car.new('275 F1', 'Villo', SaveToModels::ArrayForm::Engine.new(200, 2.0, 101), 1),
-            SaveToModels::ArrayForm::Car.new('M2B', 'Bruce McLaren', SaveToModels::ArrayForm::Engine.new(300, 3.0, 102), 2),
-            SaveToModels::ArrayForm::Car.new('M7A', 'Denis Hulme', SaveToModels::ArrayForm::Engine.new(415, 4.3, 103), 3),
+            SaveToModel::ArrayForm::Car.new('275 F1', 'Villo', SaveToModel::ArrayForm::Engine.new(200, 2.0, 101), 1),
+            SaveToModel::ArrayForm::Car.new('M2B', 'Bruce McLaren', SaveToModel::ArrayForm::Engine.new(300, 3.0, 102), 2),
+            SaveToModel::ArrayForm::Car.new('M7A', 'Denis Hulme', SaveToModel::ArrayForm::Engine.new(415, 4.3, 103), 3),
         ]
 
         model.finance = { sponsors: [
-            SaveToModels::ArrayForm::Sponsor.new('Total', 250, 11),
-            SaveToModels::ArrayForm::Sponsor.new('BP', 260, 12),
-            SaveToModels::ArrayForm::Sponsor.new('Shell', 260, 13),
+            SaveToModel::ArrayForm::Sponsor.new('Total', 250, 11),
+            SaveToModel::ArrayForm::Sponsor.new('BP', 260, 12),
+            SaveToModel::ArrayForm::Sponsor.new('Shell', 260, 13),
         ] }
 
-        chassis_model.chassis = [
-            { suspension: SaveToModels::ArrayForm::Suspension.new('independant', 'very old', 21), brakes: :disc, secret: 31, id: 1 },
-            { suspension: SaveToModels::ArrayForm::Suspension.new('old', 'very old', 22), brakes: :drum, secret: 32, id: 3 },
+        model.chassis = [
+            { suspension: SaveToModel::ArrayForm::Suspension.new('independant', 'very old', 21), brakes: :disc, secret: 31, id: 1 },
+            { suspension: SaveToModel::ArrayForm::Suspension.new('old', 'very old', 22), brakes: :drum, secret: 32, id: 3 },
         ]
 
-        model[0] = SaveToModels::ArrayForm::Colour.new('red', 0xFF0000, 301)
-        model[1] = SaveToModels::ArrayForm::Colour.new('green', 0x00FF00, 302)
-        model[2] = SaveToModels::ArrayForm::Colour.new('blue', 0x0000FF, 303)
+        model[0] = SaveToModel::ArrayForm::Colour.new('red', 0xFF0000, 301)
+        model[1] = SaveToModel::ArrayForm::Colour.new('green', 0x00FF00, 302)
+        model[2] = SaveToModel::ArrayForm::Colour.new('blue', 0x0000FF, 303)
       end
 
       include_context 'init form and save to models'
@@ -223,11 +221,11 @@ RSpec.describe 'save_to_models: Array of Form Objects - Few Models' do
         expect(model.finance[:sponsors][0].secret).to eq 13
         expect(model.finance[:sponsors][1].secret).to be_nil
 
-        expect(chassis_model.chassis[0][:secret]).to eq 31
-        expect(chassis_model.chassis[1]).not_to have_key :secret
+        expect(model.chassis[0][:secret]).to eq 31
+        expect(model.chassis[1]).not_to have_key :secret
 
-        expect(chassis_model.chassis[0][:suspension].secret).to eq 21
-        expect(chassis_model.chassis[1][:suspension].secret).to be_nil
+        expect(model.chassis[0][:suspension].secret).to eq 21
+        expect(model.chassis[1][:suspension].secret).to be_nil
 
         expect(model[0].secret).to eq 301
         expect(model[1].secret).to eq 302
@@ -237,7 +235,7 @@ RSpec.describe 'save_to_models: Array of Form Objects - Few Models' do
   end
 
   context 'Explicit declaration of form object classes' do
-    module SaveToModels
+    module SaveToModel
       class ArrayForm < FormObj::Form
         class EngineForm < FormObj::Form
           include FormObj::ModelMapper
@@ -284,13 +282,13 @@ RSpec.describe 'save_to_models: Array of Form Objects - Few Models' do
           attribute :year
           attribute :cars, array: true, class: CarForm, model_class: Car, primary_key: :code
           attribute :sponsors, array: true, model_attribute: 'finance.:sponsors', class: SponsorForm, model_class: [Hash, Sponsor], primary_key: :title
-          attribute :chassis, array: true, model_hash: true, class: ChassisForm, model: :chassis
+          attribute :chassis, array: true, model_hash: true, class: ChassisForm
           attribute :colours, array: true, model_attribute: false, class: ColourForm, model_class: Colour, primary_key: :name
         end
       end
     end
 
-    let(:form) { SaveToModels::ArrayForm::TeamForm.new }
+    let(:form) { SaveToModel::ArrayForm::TeamForm.new }
 
     context 'completely empty model' do
       include_context 'init form and save to models'
@@ -304,11 +302,11 @@ RSpec.describe 'save_to_models: Array of Form Objects - Few Models' do
         expect(model.finance[:sponsors][0].secret).to be_nil
         expect(model.finance[:sponsors][1].secret).to be_nil
 
-        expect(chassis_model.chassis[0]).not_to have_key :secret
-        expect(chassis_model.chassis[1]).not_to have_key :secret
+        expect(model.chassis[0]).not_to have_key :secret
+        expect(model.chassis[1]).not_to have_key :secret
 
-        expect(chassis_model.chassis[0][:suspension].secret).to be_nil
-        expect(chassis_model.chassis[1][:suspension].secret).to be_nil
+        expect(model.chassis[0][:suspension].secret).to be_nil
+        expect(model.chassis[1][:suspension].secret).to be_nil
 
         expect(model[0].secret).to be_nil
         expect(model[1].secret).to be_nil
@@ -322,25 +320,25 @@ RSpec.describe 'save_to_models: Array of Form Objects - Few Models' do
         model.year = 1966
 
         model.cars = [
-            SaveToModels::ArrayForm::Car.new('275 F1', 'Villo', SaveToModels::ArrayForm::Engine.new(200, 2.0, 101), 1),
-            SaveToModels::ArrayForm::Car.new('M2B', 'Bruce McLaren', SaveToModels::ArrayForm::Engine.new(300, 3.0, 102), 2),
-            SaveToModels::ArrayForm::Car.new('M7A', 'Denis Hulme', SaveToModels::ArrayForm::Engine.new(415, 4.3, 103), 3),
+            SaveToModel::ArrayForm::Car.new('275 F1', 'Villo', SaveToModel::ArrayForm::Engine.new(200, 2.0, 101), 1),
+            SaveToModel::ArrayForm::Car.new('M2B', 'Bruce McLaren', SaveToModel::ArrayForm::Engine.new(300, 3.0, 102), 2),
+            SaveToModel::ArrayForm::Car.new('M7A', 'Denis Hulme', SaveToModel::ArrayForm::Engine.new(415, 4.3, 103), 3),
         ]
 
         model.finance = { sponsors: [
-            SaveToModels::ArrayForm::Sponsor.new('Total', 250, 11),
-            SaveToModels::ArrayForm::Sponsor.new('BP', 260, 12),
-            SaveToModels::ArrayForm::Sponsor.new('Shell', 260, 13),
+            SaveToModel::ArrayForm::Sponsor.new('Total', 250, 11),
+            SaveToModel::ArrayForm::Sponsor.new('BP', 260, 12),
+            SaveToModel::ArrayForm::Sponsor.new('Shell', 260, 13),
         ] }
 
-        chassis_model.chassis = [
-            { suspension: SaveToModels::ArrayForm::Suspension.new('independant', 'very old', 21), brakes: :disc, id: 1, secret: 31 },
-            { suspension: SaveToModels::ArrayForm::Suspension.new('old', 'very old', 22), brakes: :drum, id: 3, secret: 32 },
+        model.chassis = [
+            { suspension: SaveToModel::ArrayForm::Suspension.new('independant', 'very old', 21), brakes: :disc, id: 1, secret: 31 },
+            { suspension: SaveToModel::ArrayForm::Suspension.new('old', 'very old', 22), brakes: :drum, id: 3, secret: 32 },
         ]
 
-        model[0] = SaveToModels::ArrayForm::Colour.new('red', 0xFF0000, 301)
-        model[1] = SaveToModels::ArrayForm::Colour.new('green', 0x00FF00, 302)
-        model[2] = SaveToModels::ArrayForm::Colour.new('blue', 0x0000FF, 303)
+        model[0] = SaveToModel::ArrayForm::Colour.new('red', 0xFF0000, 301)
+        model[1] = SaveToModel::ArrayForm::Colour.new('green', 0x00FF00, 302)
+        model[2] = SaveToModel::ArrayForm::Colour.new('blue', 0x0000FF, 303)
       end
 
       include_context 'init form and save to models'
@@ -354,11 +352,11 @@ RSpec.describe 'save_to_models: Array of Form Objects - Few Models' do
         expect(model.finance[:sponsors][0].secret).to eq 13
         expect(model.finance[:sponsors][1].secret).to be_nil
 
-        expect(chassis_model.chassis[0][:secret]).to eq 31
-        expect(chassis_model.chassis[1]).not_to have_key :secret
+        expect(model.chassis[0][:secret]).to eq 31
+        expect(model.chassis[1]).not_to have_key :secret
 
-        expect(chassis_model.chassis[0][:suspension].secret).to eq 21
-        expect(chassis_model.chassis[1][:suspension].secret).to be_nil
+        expect(model.chassis[0][:suspension].secret).to eq 21
+        expect(model.chassis[1][:suspension].secret).to be_nil
 
         expect(model[0].secret).to eq 301
         expect(model[1].secret).to eq 302
