@@ -2,7 +2,7 @@ require 'form_obj/mappable/model_attribute'
 
 module FormObj
   module Mappable
-    class Attribute < FormObj::Attribute
+    class Attribute < FormObj::Form::Attribute
       attr_reader :model_attribute
 
       def initialize(name, array: false, class: nil, default: nil, hash: false, model: :default, model_attribute: nil, model_class: nil, parent:, primary_key: nil, &block)

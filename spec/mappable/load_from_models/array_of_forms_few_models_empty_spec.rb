@@ -24,16 +24,16 @@ RSpec.describe 'load_from_models: Array of Form Objects - Few Empty Models' do
       expect(form.name).to eq model.team_name
       expect(form.year).to eq model.year
 
-      expect(form.cars).to be_a FormObj::Array
+      expect(form.cars).to be_a FormObj::Mappable::Array
       expect(form.cars.size).to eq 0
 
-      expect(form.sponsors).to be_a FormObj::Array
+      expect(form.sponsors).to be_a FormObj::Mappable::Array
       expect(form.sponsors.size).to eq 0
 
-      expect(form.chassis).to be_a FormObj::Array
+      expect(form.chassis).to be_a FormObj::Mappable::Array
       expect(form.chassis.size).to eq 0
 
-      expect(form.colours).to be_a FormObj::Array
+      expect(form.colours).to be_a FormObj::Mappable::Array
       expect(form.colours.size).to eq 3
 
       expect(form.colours[0].name).to eq model[0].name

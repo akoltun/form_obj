@@ -44,7 +44,7 @@ RSpec.describe 'load_from_models: Array of Form Objects - Few Models' do
       expect(form.name).to eq model.team_name
       expect(form.year).to eq model.year
 
-      expect(form.cars).to be_a FormObj::Array
+      expect(form.cars).to be_a FormObj::Mappable::Array
       expect(form.cars.size).to eq 2
 
       expect(form.cars[0].code).to          eq model.cars[0].code
@@ -57,7 +57,7 @@ RSpec.describe 'load_from_models: Array of Form Objects - Few Models' do
       expect(form.cars[1].engine.power).to  eq model.cars[1].engine.power
       expect(form.cars[1].engine.volume).to eq model.cars[1].engine.volume
 
-      expect(form.sponsors).to be_a FormObj::Array
+      expect(form.sponsors).to be_a FormObj::Mappable::Array
       expect(form.sponsors.size).to eq 2
 
       expect(form.sponsors[0].title).to eq model.finance[:sponsors][0].title
@@ -66,7 +66,7 @@ RSpec.describe 'load_from_models: Array of Form Objects - Few Models' do
       expect(form.sponsors[1].title).to eq model.finance[:sponsors][1].title
       expect(form.sponsors[1].money).to eq model.finance[:sponsors][1].money
 
-      expect(form.chassis).to be_a FormObj::Array
+      expect(form.chassis).to be_a FormObj::Mappable::Array
       expect(form.chassis.size).to eq 2
 
       expect(form.chassis[0].suspension.front).to eq chassis.chassis[0][:suspension].front
@@ -77,7 +77,7 @@ RSpec.describe 'load_from_models: Array of Form Objects - Few Models' do
       expect(form.chassis[1].suspension.rear).to  eq chassis.chassis[1][:suspension].rear
       expect(form.chassis[1].brakes).to           eq chassis.chassis[1][:brakes]
 
-      expect(form.colours).to be_a FormObj::Array
+      expect(form.colours).to be_a FormObj::Mappable::Array
       expect(form.colours.size).to eq 3
 
       expect(form.colours[0].name).to eq model[0].name
