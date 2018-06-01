@@ -1,6 +1,6 @@
 module FormObj
   module Mappable
-    class Array < FormObj::Array
+    class Array < FormObj::Form::Array
       def initialize(item_class, model_attribute:)
         @model_attribute = model_attribute
         super(item_class)

@@ -34,13 +34,15 @@ Or install it yourself as:
 
 **WARNING!!!** The gem is still under development. Expect braking changes.<br/>
 
-Form Object `FormObj::Form` inherits from `TreeStruct` (https://github.com/akoltun/tree_struct).
-On top of the `TreeStruct` functionality `FormObj::Form` adds an `update_attributes` method for mass update of attributes 
- (similar to ActiveRecord) and syntax sugar to easily use ActiveModel::Validations and ActiveModel::Errors with `TreeStruct`.
-
-The `Mappable` module included in `FormObj::Form` allows to map a form object to a model, load attributes from the model,
-sync attributes to the model, represent a form object as a model hash (similar to the `to_hash` method but using the
-attribute names as mapped to the model) and copy errors from the model(s) to the from object. 
+Class `FormObj::Struct` allows to describe complicated data structure.
+Class `FormObj::Form` inherits from `FormObj::Struct` and adds form builder compatibility and includes ActiveModel validations.
+Module `FormObj::Mappable` being included into `FormObj::Form` descendants allows to map a form object to a model 
+in order to be able to exchange attributes value between them:
+* load attributes value from the model,
+* sync attributes value to the model, 
+* represent a form object as a model hash (similar to the `to_hash` method but using the
+model attributes name) and 
+* copy errors from the model(s) to the from object. 
 
 ### Table of Contents
 
