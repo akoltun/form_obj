@@ -14,36 +14,30 @@ module FormObj
     include ::ActiveModel::Conversion
     include ::ActiveModel::Validations
 
-    private
+    class_attribute :primary_key, instance_predicate: false, instance_reader: false, instance_writer: false
+    self.primary_key = :id
     self._attributes = Attributes.new
 
-    public
+    class << self
+      def array_class
+        Array
+      end
 
-    def self.array_class
-      Array
-    end
+      def nested_class
+        ::FormObj::Form
+      end
 
-    def self.nested_class
-      FormObj::Struct
-    end
+      def attribute_class
+        Attribute
+      end
 
-    def self.attribute_class
-      Attribute
+      def model_name
+        @model_name || super
+      end
     end
 
     attr_accessor :persisted
     attr_reader :errors
-
-    class_attribute :primary_key, instance_predicate: false, instance_reader: false, instance_writer: false
-    self.primary_key = :id
-
-    def self.nested_class
-      ::FormObj::Form
-    end
-
-    def self.model_name
-      @model_name || super
-    end
 
     def initialize()
       @errors = ActiveModel::Errors.new(self)
