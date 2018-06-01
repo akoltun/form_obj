@@ -3,7 +3,7 @@ RSpec.describe 'Nested Form Object' do
     it 'has assigned values' do
       expect(form.name).to eq 'Ferrari'
       expect(form.year).to eq 1950
-      expect(form.car.model).to eq '340 F1'
+      expect(form.car.code).to eq '340 F1'
       expect(form.car.driver).to eq 'Ascari'
       expect(form.car.engine.power).to eq 335
       expect(form.car.engine.volume).to eq 4.1
@@ -29,7 +29,7 @@ RSpec.describe 'Nested Form Object' do
       attribute :name
       attribute :year
       attribute :car do
-        attribute :model
+        attribute :code
         attribute :driver
         attribute :engine do
           attribute :power
@@ -42,7 +42,7 @@ RSpec.describe 'Nested Form Object' do
     before do
       form.name = 'Ferrari'
       form.year = 1950
-      form.car.model = '340 F1'
+      form.car.code = '340 F1'
       form.car.driver = 'Ascari'
       form.car.engine.power = 335
       form.car.engine.volume = 4.1
@@ -59,7 +59,7 @@ RSpec.describe 'Nested Form Object' do
         attribute :volume
       end
       class CarForm < FormObj::Form
-        attribute :model
+        attribute :code
         attribute :driver
         attribute :engine, class: EngineForm
       end
@@ -75,7 +75,7 @@ RSpec.describe 'Nested Form Object' do
       before do
         form.name = 'Ferrari'
         form.year = 1950
-        form.car.model = '340 F1'
+        form.car.code = '340 F1'
         form.car.driver = 'Ascari'
         form.car.engine.power = 335
         form.car.engine.volume = 4.1
@@ -91,7 +91,7 @@ RSpec.describe 'Nested Form Object' do
         engine_form.power = 335
         engine_form.volume = 4.1
 
-        car_form.model = '340 F1'
+        car_form.code = '340 F1'
         car_form.driver = 'Ascari'
         car_form.engine = engine_form
 

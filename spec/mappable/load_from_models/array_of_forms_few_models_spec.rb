@@ -1,6 +1,6 @@
 RSpec.describe 'load_from_models: Array of Form Objects - Few Models' do
   let(:engine) { Struct.new(:power, :volume) }
-  let(:car) { Struct.new(:model, :driver, :engine) }
+  let(:car) { Struct.new(:code, :driver, :engine) }
   let(:cars) {[
       car.new('340 F1', 'Ascari', engine.new(335, 4.1)),
       car.new('275 F1', 'Villoresi', engine.new(300, 3.3)),
@@ -47,12 +47,12 @@ RSpec.describe 'load_from_models: Array of Form Objects - Few Models' do
       expect(form.cars).to be_a FormObj::Array
       expect(form.cars.size).to eq 2
 
-      expect(form.cars[0].model).to         eq model.cars[0].model
+      expect(form.cars[0].code).to          eq model.cars[0].code
       expect(form.cars[0].driver).to        eq model.cars[0].driver
       expect(form.cars[0].engine.power).to  eq model.cars[0].engine.power
       expect(form.cars[0].engine.volume).to eq model.cars[0].engine.volume
 
-      expect(form.cars[1].model).to         eq model.cars[1].model
+      expect(form.cars[1].code).to          eq model.cars[1].code
       expect(form.cars[1].driver).to        eq model.cars[1].driver
       expect(form.cars[1].engine.power).to  eq model.cars[1].engine.power
       expect(form.cars[1].engine.volume).to eq model.cars[1].engine.volume
@@ -100,7 +100,7 @@ RSpec.describe 'load_from_models: Array of Form Objects - Few Models' do
         attribute :name, model_attribute: :team_name
         attribute :year
         attribute :cars, array: true do
-          attribute :model
+          attribute :code
           attribute :driver
           attribute :engine do
             attribute :power
@@ -142,7 +142,7 @@ RSpec.describe 'load_from_models: Array of Form Objects - Few Models' do
         class CarForm < FormObj::Form
           include FormObj::Mappable
 
-          attribute :model
+          attribute :code
           attribute :engine, class: EngineForm
           attribute :driver
         end

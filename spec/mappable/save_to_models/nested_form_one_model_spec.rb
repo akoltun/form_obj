@@ -16,7 +16,7 @@ RSpec.describe 'save_to_model: Nested Form Objects - One Model' do
     before do
       form.name = 'Ferrari'
       form.year = 1950
-      form.car.model = '340 F1'
+      form.car.code = '340 F1'
       form.car.driver = 'Ascari'
       form.car.engine.power = 335
       form.car.engine.volume = 4.1
@@ -30,7 +30,7 @@ RSpec.describe 'save_to_model: Nested Form Objects - One Model' do
     it 'creates non-existent models and correctly saves all attributes' do
       expect(model.team_name).to            eq form.name
       expect(model.year).to                 eq form.year
-      expect(model.car[:model]).to          eq form.car.model
+      expect(model.car[:code]).to           eq form.car.code
       expect(model.car[:driver]).to         eq form.car.driver
       expect(model.car[:engine].power).to   eq form.car.engine.power
       expect(model.car[:engine].volume).to  eq form.car.engine.volume
@@ -52,7 +52,7 @@ RSpec.describe 'save_to_model: Nested Form Objects - One Model' do
         attribute :name, model_attribute: :team_name
         attribute :year
         attribute :car, hash: true do
-          attribute :model
+          attribute :code
           attribute :engine, model_class: Engine do
             attribute :power
             attribute :volume
@@ -111,7 +111,7 @@ RSpec.describe 'save_to_model: Nested Form Objects - One Model' do
         class CarForm < FormObj::Form
           include FormObj::Mappable
 
-          attribute :model
+          attribute :code
           attribute :engine, class: EngineForm, model_class: Engine
           attribute :driver
         end

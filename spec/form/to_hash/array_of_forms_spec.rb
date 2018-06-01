@@ -7,14 +7,14 @@ RSpec.describe 'to_hash: Array of Form Objects' do
                             name: 'Ferrari',
                             year: 1950,
                             cars: [{
-                                       model: '340 F1',
+                                       code: '340 F1',
                                        driver: 'Ascari',
                                        engine: {
                                            power: 335,
                                            volume: 4.1
                                        }
                                    }, {
-                                       model: '275 F1',
+                                       code: '275 F1',
                                        driver: 'Villoresi',
                                        engine: {
                                            power: 300,
@@ -31,7 +31,7 @@ RSpec.describe 'to_hash: Array of Form Objects' do
       class ArrayForm < FormObj::Form
         attribute :name
         attribute :cars, array: true do
-          attribute :model
+          attribute :code
           attribute :engine do
             attribute :power
             attribute :volume
@@ -48,13 +48,13 @@ RSpec.describe 'to_hash: Array of Form Objects' do
       form.year = 1950
 
       car = form.cars.create
-      car.model = '340 F1'
+      car.code = '340 F1'
       car.driver = 'Ascari'
       car.engine.power = 335
       car.engine.volume = 4.1
 
       car = form.cars.create
-      car.model = '275 F1'
+      car.code = '275 F1'
       car.driver = 'Villoresi'
       car.engine.power = 300
       car.engine.volume = 3.3
@@ -71,7 +71,7 @@ RSpec.describe 'to_hash: Array of Form Objects' do
           attribute :volume
         end
         class CarForm < FormObj::Form
-          attribute :model
+          attribute :code
           attribute :engine, class: EngineForm
           attribute :driver
         end
@@ -90,13 +90,13 @@ RSpec.describe 'to_hash: Array of Form Objects' do
         form.year = 1950
 
         car = form.cars.create
-        car.model = '340 F1'
+        car.code = '340 F1'
         car.driver = 'Ascari'
         car.engine.power = 335
         car.engine.volume = 4.1
 
         car = form.cars.create
-        car.model = '275 F1'
+        car.code = '275 F1'
         car.driver = 'Villoresi'
         car.engine.power = 300
         car.engine.volume = 3.3
@@ -113,7 +113,7 @@ RSpec.describe 'to_hash: Array of Form Objects' do
         engine1.volume = 4.1
 
         car1 = ToHash::ArrayForm::CarForm.new
-        car1.model = '340 F1'
+        car1.code = '340 F1'
         car1.driver = 'Ascari'
         car1.engine = engine1
 
@@ -122,7 +122,7 @@ RSpec.describe 'to_hash: Array of Form Objects' do
         engine2.volume = 3.3
 
         car2 = ToHash::ArrayForm::CarForm.new
-        car2.model = '275 F1'
+        car2.code = '275 F1'
         car2.driver = 'Villoresi'
         car2.engine = engine2
 

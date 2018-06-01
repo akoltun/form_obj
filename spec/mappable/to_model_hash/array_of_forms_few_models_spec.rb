@@ -5,13 +5,13 @@ RSpec.describe 'to_models_hash: Array of Form Objects - Few Models' do
       form.year = 1950
 
       car = form.cars.create
-      car.model = '340 F1'
+      car.code = '340 F1'
       car.driver = 'Ascari'
       car.engine.power = 335
       car.engine.volume = 4.1
 
       car = form.cars.create
-      car.model = '275 F1'
+      car.code = '275 F1'
       car.driver = 'Villoresi'
       car.engine.power = 300
       car.engine.volume = 3.3
@@ -56,14 +56,14 @@ RSpec.describe 'to_models_hash: Array of Form Objects - Few Models' do
           team_name: 'Ferrari',
           year: 1950,
           cars: [{
-                     car_model: '340 F1',
+                     car_code: '340 F1',
                      driver: 'Ascari',
                      engine: {
                          power: 335,
                          volume: 4.1
                      }
                  }, {
-                     car_model: '275 F1',
+                     car_code: '275 F1',
                      driver: 'Villoresi',
                      engine: {
                          power: 300,
@@ -126,8 +126,8 @@ RSpec.describe 'to_models_hash: Array of Form Objects - Few Models' do
 
         attribute :name, model_attribute: :team_name
         attribute :year
-        attribute :cars, array: true, primary_key: :model do
-          attribute :model, model_attribute: :car_model
+        attribute :cars, array: true, primary_key: :code do
+          attribute :code, model_attribute: :car_code
           attribute :driver
           attribute :engine do
             attribute :power
@@ -171,7 +171,7 @@ RSpec.describe 'to_models_hash: Array of Form Objects - Few Models' do
         class CarForm < FormObj::Form
           include FormObj::Mappable
 
-          attribute :model, model_attribute: :car_model
+          attribute :code, model_attribute: :car_code
           attribute :engine, class: EngineForm
           attribute :driver
         end
@@ -205,7 +205,7 @@ RSpec.describe 'to_models_hash: Array of Form Objects - Few Models' do
 
           attribute :name, model_attribute: :team_name
           attribute :year
-          attribute :cars, array: true, class: CarForm, primary_key: :model
+          attribute :cars, array: true, class: CarForm, primary_key: :code
           attribute :sponsors, array: true, model_attribute: 'finance.:sponsors', class: SponsorForm, primary_key: :title
           attribute :chassis, array: true, hash: true, class: ChassisForm, model: :chassis
           attribute :colours, array: true, model_attribute: false, class: ColourForm, primary_key: :name

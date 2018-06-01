@@ -6,7 +6,7 @@ RSpec.describe 'Nested Form Object' do
       concat f.text_field :name
       concat f.text_field :year
       concat(f.fields_for(:car) do |fc|
-        concat fc.text_field :model
+        concat fc.text_field :code
         concat fc.text_field :driver
         concat(fc.fields_for(:engine) do |fce|
           concat fce.text_field :power
@@ -25,8 +25,8 @@ RSpec.describe 'Nested Form Object' do
       is_expected.to match /<input( \w+="[^"]+")* name="\w+\[year\]"( \w+="[^"]+")* \/>/
     end
 
-    it 'form_for renders input element for :model' do
-      is_expected.to match /<input( \w+="[^"]+")* name="\w+\[car\]\[model\]"( \w+="[^"]+")* \/>/
+    it 'form_for renders input element for :code' do
+      is_expected.to match /<input( \w+="[^"]+")* name="\w+\[car\]\[code\]"( \w+="[^"]+")* \/>/
     end
 
     it 'form_for renders input element for :driver' do
@@ -48,7 +48,7 @@ RSpec.describe 'Nested Form Object' do
       attribute :name
       attribute :year
       attribute :car do
-        attribute :model
+        attribute :code
         attribute :driver
         attribute :engine do
           attribute :power
@@ -61,7 +61,7 @@ RSpec.describe 'Nested Form Object' do
     before do
       form.name = 'Ferrari'
       form.year = 1950
-      form.car.model = '340 F1'
+      form.car.code = '340 F1'
       form.car.driver = 'Ascari'
       form.car.engine.power = 335
       form.car.engine.volume = 4.1
@@ -78,7 +78,7 @@ RSpec.describe 'Nested Form Object' do
         attribute :volume
       end
       class CarForm < FormObj::Form
-        attribute :model
+        attribute :code
         attribute :driver
         attribute :engine, class: EngineForm
       end
@@ -94,7 +94,7 @@ RSpec.describe 'Nested Form Object' do
       before do
         form.name = 'Ferrari'
         form.year = 1950
-        form.car.model = '340 F1'
+        form.car.code = '340 F1'
         form.car.driver = 'Ascari'
         form.car.engine.power = 335
         form.car.engine.volume = 4.1
@@ -110,7 +110,7 @@ RSpec.describe 'Nested Form Object' do
         engine_form.power = 335
         engine_form.volume = 4.1
 
-        car_form.model = '340 F1'
+        car_form.code = '340 F1'
         car_form.driver = 'Ascari'
         car_form.engine = engine_form
 

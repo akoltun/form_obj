@@ -1,9 +1,9 @@
-RSpec.describe 'to_models_hash: Nested Form Objects - Few Models' do
+RSpec.describe 'to_codes_hash: Nested Form Objects - Few Models' do
   shared_context 'initialize form' do
     before do
       form.name = 'Ferrari'
       form.year = 1950
-      form.car.model = '340 F1'
+      form.car.code = '340 F1'
       form.car.driver = 'Ascari'
       form.car.engine.power = 335
       form.car.engine.volume = 4.1
@@ -20,7 +20,7 @@ RSpec.describe 'to_models_hash: Nested Form Objects - Few Models' do
                                                 team_name: 'Ferrari',
                                                 year: 1950,
                                                 car: {
-                                                    car_model: '340 F1',
+                                                    car_code: '340 F1',
                                                     driver: 'Ascari',
                                                     engine: {
                                                         power: 335,
@@ -43,7 +43,7 @@ RSpec.describe 'to_models_hash: Nested Form Objects - Few Models' do
                                            team_name: 'Ferrari',
                                            year: 1950,
                                            car: {
-                                               car_model: '340 F1',
+                                               car_code: '340 F1',
                                                driver: 'Ascari',
                                                engine: {
                                                    power: 335,
@@ -70,7 +70,7 @@ RSpec.describe 'to_models_hash: Nested Form Objects - Few Models' do
         attribute :name, model_attribute: :team_name
         attribute :year
         attribute :car, hash: true do
-          attribute :model, model_attribute: :car_model
+          attribute :code, model_attribute: :car_code
           attribute :engine do
             attribute :power
             attribute :volume
@@ -105,7 +105,7 @@ RSpec.describe 'to_models_hash: Nested Form Objects - Few Models' do
         class CarForm < FormObj::Form
           include FormObj::Mappable
 
-          attribute :model, model_attribute: :car_model
+          attribute :code, model_attribute: :car_code
           attribute :engine, class: EngineForm
           attribute :driver
         end

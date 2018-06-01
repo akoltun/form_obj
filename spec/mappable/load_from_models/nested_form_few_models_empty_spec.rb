@@ -10,7 +10,7 @@ RSpec.describe 'load_from_models: Nested Form Objects - Few Empty Models' do
         attribute :name, model_attribute: :team_name
         attribute :year
         attribute :car, hash: true do
-          attribute :model
+          attribute :code
           attribute :engine do
             attribute :power
             attribute :volume
@@ -34,7 +34,7 @@ RSpec.describe 'load_from_models: Nested Form Objects - Few Empty Models' do
 
       expect(form.name).to eq model.team_name
       expect(form.year).to eq model.year
-      expect(form.car.model).to be_nil
+      expect(form.car.code).to be_nil
       expect(form.car.driver).to be_nil
       expect(form.car.engine.power).to be_nil
       expect(form.car.engine.volume).to be_nil
@@ -60,7 +60,7 @@ RSpec.describe 'load_from_models: Nested Form Objects - Few Empty Models' do
         class CarForm < FormObj::Form
           include FormObj::Mappable
 
-          attribute :model
+          attribute :code
           attribute :engine, class: EngineForm
           attribute :driver
         end
@@ -91,7 +91,7 @@ RSpec.describe 'load_from_models: Nested Form Objects - Few Empty Models' do
 
       expect(form.name).to eq model.team_name
       expect(form.year).to eq model.year
-      expect(form.car.model).to be_nil
+      expect(form.car.code).to be_nil
       expect(form.car.driver).to be_nil
       expect(form.car.engine.power).to be_nil
       expect(form.car.engine.volume).to be_nil
