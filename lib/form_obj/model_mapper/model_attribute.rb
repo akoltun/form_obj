@@ -6,9 +6,10 @@ module FormObj
     class ModelAttribute
       attr_reader :model
 
-      def initialize(names:, classes:, default_name:, array:, hash:, subform:, model:)
+      def initialize(names:, classes:, default_name:, array:, hash:, subform:, model:, nesting:)
         @read_from_model = @write_to_model = !(names === false)
 
+        @nesting = nesting
         @model = model
         @array = array
 
@@ -40,6 +41,10 @@ module FormObj
       def create_model
         raise 'Creation available only for array attributes' unless @array
         @items.last.create_model
+      end
+
+      def nesting?
+        @nesting
       end
 
       def read_from_model?
