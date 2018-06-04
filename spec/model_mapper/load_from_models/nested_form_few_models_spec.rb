@@ -5,6 +5,26 @@ RSpec.describe 'load_from_models: Nested Form Objects - Few Models' do
   let(:suspension) { Struct.new(:front, :rear).new('independant', 'de Dion') }
   let(:chassis) { Struct.new(:suspension, :brakes).new(suspension, :drum) }
 
+  shared_examples 'a nested form' do
+    it 'has all attributes correctly set up' do
+      form.load_from_models(default: model, chassis: chassis)
+
+      expect(form.name).to eq model.team_name
+      expect(form.year).to eq model.year
+      expect(form.car.code).to eq model.car[:code]
+      expect(form.car.driver).to eq model.car[:driver]
+      expect(form.car.engine.power).to eq model.car[:engine].power
+      expect(form.car.engine.volume).to eq model.car[:engine].volume
+      expect(form.chassis.suspension.front).to eq chassis.suspension.front
+      expect(form.chassis.suspension.rear).to eq chassis.suspension.rear
+      expect(form.chassis.brakes).to eq chassis.brakes
+    end
+
+    it 'returns self' do
+      expect(form.load_from_models(default: model, chassis: chassis)).to eql form
+    end
+  end
+
   context 'Implicit declaration of form object classes' do
     module LoadFromModels
       class NestedForm < FormObj::Form
@@ -32,23 +52,7 @@ RSpec.describe 'load_from_models: Nested Form Objects - Few Models' do
 
     let(:form) { LoadFromModels::NestedForm.new }
 
-    it 'has all attributes correctly set up' do
-      form.load_from_models(default: model, chassis: chassis)
-
-      expect(form.name).to eq model.team_name
-      expect(form.year).to eq model.year
-      expect(form.car.code).to eq model.car[:code]
-      expect(form.car.driver).to eq model.car[:driver]
-      expect(form.car.engine.power).to eq model.car[:engine].power
-      expect(form.car.engine.volume).to eq model.car[:engine].volume
-      expect(form.chassis.suspension.front).to eq chassis.suspension.front
-      expect(form.chassis.suspension.rear).to eq chassis.suspension.rear
-      expect(form.chassis.brakes).to eq chassis.brakes
-    end
-
-    it 'returns self' do
-      expect(form.load_from_models(default: model, chassis: chassis)).to eql form
-    end
+    it_behaves_like 'a nested form'
   end
 
   context 'Explicit declaration of form object classes' do
@@ -89,22 +93,6 @@ RSpec.describe 'load_from_models: Nested Form Objects - Few Models' do
 
     let(:form) { LoadFromModels::NestedForm.new }
 
-    it 'has all attributes correctly set up' do
-      form.load_from_models(default: model, chassis: chassis)
-
-      expect(form.name).to eq model.team_name
-      expect(form.year).to eq model.year
-      expect(form.car.code).to eq model.car[:code]
-      expect(form.car.driver).to eq model.car[:driver]
-      expect(form.car.engine.power).to eq model.car[:engine].power
-      expect(form.car.engine.volume).to eq model.car[:engine].volume
-      expect(form.chassis.suspension.front).to eq chassis.suspension.front
-      expect(form.chassis.suspension.rear).to eq chassis.suspension.rear
-      expect(form.chassis.brakes).to eq chassis.brakes
-    end
-
-    it 'returns self' do
-      expect(form.load_from_models(default: model, chassis: chassis)).to eql form
-    end
+    it_behaves_like 'a nested form'
   end
 end
