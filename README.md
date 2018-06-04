@@ -435,14 +435,14 @@ array_form.to_hash      # => {
 
 ### 4. Map Form Object to/from Models
 
-Include `DataMapper` mix-in and map form object attributes to one or more models by using `:model` and `:model_attribute` parameters.
+Include `ModelMapper` mix-in and map form object attributes to one or more models by using `:model` and `:model_attribute` parameters.
 By default each form object attribute is mapped to the model attribute with the same name of the `:default` model. 
 
 Use dot notation to map model attribute to a nested model. Use colon to specify a "hash" attribute.
 
 ```ruby
 class SingleForm < FormObj::Form
-  include DataMapper
+  include ModelMapper
   
   attribute :name, model_attribute: :team_name
   attribute :year
