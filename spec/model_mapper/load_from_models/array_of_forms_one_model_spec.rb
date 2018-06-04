@@ -17,10 +17,16 @@ RSpec.describe 'load_from_model: Array of Form Objects - One Model' do
 
   let(:colour) { Struct.new(:name, :rgb) }
 
+  let(:drivers_championship) { Struct.new(:driver, :year) }
+  let(:drivers_championships) {[
+      drivers_championship.new('Ascari', 1952),
+      drivers_championship.new('Hawthorn', 1958)
+  ]}
+
   module LoadFromModel
     class ArrayForm < FormObj::Form
       class Model < ::Array
-        attr_accessor :team_name, :year, :cars, :finance, :chassis
+        attr_accessor :team_name, :year, :cars, :finance, :chassis, :drivers_championships
       end
     end
   end
@@ -32,6 +38,7 @@ RSpec.describe 'load_from_model: Array of Form Objects - One Model' do
     model.cars = cars
     model.finance = finance
     model.chassis = chassis
+    model.drivers_championships = drivers_championships
 
     model.push(colour.new('red', 0xFF0000), colour.new('green', 0x00FF00), colour.new('blue', 0x0000FF))
 
@@ -78,6 +85,9 @@ RSpec.describe 'load_from_model: Array of Form Objects - One Model' do
       expect(form.chassis[1].suspension.rear).to  eq model.chassis[1][:suspension].rear
       expect(form.chassis[1].brakes).to           eq model.chassis[1][:brakes]
 
+      expect(form.drivers_championships).to eq Array.new
+      expect(form.constructors_championships).to eq Array.new
+
       expect(form.colours).to be_a FormObj::ModelMapper::Array
       expect(form.colours.size).to eq 3
 
@@ -122,9 +132,16 @@ RSpec.describe 'load_from_model: Array of Form Objects - One Model' do
           end
           attribute :brakes
         end
-        attribute :colours, array: true, model_attribute: false do
+        attribute :colours, array: true, model_nesting: false do
           attribute :name
           attribute :rgb
+        end
+        attribute :drivers_championships, array: true, model_attribute: false do
+          attribute :driver
+          attribute :year
+        end
+        attribute :constructors_championships, array: true, model_attribute: false do
+          attribute :year
         end
       end
     end
@@ -174,6 +191,17 @@ RSpec.describe 'load_from_model: Array of Form Objects - One Model' do
             attribute :name
             attribute :rgb
           end
+          class DriversChampionshipForm < FormObj::Form
+            include FormObj::ModelMapper
+
+            attribute :driver
+            attribute :year
+          end
+          class ConstructorsChampionshipForm < FormObj::Form
+            include FormObj::ModelMapper
+
+            attribute :year
+          end
           class TeamForm < FormObj::Form
             include FormObj::ModelMapper
 
@@ -182,7 +210,9 @@ RSpec.describe 'load_from_model: Array of Form Objects - One Model' do
             attribute :cars, array: true, class: CarForm
             attribute :sponsors, array: true, model_attribute: 'finance.:sponsors', class: SponsorForm
             attribute :chassis, array: true, model_hash: true, class: ChassisForm
-            attribute :colours, array: true, model_attribute: false, class: ColourForm
+            attribute :colours, array: true, model_nesting: false, class: ColourForm
+            attribute :drivers_championships, array: true, class: DriversChampionshipForm, model_attribute: false
+            attribute :constructors_championships, array: true, class: ConstructorsChampionshipForm, model_attribute: false
           end
       end
     end

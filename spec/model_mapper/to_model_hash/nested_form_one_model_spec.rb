@@ -12,6 +12,8 @@ RSpec.describe 'to_model_hash: Nested Form Objects - One Model' do
       form.chassis.suspension.front = 'independant'
       form.chassis.suspension.rear = 'de Dion'
       form.chassis.brakes = :drum
+      form.drivers_championship.driver = 'Ascari'
+      form.drivers_championship.year = 1952
     end
   end
 
@@ -52,12 +54,16 @@ RSpec.describe 'to_model_hash: Nested Form Objects - One Model' do
           end
           attribute :driver
         end
-        attribute :chassis, model_attribute: false do
+        attribute :chassis, model_nesting: false do
           attribute :suspension do
             attribute :front
             attribute :rear
           end
           attribute :brakes
+        end
+        attribute :drivers_championship, model_attribute: false do
+          attribute :driver
+          attribute :year
         end
       end
     end
@@ -93,13 +99,20 @@ RSpec.describe 'to_model_hash: Nested Form Objects - One Model' do
           end
           attribute :brakes
         end
+        class DriversChampionshipForm < FormObj::Form
+          include FormObj::ModelMapper
+
+          attribute :driver
+          attribute :year
+        end
         class TeamForm < FormObj::Form
           include FormObj::ModelMapper
 
           attribute :name, model_attribute: :team_name
           attribute :car, class: CarForm, model_hash: true
           attribute :year
-          attribute :chassis, class: ChassisForm, model_attribute: false
+          attribute :chassis, class: ChassisForm, model_nesting: false
+          attribute :drivers_championship, class: DriversChampionshipForm, model_attribute: false
         end
       end
     end

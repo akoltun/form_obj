@@ -60,24 +60,7 @@ module FormObj
 
     def to_models_hash(models = {})
       self.class._attributes.each do |attribute|
-        val = if attribute.subform?
-                if attribute.array?
-                  []
-                else
-                  attribute.model_attribute.write_to_model? ? {} : (models[attribute.model_attribute.model] ||= {})
-                end
-              else
-                send(attribute.name)
-              end
-
-        value = if attribute.subform? && !attribute.model_attribute.write_to_model?
-                  attribute.array? ? { self: val } : {}
-                elsif attribute.subform? || attribute.model_attribute.write_to_model?
-                  attribute.model_attribute.to_model_hash(val)
-                end
-
-        (models[attribute.model_attribute.model] ||= {}).merge!(value) if attribute.subform? || attribute.model_attribute.write_to_model?
-        send(attribute.name).to_models_hash(models.merge(default: val)) if attribute.subform?
+        attribute_to_models_hash(attribute, models)
       end
       models
     end
@@ -99,27 +82,54 @@ module FormObj
     private
 
     def load_attribute_from_model(attribute, models)
+      return unless attribute.model_attribute.read_from_model?
+
       if attribute.subform?
-        if attribute.model_attribute.read_from_model?
+        if attribute.model_attribute.nesting?
           self.send(attribute.name).load_from_models(models.merge(default: attribute.model_attribute.read_from_models(models)))
         else
           self.send(attribute.name).load_from_models(models.merge(default: models[attribute.model_attribute.model]))
         end
-      elsif attribute.model_attribute.read_from_model?
+      else
         self.send("#{attribute.name}=", attribute.model_attribute.read_from_models(models))
       end
     end
 
     def sync_attribute_to_model(attribute, models)
+      return unless attribute.model_attribute.write_to_model?
+
       if attribute.subform?
-        if attribute.model_attribute.write_to_model?
+        if attribute.model_attribute.nesting?
           self.send(attribute.name).sync_to_models(models.merge(default: attribute.model_attribute.read_from_models(models, create_nested_model_if_nil: true)))
         else
           self.send(attribute.name).sync_to_models(models.merge(default: models[attribute.model_attribute.model]))
         end
-      elsif attribute.model_attribute.write_to_model?
+      else
         attribute.model_attribute.write_to_models(models, self.send(attribute.name))
       end
+    end
+
+    def attribute_to_models_hash(attribute, models)
+      return unless attribute.model_attribute.write_to_model?
+
+      val = if attribute.subform?
+              if attribute.array?
+                []
+              else
+                attribute.model_attribute.nesting? ? {} : (models[attribute.model_attribute.model] ||= {})
+              end
+            else
+              send(attribute.name)
+            end
+
+      value = if attribute.subform? && !attribute.model_attribute.nesting?
+                attribute.array? ? { self: val } : {}
+              else
+                attribute.model_attribute.to_model_hash(val)
+              end
+
+      (models[attribute.model_attribute.model] ||= {}).merge!(value)
+      send(attribute.name).to_models_hash(models.merge(default: val)) if attribute.subform?
     end
   end
 end

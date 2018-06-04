@@ -8,7 +8,7 @@ RSpec.describe 'sync_to_model: Array of Form Objects - One Model' do
       Colour = Struct.new(:name, :rgb, :secret)
 
       class Model < ::Array
-        attr_accessor :team_name, :year, :cars, :finance, :chassis
+        attr_accessor :team_name, :year, :cars, :finance, :chassis, :drivers_championships
       end
     end
   end
@@ -64,7 +64,23 @@ RSpec.describe 'sync_to_model: Array of Form Objects - One Model' do
       colour.name = 'blue'
       colour.rgb = 0x0000FF
 
-      form.sync_to_model(model)
+      drivers_championship = form.drivers_championships.create
+      drivers_championship.driver = 'Ascari'
+      drivers_championship.year = 1952
+
+      drivers_championship = form.drivers_championships.create
+      drivers_championship.driver = 'Hawthorn'
+      drivers_championship.year = 1958
+
+      constructors_championship = form.constructors_championships.create
+      constructors_championship.year = 1961
+
+      constructors_championship = form.constructors_championships.create
+      constructors_championship.year = 1964
+
+      expect {
+        form.sync_to_model(model)
+      }.not_to raise_error
     end
   end
 
@@ -116,6 +132,8 @@ RSpec.describe 'sync_to_model: Array of Form Objects - One Model' do
 
       expect(model[2].name).to eq 'blue'
       expect(model[2].rgb).to eq 0x0000FF
+
+      expect(model.drivers_championships).to be_nil
     end
 
     it 'returns self' do
@@ -150,9 +168,16 @@ RSpec.describe 'sync_to_model: Array of Form Objects - One Model' do
           end
           attribute :brakes
         end
-        attribute :colours, array: true, model_attribute: false, model_class: Colour, primary_key: :name do
+        attribute :colours, array: true, model_nesting: false, model_class: Colour, primary_key: :name do
           attribute :name
           attribute :rgb
+        end
+        attribute :drivers_championships, array: true, model_attribute: false do
+          attribute :driver
+          attribute :year
+        end
+        attribute :constructors_championships, array: true, model_attribute: false do
+          attribute :year
         end
       end
     end
@@ -275,6 +300,17 @@ RSpec.describe 'sync_to_model: Array of Form Objects - One Model' do
           attribute :name
           attribute :rgb
         end
+        class DriversChampionshipForm < FormObj::Form
+          include FormObj::ModelMapper
+
+          attribute :driver
+          attribute :year
+        end
+        class ConstructorsChampionshipForm < FormObj::Form
+          include FormObj::ModelMapper
+
+          attribute :year
+        end
         class TeamForm < FormObj::Form
           include FormObj::ModelMapper
 
@@ -283,7 +319,9 @@ RSpec.describe 'sync_to_model: Array of Form Objects - One Model' do
           attribute :cars, array: true, class: CarForm, model_class: Car, primary_key: :code
           attribute :sponsors, array: true, model_attribute: 'finance.:sponsors', class: SponsorForm, model_class: [Hash, Sponsor], primary_key: :title
           attribute :chassis, array: true, model_hash: true, class: ChassisForm
-          attribute :colours, array: true, model_attribute: false, class: ColourForm, model_class: Colour, primary_key: :name
+          attribute :colours, array: true, model_nesting: false, class: ColourForm, model_class: Colour, primary_key: :name
+          attribute :drivers_championships, array: true, class: DriversChampionshipForm, model_attribute: false
+          attribute :constructors_championships, array: true, class: ConstructorsChampionshipForm, model_attribute: false
         end
       end
     end

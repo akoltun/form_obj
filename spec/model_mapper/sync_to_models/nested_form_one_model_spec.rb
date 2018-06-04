@@ -10,7 +10,7 @@ RSpec.describe 'sync_to_model: Nested Form Objects - One Model' do
 
   let(:engine) { SaveToModel::NestedForm::Engine.new }
   let(:suspension) { SaveToModel::NestedForm::Suspension.new }
-  let(:model) { Struct.new(:team_name, :year, :car, :suspension, :brakes).new }
+  let(:model) { Struct.new(:team_name, :year, :car, :suspension, :brakes, :drivers_championship).new }
 
   shared_context 'initialize form' do
     before do
@@ -23,6 +23,9 @@ RSpec.describe 'sync_to_model: Nested Form Objects - One Model' do
       form.chassis.suspension.front = 'independant'
       form.chassis.suspension.rear = 'de Dion'
       form.chassis.brakes = :drum
+      form.drivers_championship.driver = 'Ascari'
+      form.drivers_championship.year = 1952
+      form.constructors_championship.year = 1961
     end
   end
 
@@ -37,6 +40,7 @@ RSpec.describe 'sync_to_model: Nested Form Objects - One Model' do
       expect(model.suspension.front).to     eq form.chassis.suspension.front
       expect(model.suspension.rear).to      eq form.chassis.suspension.rear
       expect(model.brakes).to               eq form.chassis.brakes
+      expect(model.drivers_championship).to be_nil
     end
 
     it 'returns self' do
@@ -59,12 +63,19 @@ RSpec.describe 'sync_to_model: Nested Form Objects - One Model' do
           end
           attribute :driver
         end
-        attribute :chassis, model_attribute: false do
+        attribute :chassis, model_nesting: false do
           attribute :suspension, model_class: Suspension do
             attribute :front
             attribute :rear
           end
           attribute :brakes
+        end
+        attribute :drivers_championship, model_attribute: false do
+          attribute :driver
+          attribute :year
+        end
+        attribute :constructors_championship, model_attribute: false do
+          attribute :year
         end
       end
     end
@@ -73,7 +84,7 @@ RSpec.describe 'sync_to_model: Nested Form Objects - One Model' do
 
     context 'nested models are created when they do not exist yet' do
       include_context 'initialize form'
-      before { form.sync_to_model(model) }
+      before { expect { form.sync_to_model(model) }.not_to raise_error }
 
       it_behaves_like 'a form that can be saved'
     end
@@ -86,7 +97,7 @@ RSpec.describe 'sync_to_model: Nested Form Objects - One Model' do
       end
 
       include_context 'initialize form'
-      before { form.sync_to_model(model) }
+      before { expect { form.sync_to_model(model) }.not_to raise_error }
 
       it_behaves_like 'a form that can be saved'
 
@@ -124,13 +135,26 @@ RSpec.describe 'sync_to_model: Nested Form Objects - One Model' do
           end
           attribute :brakes
         end
+        class DriversChampionshipForm < FormObj::Form
+          include FormObj::ModelMapper
+
+          attribute :driver
+          attribute :year
+        end
+        class ConstructorsChampionshipForm < FormObj::Form
+          include FormObj::ModelMapper
+
+          attribute :year
+        end
         class TeamForm < FormObj::Form
           include FormObj::ModelMapper
 
           attribute :name, model_attribute: :team_name
           attribute :car, class: CarForm, model_hash: true
           attribute :year
-          attribute :chassis, class: ChassisForm, model_attribute: false
+          attribute :chassis, class: ChassisForm, model_nesting: false
+          attribute :drivers_championship, class: DriversChampionshipForm, model_attribute: false
+          attribute :constructors_championship, class: ConstructorsChampionshipForm, model_attribute: false
         end
       end
     end
@@ -139,7 +163,7 @@ RSpec.describe 'sync_to_model: Nested Form Objects - One Model' do
 
     context 'nested models are created when they do not exist yet' do
       include_context 'initialize form'
-      before { form.sync_to_model(model) }
+      before { expect { form.sync_to_model(model) }.not_to raise_error }
 
       it_behaves_like 'a form that can be saved'
     end
@@ -152,7 +176,7 @@ RSpec.describe 'sync_to_model: Nested Form Objects - One Model' do
       end
 
       include_context 'initialize form'
-      before { form.sync_to_model(model) }
+      before { expect { form.sync_to_model(model) }.not_to raise_error }
 
       it_behaves_like 'a form that can be saved'
 

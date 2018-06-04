@@ -77,7 +77,7 @@ RSpec.describe 'load_from_models: Array of Form Objects - Few Empty Models' do
           end
           attribute :brakes
         end
-        attribute :colours, array: true, model_attribute: false do
+        attribute :colours, array: true, model_nesting: false do
           attribute :name
           attribute :rgb
         end
@@ -137,7 +137,7 @@ RSpec.describe 'load_from_models: Array of Form Objects - Few Empty Models' do
           attribute :cars, array: true, class: CarForm
           attribute :sponsors, array: true, model_attribute: 'finance.:sponsors', class: SponsorForm
           attribute :chassis, array: true, model_hash: true, class: ChassisForm, model: :chassis
-          attribute :colours, array: true, model_attribute: false, class: ColourForm
+          attribute :colours, array: true, model_nesting: false, class: ColourForm
         end
       end
     end
