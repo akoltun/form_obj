@@ -925,8 +925,8 @@ end
 
 | Parameter | Condition | Default value | Defined in | Description |
 | --- |:---:|:---:|:---:| --- |
-| array | block* or `:class`** | `false` | `TreeStruct` | This attribute is an array of form objects. The structure of array element form object is described either in the block or in the separate class referenced by `:class` parameter |
-| class | - | - | `TreeStruct` | This attribute is either nested form object or array of form objects. The value of this parameter is the class of this form object or the name of the class. |
+| array | block* or `:class`** | `false` | `FormObj::Struct` | This attribute is an array of form objects. The structure of array element form object is described either in the block or in the separate class referenced by `:class` parameter |
+| class | - | - | `FormObj::Struct` | This attribute is either nested form object or array of form objects. The value of this parameter is the class of this form object or the name of the class. |
 | model_hash | block* or `:class`** | `false` | `FormObj::ModelMapper` | This attribute is either nested form object or array of form objects. This form object is mapped to a model of the class `Hash` so all its attributes should be accessed by `[:<attribute_name>]` instead of `.<attribute_name>` | 
 | model | - | `:default` | `FormObj::ModelMapper` | The name of the model to which this attribute is mapped |
 | model_attribute | - | `<attribute_name>` | `FormObj::ModelMapper` | The name of the model attribute to which this form object attribute is mapped. Dot notation is used in order to map to nested model, ex. `"car.engine.power"`. Colon is used in front of the name if the model is hash, ex. `"car.:engine.power"` - means call to `#car` returns `Hash` so the model attribute should be accessed like `car[:engine].power`. `false` value means that attribute is not mapped. |
