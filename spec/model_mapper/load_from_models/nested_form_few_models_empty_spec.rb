@@ -37,7 +37,7 @@ RSpec.describe 'load_from_models: Nested Form Objects - Few Empty Models' do
           end
           attribute :driver
         end
-        attribute :chassis, model_attribute: false, model: :chassis do
+        attribute :chassis, model_nesting: false, model: :chassis do
           attribute :suspension do
             attribute :front
             attribute :rear
@@ -83,7 +83,7 @@ RSpec.describe 'load_from_models: Nested Form Objects - Few Empty Models' do
           attribute :name, model_attribute: :team_name
           attribute :car, class: CarForm, model_hash: true
           attribute :year
-          attribute :chassis, class: ChassisForm, model_attribute: false, model: :chassis
+          attribute :chassis, class: ChassisForm, model_nesting: false, model: :chassis
         end
       end
     end

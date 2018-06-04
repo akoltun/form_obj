@@ -150,7 +150,7 @@ RSpec.describe 'sync_to_model: Array of Form Objects - One Model' do
           end
           attribute :brakes
         end
-        attribute :colours, array: true, model_attribute: false, model_class: Colour, primary_key: :name do
+        attribute :colours, array: true, model_nesting: false, model_class: Colour, primary_key: :name do
           attribute :name
           attribute :rgb
         end
@@ -283,7 +283,7 @@ RSpec.describe 'sync_to_model: Array of Form Objects - One Model' do
           attribute :cars, array: true, class: CarForm, model_class: Car, primary_key: :code
           attribute :sponsors, array: true, model_attribute: 'finance.:sponsors', class: SponsorForm, model_class: [Hash, Sponsor], primary_key: :title
           attribute :chassis, array: true, model_hash: true, class: ChassisForm
-          attribute :colours, array: true, model_attribute: false, class: ColourForm, model_class: Colour, primary_key: :name
+          attribute :colours, array: true, model_nesting: false, class: ColourForm, model_class: Colour, primary_key: :name
         end
       end
     end
