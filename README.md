@@ -34,7 +34,7 @@ Or install it yourself as:
 
 **WARNING!!!** The gem is still under development. Expect braking changes.<br/>
 
-Class `FormObj::Struct` allows to describe complicated data structure.
+Class `FormObj::Struct` allows to describe complicated data structure and update it with `update_attributes` method.
 
 Class `FormObj::Form` inherits from `FormObj::Struct` and adds form builder compatibility and includes ActiveModel validations.
 
@@ -932,8 +932,8 @@ end
 | model_attribute | - | `<attribute_name>` | `FormObj::ModelMapper` | The name of the model attribute to which this form object attribute is mapped. Dot notation is used in order to map to nested model, ex. `"car.engine.power"`. Colon is used in front of the name if the model is hash, ex. `"car.:engine.power"` - means call to `#car` returns `Hash` so the model attribute should be accessed like `car[:engine].power`. `false` value means that attribute is not mapped. |
 | model_class | block* or `:class`** or dot notation for `:model_attribute`*** | `<attribute_name>.classify` | `FormObj::ModelMapper` | The class (or the name of the class) of the mapped model. |
 | model_nesting | block* or `:class`** | `true` | `FornObj::ModelMapper` | If attribute describes nested form object and has `model_nesting: false` the attributes of nested form will be called on the parent (upper level) model. If attribute describes array of form objects and has `model_nesting: false` the methods to access array elements (`:[]` etc.) will be called on the parent (upper level) model. | 
-| primary_key | no block* and no `:class`** | `false` | `FormObj::Form` | This attribute is the primary key of the form object. The mapped model attribute is considered to be a primary key for the corresponding model. |
-| primary_key | block* or `:class`** | - | `FormObj::Form` | This attribute is either nested form object or array of form objects. The value of this parameter is the name of the primary key attribute of this form object. |
+| primary_key | no block* and no `:class`** | `false` | `FormObj::Struct` | This attribute is the primary key of the form object. The mapped model attribute is considered to be a primary key for the corresponding model. |
+| primary_key | block* or `:class`** | - | `FormObj::Struct` | This attribute is either nested form object or array of form objects. The value of this parameter is the name of the primary key attribute of this form object. |
 \* block - means that there is block definition for the attribute
 
 \** `:class` - means that this attribute has `:class` parameter specified
