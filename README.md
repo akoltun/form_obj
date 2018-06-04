@@ -60,8 +60,8 @@ model attributes name) and
 4. [Map Form Object to Models](4-map-form-objects-to-models)
    1. [Multiple Models Example](41-multiple-models-example)
    2. [Skip Attribute Mapping](42-skip-attribute-mapping)
-      1. [Map Nested Form Object Attribute to Parent Level Model Attribute](421-map-nested-form-object-attribute-to-parent-level-model-attribute)
-   3. [Map Nested Form Object to A Hash Model](43-map-nested-form-object-to-a-hash-model)
+   3. [Map Nested Form Object Attribute to Parent Level Model Attribute](43-map-nested-form-object-attribute-to-parent-level-model-attribute)
+   4. [Map Nested Form Object to A Hash Model](44-map-nested-form-object-to-a-hash-model)
 5. [Load Form Object from Models](5-load-form-object-from-models)
 6. [Save Form Object to Models](6-save-form-object-to-models)
    1. [Array of Form Objects and Models](61-array-of-form-objects-and-models)
@@ -500,10 +500,9 @@ Suppose `form = SimpleForm.new` and `model` to be an instance of a model.
 | `form.year` | `model.year` |
 | `form.engine_power` | - |
 
-##### 4.2.1. Map Nested Form Object Attribute to Parent Level Model Attribute
+#### 4.3. Map Nested Form Object Attribute to Parent Level Model Attribute
 
-TODO: replace `model_attribute` by `model`
-Use `model_attribute: false` for nested form object in order to map its attributes to the parent level of the model.
+Use `model_nesting: false` for nested form object in order to map its attributes to the parent level of the model.
 
 ```ruby
 class NestedForm < FormObj::Form
@@ -511,7 +510,7 @@ class NestedForm < FormObj::Form
     
   attribute :name, model_attribute: :team_name
   attribute :year
-  attribute :car, model_attribute: false do   # nesting only in form object but not in a model
+  attribute :car, model_nesting: false do   # nesting only in form object but not in a model
     attribute :code
     attribute :driver
     attribute :engine do
@@ -533,7 +532,7 @@ Suppose `form = NestedForm.new` and `model` to be an instance of a model.
 | `form.car.engine.power` | `model.engine.power` |
 | `form.car.engine.volume` | `model.engine.volume` |
 
-#### 4.3. Map Nested Form Object to A Hash Model
+#### 4.4. Map Nested Form Object to A Hash Model
 
 Use `model_hash: true` in order to map a nested form object to a hash as a model.
 
