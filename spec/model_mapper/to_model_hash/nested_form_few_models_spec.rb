@@ -1,4 +1,4 @@
-RSpec.describe 'to_codes_hash: Nested Form Objects - Few Models' do
+RSpec.describe 'to_models_hash: Nested Form Objects - Few Models' do
   shared_context 'initialize form' do
     before do
       form.name = 'Ferrari'
