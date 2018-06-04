@@ -2,7 +2,9 @@ RSpec.describe 'load_from_model: Nested Form Objects - One Model' do
   let(:engine) { Struct.new(:power, :volume).new(335, 4.1) }
   let(:car) {{ code: '340 F1', driver: 'Ascari', engine: engine }}
   let(:suspension) { Struct.new(:front, :rear).new('independant', 'de Dion') }
-  let(:model) { Struct.new(:team_name, :year, :car, :suspension, :brakes).new('Ferrari', 1950, car, suspension, :drum) }
+  let(:drivers_championship) { Struct.new(:driver, :year).new('Ascari', 1952) }
+  let(:model) { Struct.new(:team_name, :year, :car, :suspension, :brakes, :drivers_championship).new('Ferrari', 1950, car, suspension, :drum, drivers_championship) }
+
   shared_examples 'a nested form' do
     it 'has all attributes correctly set up' do
       form.load_from_model(model)
@@ -48,6 +50,13 @@ RSpec.describe 'load_from_model: Nested Form Objects - One Model' do
           end
           attribute :brakes
         end
+        attribute :drivers_championship, model_attribute: false do
+          attribute :driver
+          attribute :year
+        end
+        attribute :constructors_championship, model_attribute: false do
+          attribute :year
+        end
       end
     end
 
@@ -81,6 +90,17 @@ RSpec.describe 'load_from_model: Nested Form Objects - One Model' do
           end
           attribute :brakes
         end
+        class DriversChampionshipForm < FormObj::Form
+          include FormObj::ModelMapper
+
+          attribute :driver
+          attribute :year
+        end
+        class ConstructorsChampionshipForm < FormObj::Form
+          include FormObj::ModelMapper
+
+          attribute :year
+        end
         class TeamForm < FormObj::Form
           include FormObj::ModelMapper
 
@@ -88,6 +108,8 @@ RSpec.describe 'load_from_model: Nested Form Objects - One Model' do
           attribute :car, class: CarForm, model_hash: true
           attribute :year
           attribute :chassis, class: ChassisForm, model_nesting: false
+          attribute :drivers_championship, class: DriversChampionshipForm, model_attribute: false
+          attribute :constructors_championship, class: ConstructorsChampionshipForm, model_attribute: false
         end
       end
     end

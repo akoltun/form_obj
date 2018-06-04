@@ -49,6 +49,14 @@ RSpec.describe 'to_model_hash: Array of Form Objects - One Model' do
       colour = form.colours.create
       colour.name = 'blue'
       colour.rgb = 0x0000FF
+
+      drivers_championship = form.drivers_championships.create
+      drivers_championship.driver = 'Ascari'
+      drivers_championship.year = 1952
+
+      drivers_championship = form.drivers_championships.create
+      drivers_championship.driver = 'Hawthorn'
+      drivers_championship.year = 1958
     end
   end
 
@@ -141,6 +149,10 @@ RSpec.describe 'to_model_hash: Array of Form Objects - One Model' do
           attribute :name
           attribute :rgb
         end
+        attribute :drivers_championships, array: true, model_attribute: false do
+          attribute :driver
+          attribute :year
+        end
       end
     end
 
@@ -191,6 +203,12 @@ RSpec.describe 'to_model_hash: Array of Form Objects - One Model' do
           attribute :name
           attribute :rgb
         end
+        class DriversChampionshipForm < FormObj::Form
+          include FormObj::ModelMapper
+
+          attribute :driver
+          attribute :year
+        end
         class TeamForm < FormObj::Form
           include FormObj::ModelMapper
 
@@ -200,6 +218,7 @@ RSpec.describe 'to_model_hash: Array of Form Objects - One Model' do
           attribute :sponsors, array: true, model_attribute: 'finance.:sponsors', class: SponsorForm, primary_key: :title
           attribute :chassis, array: true, model_hash: true, class: ChassisForm
           attribute :colours, array: true, model_nesting: false, class: ColourForm, primary_key: :name
+          attribute :drivers_championships, array: true, class: DriversChampionshipForm, model_attribute: false
         end
       end
     end
