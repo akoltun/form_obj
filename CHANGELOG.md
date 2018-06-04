@@ -1,5 +1,17 @@
 # Change Log
 
+## [Unreleased](https://github.com/akoltun/form_obj/tree/HEAD)
+
+[Full Changelog](https://github.com/akoltun/form_obj/compare/v0.4.0...HEAD)
+
+**Implemented enhancements:**
+
+- Unify "model\_attribute: false" behaviour [\#7](https://github.com/akoltun/form_obj/issues/7)
+
+**Merged pull requests:**
+
+- Unify model\_attribute: false behaviour [\#28](https://github.com/akoltun/form_obj/pull/28) ([akoltun](https://github.com/akoltun))
+
 ## [v0.4.0](https://github.com/akoltun/form_obj/tree/v0.4.0) (2018-06-04)
 [Full Changelog](https://github.com/akoltun/form_obj/compare/v0.3.0...v0.4.0)
 
