@@ -1,9 +1,11 @@
 RSpec.describe 'Array of Struct' do
-  shared_examples 'nested Struct' do
+  shared_examples 'array of structs' do
     it 'has assigned values' do
       expect(struct.name).to eq 'Ferrari'
       expect(struct.year).to eq 1950
-      
+
+      expect(struct.cars.size).to eq 2
+
       expect(struct.cars[0].code).to eq '340 F1'
       expect(struct.cars[0].driver).to eq 'Ascari'
       expect(struct.cars[0].engine.power).to eq 335
@@ -54,8 +56,7 @@ RSpec.describe 'Array of Struct' do
       car.engine.volume = 3.3
     end
 
-    it { expect(struct.cars.size).to eq 2 }
-    it_behaves_like 'nested Struct'
+    it_behaves_like 'array of structs'
   end
 
   context 'Explicit declaration of struct objects' do
@@ -95,8 +96,7 @@ RSpec.describe 'Array of Struct' do
         car.engine.volume = 3.3
       end
 
-      it { expect(struct.cars.size).to eq 2 }
-      it_behaves_like 'nested Struct'
+      it_behaves_like 'array of structs'
     end
 
     context 'explicit creation of array of struct objects' do
@@ -126,8 +126,7 @@ RSpec.describe 'Array of Struct' do
         struct.cars << car2
       end
 
-      it { expect(struct.cars.size).to eq 2 }
-      it_behaves_like 'nested Struct'
+      it_behaves_like 'array of structs'
     end
   end
 end

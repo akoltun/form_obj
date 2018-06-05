@@ -3,7 +3,7 @@ module FormObj
     class Attribute
       attr_reader :name
 
-      def initialize(name, array: false, class: nil, default: nil, parent:, &block)
+      def initialize(name, array: false, class: nil, default: nil, parent:, primary_key: nil, &block)
         @name = name.to_sym
         @array = array
         @default_value = default
@@ -13,6 +13,14 @@ module FormObj
         @nested_class = Class.new(@parent.nested_class, &block) if !@nested_class && block_given?
 
         raise ArgumentError.new('Nested structure has to be defined (either with :class parameter or with block) for arrays if :default parameter is not specified') if @array && @nested_class.nil? && @default_value.nil?
+
+        if primary_key
+          if @nested_class
+            @nested_class.primary_key = primary_key
+          else
+            parent.primary_key = name.to_sym
+          end
+        end
       end
 
       def subform?

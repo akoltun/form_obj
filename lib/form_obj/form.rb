@@ -5,8 +5,6 @@ require 'form_obj/form/array'
 require 'active_model'
 
 module FormObj
-  class UnknownAttributeError < RuntimeError; end
-
   class Form < FormObj::Struct
     extend ::ActiveModel::Naming
     extend ::ActiveModel::Translation
@@ -14,8 +12,6 @@ module FormObj
     include ::ActiveModel::Conversion
     include ::ActiveModel::Validations
 
-    class_attribute :primary_key, instance_predicate: false, instance_reader: false, instance_writer: false
-    self.primary_key = :id
     self._attributes = Attributes.new
 
     class << self
@@ -39,9 +35,10 @@ module FormObj
     attr_accessor :persisted
     attr_reader :errors
 
-    def initialize()
+    def initialize(*args)
       @errors = ActiveModel::Errors.new(self)
       @persisted = false
+      super
     end
 
     def persisted?
@@ -49,33 +46,8 @@ module FormObj
     end
 
     def _set_attribute_value(attribute, value)
-      @persisted = false
+      @persisted = false unless _get_attribute_value(attribute) === value
       super
-    end
-
-    def primary_key
-      send(self.class.primary_key)
-    end
-
-    def primary_key=(val)
-      send("#{self.class.primary_key}=", val)
-    end
-
-    def update_attributes(new_attrs, raise_if_not_found: true)
-      new_attrs.each_pair do |new_attr, new_val|
-        attr = self.class._attributes.find(new_attr)
-        if attr.nil?
-          raise UnknownAttributeError.new(new_attr) if raise_if_not_found
-        else
-          if attr.subform?
-            self.send(new_attr).update_attributes(new_val)
-          else
-            self.send("#{new_attr}=", new_val)
-          end
-        end
-      end
-
-      self
     end
 
     def saved

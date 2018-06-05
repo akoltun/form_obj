@@ -13,6 +13,14 @@ module FormObj
         end
       end
 
+      def each(&block)
+        @items.each(&block)
+      end
+
+      def find(name)
+        @items.find { |item| item.name == name.to_sym }
+      end
+
       def map(*args, &block)
         @items.map(*args, &block)
       end
