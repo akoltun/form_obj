@@ -1,19 +1,19 @@
 RSpec.describe 'update_attributes: Nested Struct' do
   shared_examples 'updated struct' do
-    let(:update_attributes) {
-      struct.update_attributes(
-          name: 'McLaren',
-          year: 1966,
-          car: {
-              code: 'M2B',
-              driver: 'Bruce McLaren',
-              engine: {
-                  power: 300,
-                  volume: 3.0
-              }
-          }
-      )
-    }
+    let(:hash) {{
+        name: 'McLaren',
+        year: 1966,
+        car: {
+            code: 'M2B',
+            driver: 'Bruce McLaren',
+            engine: {
+                power: 300,
+                volume: 3.0
+            }
+        }
+    }}
+
+    let(:update_attributes) { struct.update_attributes(hash) }
 
     it 'has all attributes correctly updated' do
       update_attributes
@@ -28,6 +28,46 @@ RSpec.describe 'update_attributes: Nested Struct' do
 
     it 'returns self' do
       expect(update_attributes).to eql struct
+    end
+
+    context 'update non-existent attribute' do
+      let(:hash) {{ car: { engine: { a: 1 }}}}
+
+      it 'raises' do
+        expect{
+          update_attributes
+        }.to raise_error FormObj::UnknownAttributeError, 'a'
+      end
+
+      context 'with raise_if_not_found parameter' do
+        let(:update_attributes) { struct.update_attributes(hash, opts) }
+
+        context 'equal to true' do
+          let(:opts) {{ raise_if_not_found: true }}
+
+          it 'raises' do
+            expect{
+              update_attributes
+            }.to raise_error FormObj::UnknownAttributeError, 'a'
+          end
+        end
+
+        context 'equal to false' do
+          let(:opts) {{ raise_if_not_found: false }}
+
+          it 'does not raise' do
+            expect{
+              update_attributes
+            }.not_to raise_error
+          end
+
+          it 'does not create new attribute' do
+            expect{
+              update_attributes.car.engine.a
+            }.to raise_error NoMethodError
+          end
+        end
+      end
     end
   end
 

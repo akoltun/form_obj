@@ -1,51 +1,45 @@
-RSpec.describe 'update_attributes: Simple Struct' do
-  module UpdateAttributes
+RSpec.describe 'initialize attributes: Simple Struct' do
+  module InitializeAttributes
     class SimpleStruct < FormObj::Struct
       attribute :name
       attribute :year
     end
   end
 
-  let(:struct) { UpdateAttributes::SimpleStruct.new }
-  before do
-    struct.name = 'Ferrari'
-    struct.year = 1950
+  let(:hash) {{name: 'Ferrari', year: 1950}}
+  let(:struct) { InitializeAttributes::SimpleStruct.new(hash) }
+
+  it 'has assigned values' do
+    expect(struct.name).to eq 'Ferrari'
+    expect(struct.year).to eq 1950
   end
 
-  let(:hash) {{ name: 'McLaren', year: 1966 }}
-  let(:update_attributes) { struct.update_attributes(hash) }
-
-  it 'has all attributes correctly updated' do
-    update_attributes
-
-    expect(struct.name).to eq 'McLaren'
-    expect(struct.year).to eq 1966
+  it "doesn't have another attributes" do
+    expect {
+      struct.another_attribute
+    }.to raise_error NoMethodError
   end
 
-  it 'returns self' do
-    expect(update_attributes).to eql struct
-  end
-
-  context 'update non-existent attribute' do
+  context 'initialize non-existent attribute' do
     let(:hash) {{a: 1}}
 
     context 'when called without parameter' do
       it 'raises' do
         expect{
-          update_attributes
+          struct
         }.to raise_error FormObj::UnknownAttributeError, 'a'
       end
     end
 
     context 'when called with raise_if_not_found parameter' do
-      let(:update_attributes) { struct.update_attributes(hash, opts) }
+      let(:struct) { InitializeAttributes::SimpleStruct.new(hash, opts) }
 
       context 'when called with raise_if_not_found = true' do
         let(:opts) {{ raise_if_not_found: true }}
 
         it 'raises' do
           expect{
-            update_attributes
+            struct
           }.to raise_error FormObj::UnknownAttributeError, 'a'
         end
       end
@@ -55,13 +49,13 @@ RSpec.describe 'update_attributes: Simple Struct' do
 
         it 'does not raise' do
           expect{
-            update_attributes
+            struct
           }.not_to raise_error
         end
 
         it 'does not create new attribute' do
           expect{
-            update_attributes.a
+            struct.a
           }.to raise_error NoMethodError
         end
       end

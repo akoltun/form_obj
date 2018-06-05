@@ -57,6 +57,11 @@ module FormObj
       end
     end
 
+    def initialize(*args)
+      super()
+      update_attributes(*args) if args.size > 0
+    end
+
     def primary_key
       send(self.class.primary_key)
     end
@@ -72,7 +77,7 @@ module FormObj
           raise UnknownAttributeError.new(new_attr) if raise_if_not_found
         else
           if attr.subform?
-            self.send(new_attr).update_attributes(new_val)
+            self.send(new_attr).update_attributes(new_val, raise_if_not_found: raise_if_not_found)
           else
             self.send("#{new_attr}=", new_val)
           end

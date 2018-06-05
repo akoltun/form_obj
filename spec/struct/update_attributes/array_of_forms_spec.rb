@@ -1,25 +1,90 @@
 RSpec.describe 'update_attributes: Array of Struct Objects' do
-  let(:update_attributes) {
-    struct.update_attributes(
-        name: 'McLaren',
-        year: 1966,
-        cars: [
-            {
-                code: 'M2B',
-                driver: 'Bruce McLaren',
-                engine: {
-                    volume: 3.0
+  let(:hash) {{
+      name: 'McLaren',
+      year: 1966,
+      cars: [
+                {
+                    code: 'M2B',
+                    driver: 'Bruce McLaren',
+                    engine: {
+                        volume: 3.0
+                    }
+                }, {
+                    code: 'M7A',
+                    driver: 'Denis Hulme',
+                    engine: {
+                        power: 415,
+                    }
                 }
-            }, {
-                code: 'M7A',
-                driver: 'Denis Hulme',
-                engine: {
-                    power: 415,
-                }
-            }
-        ],
-        )
-  }
+            ],
+  }}
+
+  let(:update_attributes) { struct.update_attributes(hash) }
+
+  shared_examples 'array of structs' do |power: false, volume: false|
+    it 'has all attributes correctly updated' do
+      update_attributes
+
+      expect(struct.name).to                  eq 'McLaren'
+      expect(struct.year).to                  eq 1966
+
+      expect(struct.cars.size).to             eq 2
+
+      expect(struct.cars[0].code).to          eq 'M2B'
+      expect(struct.cars[0].driver).to        eq 'Bruce McLaren'
+      expect(struct.cars[0].engine.power).to  power ? eq(power) : be_nil
+      expect(struct.cars[0].engine.volume).to eq 3.0
+
+      expect(struct.cars[1].code).to          eq 'M7A'
+      expect(struct.cars[1].driver).to        eq 'Denis Hulme'
+      expect(struct.cars[1].engine.power).to  eq 415
+      expect(struct.cars[1].engine.volume).to volume ? eq(volume) : be_nil
+    end
+
+    it 'returns self' do
+      expect(update_attributes).to eql struct
+    end
+
+    context 'update non-existent attribute' do
+      let(:hash) {{ cars: [{ code: '340 F1', engine: { a: 1 }}]}}
+
+      it 'raises' do
+        expect{
+          update_attributes
+        }.to raise_error FormObj::UnknownAttributeError, 'a'
+      end
+
+      context 'with raise_if_not_found parameter' do
+        let(:update_attributes) { struct.update_attributes(hash, opts) }
+
+        context 'equal to true' do
+          let(:opts) {{ raise_if_not_found: true }}
+
+          it 'raises' do
+            expect{
+              update_attributes
+            }.to raise_error FormObj::UnknownAttributeError, 'a'
+          end
+        end
+
+        context 'equal to false' do
+          let(:opts) {{ raise_if_not_found: false }}
+
+          it 'does not raise' do
+            expect{
+              update_attributes
+            }.not_to raise_error
+          end
+
+          it 'does not create new attribute' do
+            expect{
+              update_attributes.car.engine.a
+            }.to raise_error NoMethodError
+          end
+        end
+      end
+    end
+  end
 
   context 'Implicit declaration of struct objects' do
     shared_examples 'implicitly declared struct object' do
@@ -30,28 +95,7 @@ RSpec.describe 'update_attributes: Array of Struct Objects' do
             struct.year = 1950
           end
 
-          it 'has all attributes correctly updated' do
-            update_attributes
-
-            expect(struct.name).to                  eq 'McLaren'
-            expect(struct.year).to                  eq 1966
-
-            expect(struct.cars.size).to             eq 2
-
-            expect(struct.cars[0].code).to         eq 'M2B'
-            expect(struct.cars[0].driver).to        eq 'Bruce McLaren'
-            expect(struct.cars[0].engine.power).to  be_nil
-            expect(struct.cars[0].engine.volume).to eq 3.0
-
-            expect(struct.cars[1].code).to         eq 'M7A'
-            expect(struct.cars[1].driver).to        eq 'Denis Hulme'
-            expect(struct.cars[1].engine.power).to  eq 415
-            expect(struct.cars[1].engine.volume).to be_nil
-          end
-
-          it 'returns self' do
-            expect(update_attributes).to eql struct
-          end
+          it_behaves_like 'array of structs'
         end
 
         context 'struct initially has less elements than updated data' do
@@ -66,28 +110,7 @@ RSpec.describe 'update_attributes: Array of Struct Objects' do
             car.engine.volume = 4.1
           end
 
-          it 'has all attributes correctly updated' do
-            update_attributes
-
-            expect(struct.name).to                  eq 'McLaren'
-            expect(struct.year).to                  eq 1966
-
-            expect(struct.cars.size).to             eq 2
-
-            expect(struct.cars[0].code).to         eq 'M2B'
-            expect(struct.cars[0].driver).to        eq 'Bruce McLaren'
-            expect(struct.cars[0].engine.power).to  be_nil
-            expect(struct.cars[0].engine.volume).to eq 3.0
-
-            expect(struct.cars[1].code).to         eq 'M7A'
-            expect(struct.cars[1].driver).to        eq 'Denis Hulme'
-            expect(struct.cars[1].engine.power).to  eq 415
-            expect(struct.cars[1].engine.volume).to be_nil
-          end
-
-          it 'returns self' do
-            expect(update_attributes).to eql struct
-          end
+          it_behaves_like 'array of structs'
         end
 
         context 'struct initially has the same quantity of elements as updated data' do
@@ -108,28 +131,7 @@ RSpec.describe 'update_attributes: Array of Struct Objects' do
             car.engine.volume = 3.3
           end
 
-          it 'has all attributes correctly updated' do
-            update_attributes
-
-            expect(struct.name).to                  eq 'McLaren'
-            expect(struct.year).to                  eq 1966
-
-            expect(struct.cars.size).to             eq 2
-
-            expect(struct.cars[0].code).to         eq 'M2B'
-            expect(struct.cars[0].driver).to        eq 'Bruce McLaren'
-            expect(struct.cars[0].engine.power).to  be_nil
-            expect(struct.cars[0].engine.volume).to eq 3.0
-
-            expect(struct.cars[1].code).to         eq 'M7A'
-            expect(struct.cars[1].driver).to        eq 'Denis Hulme'
-            expect(struct.cars[1].engine.power).to  eq 415
-            expect(struct.cars[1].engine.volume).to be_nil
-          end
-
-          it 'returns self' do
-            expect(update_attributes).to eql struct
-          end
+          it_behaves_like 'array of structs'
         end
 
         context 'struct initially has more elements than updated data' do
@@ -156,28 +158,7 @@ RSpec.describe 'update_attributes: Array of Struct Objects' do
             car.engine.volume = 4.5
           end
 
-          it 'has all attributes correctly updated' do
-            update_attributes
-
-            expect(struct.name).to                  eq 'McLaren'
-            expect(struct.year).to                  eq 1966
-
-            expect(struct.cars.size).to             eq 2
-
-            expect(struct.cars[0].code).to         eq 'M2B'
-            expect(struct.cars[0].driver).to        eq 'Bruce McLaren'
-            expect(struct.cars[0].engine.power).to  be_nil
-            expect(struct.cars[0].engine.volume).to eq 3.0
-
-            expect(struct.cars[1].code).to         eq 'M7A'
-            expect(struct.cars[1].driver).to        eq 'Denis Hulme'
-            expect(struct.cars[1].engine.power).to  eq 415
-            expect(struct.cars[1].engine.volume).to be_nil
-          end
-
-          it 'returns self' do
-            expect(update_attributes).to eql struct
-          end
+          it_behaves_like 'array of structs'
         end
       end
 
@@ -194,28 +175,7 @@ RSpec.describe 'update_attributes: Array of Struct Objects' do
             car.engine.volume = 4.1
           end
 
-          it 'has all attributes correctly updated' do
-            update_attributes
-
-            expect(struct.name).to                  eq 'McLaren'
-            expect(struct.year).to                  eq 1966
-
-            expect(struct.cars.size).to             eq 2
-
-            expect(struct.cars[0].code).to         eq 'M2B'
-            expect(struct.cars[0].driver).to        eq 'Bruce McLaren'
-            expect(struct.cars[0].engine.power).to  be_nil
-            expect(struct.cars[0].engine.volume).to eq 3.0
-
-            expect(struct.cars[1].code).to         eq 'M7A'
-            expect(struct.cars[1].driver).to        eq 'Denis Hulme'
-            expect(struct.cars[1].engine.power).to  eq 415
-            expect(struct.cars[1].engine.volume).to eq 4.1
-          end
-
-          it 'returns self' do
-            expect(update_attributes).to eql struct
-          end
+          it_behaves_like 'array of structs', volume: 4.1
         end
 
         context 'struct initially has three elements one of which is included in the updated ones' do
@@ -242,28 +202,7 @@ RSpec.describe 'update_attributes: Array of Struct Objects' do
             car.engine.volume = 4.5
           end
 
-          it 'has all attributes correctly updated' do
-            update_attributes
-
-            expect(struct.name).to                  eq 'McLaren'
-            expect(struct.year).to                  eq 1966
-
-            expect(struct.cars.size).to             eq 2
-
-            expect(struct.cars[0].code).to         eq 'M2B'
-            expect(struct.cars[0].driver).to        eq 'Bruce McLaren'
-            expect(struct.cars[0].engine.power).to  eq 300
-            expect(struct.cars[0].engine.volume).to eq 3.0
-
-            expect(struct.cars[1].code).to         eq 'M7A'
-            expect(struct.cars[1].driver).to        eq 'Denis Hulme'
-            expect(struct.cars[1].engine.power).to  eq 415
-            expect(struct.cars[1].engine.volume).to be_nil
-          end
-
-          it 'returns self' do
-            expect(update_attributes).to eql struct
-          end
+          it_behaves_like 'array of structs', power: 300
         end
       end
     end
@@ -372,28 +311,7 @@ RSpec.describe 'update_attributes: Array of Struct Objects' do
             struct.year = 1950
           end
 
-          it 'has all attributes correctly updated' do
-            update_attributes
-
-            expect(struct.name).to                  eq 'McLaren'
-            expect(struct.year).to                  eq 1966
-
-            expect(struct.cars.size).to             eq 2
-
-            expect(struct.cars[0].code).to         eq 'M2B'
-            expect(struct.cars[0].driver).to        eq 'Bruce McLaren'
-            expect(struct.cars[0].engine.power).to  be_nil
-            expect(struct.cars[0].engine.volume).to eq 3.0
-
-            expect(struct.cars[1].code).to         eq 'M7A'
-            expect(struct.cars[1].driver).to        eq 'Denis Hulme'
-            expect(struct.cars[1].engine.power).to  eq 415
-            expect(struct.cars[1].engine.volume).to be_nil
-          end
-
-          it 'returns self' do
-            expect(update_attributes).to eql struct
-          end
+          it_behaves_like 'array of structs'
         end
 
         context 'struct initially has less elements than updated data' do
@@ -412,28 +330,7 @@ RSpec.describe 'update_attributes: Array of Struct Objects' do
             struct.cars << car1
           end
 
-          it 'has all attributes correctly updated' do
-            update_attributes
-
-            expect(struct.name).to                  eq 'McLaren'
-            expect(struct.year).to                  eq 1966
-
-            expect(struct.cars.size).to             eq 2
-
-            expect(struct.cars[0].code).to         eq 'M2B'
-            expect(struct.cars[0].driver).to        eq 'Bruce McLaren'
-            expect(struct.cars[0].engine.power).to  be_nil
-            expect(struct.cars[0].engine.volume).to eq 3.0
-
-            expect(struct.cars[1].code).to         eq 'M7A'
-            expect(struct.cars[1].driver).to        eq 'Denis Hulme'
-            expect(struct.cars[1].engine.power).to  eq 415
-            expect(struct.cars[1].engine.volume).to be_nil
-          end
-
-          it 'returns self' do
-            expect(update_attributes).to eql struct
-          end
+          it_behaves_like 'array of structs'
         end
 
         context 'struct initially has the same quantity of elements as updated data' do
@@ -462,28 +359,7 @@ RSpec.describe 'update_attributes: Array of Struct Objects' do
             struct.cars << car2
           end
 
-          it 'has all attributes correctly updated' do
-            update_attributes
-
-            expect(struct.name).to                  eq 'McLaren'
-            expect(struct.year).to                  eq 1966
-
-            expect(struct.cars.size).to             eq 2
-
-            expect(struct.cars[0].code).to         eq 'M2B'
-            expect(struct.cars[0].driver).to        eq 'Bruce McLaren'
-            expect(struct.cars[0].engine.power).to  be_nil
-            expect(struct.cars[0].engine.volume).to eq 3.0
-
-            expect(struct.cars[1].code).to         eq 'M7A'
-            expect(struct.cars[1].driver).to        eq 'Denis Hulme'
-            expect(struct.cars[1].engine.power).to  eq 415
-            expect(struct.cars[1].engine.volume).to be_nil
-          end
-
-          it 'returns self' do
-            expect(update_attributes).to eql struct
-          end
+          it_behaves_like 'array of structs'
         end
 
         context 'struct initially has more elements than updated data' do
@@ -522,28 +398,7 @@ RSpec.describe 'update_attributes: Array of Struct Objects' do
             struct.cars << car3
           end
 
-          it 'has all attributes correctly updated' do
-            update_attributes
-
-            expect(struct.name).to                  eq 'McLaren'
-            expect(struct.year).to                  eq 1966
-
-            expect(struct.cars.size).to             eq 2
-
-            expect(struct.cars[0].code).to         eq 'M2B'
-            expect(struct.cars[0].driver).to        eq 'Bruce McLaren'
-            expect(struct.cars[0].engine.power).to  be_nil
-            expect(struct.cars[0].engine.volume).to eq 3.0
-
-            expect(struct.cars[1].code).to         eq 'M7A'
-            expect(struct.cars[1].driver).to        eq 'Denis Hulme'
-            expect(struct.cars[1].engine.power).to  eq 415
-            expect(struct.cars[1].engine.volume).to be_nil
-          end
-
-          it 'returns self' do
-            expect(update_attributes).to eql struct
-          end
+          it_behaves_like 'array of structs'
         end
       end
 
@@ -564,28 +419,7 @@ RSpec.describe 'update_attributes: Array of Struct Objects' do
             struct.cars << car1
           end
 
-          it 'has all attributes correctly updated' do
-            update_attributes
-
-            expect(struct.name).to                  eq 'McLaren'
-            expect(struct.year).to                  eq 1966
-
-            expect(struct.cars.size).to             eq 2
-
-            expect(struct.cars[0].code).to         eq 'M2B'
-            expect(struct.cars[0].driver).to        eq 'Bruce McLaren'
-            expect(struct.cars[0].engine.power).to  be_nil
-            expect(struct.cars[0].engine.volume).to eq 3.0
-
-            expect(struct.cars[1].code).to         eq 'M7A'
-            expect(struct.cars[1].driver).to        eq 'Denis Hulme'
-            expect(struct.cars[1].engine.power).to  eq 415
-            expect(struct.cars[1].engine.volume).to eq 4.1
-          end
-
-          it 'returns self' do
-            expect(update_attributes).to eql struct
-          end
+          it_behaves_like 'array of structs', volume: 4.1
         end
 
         context 'struct initially has three elements one of which is included in the updated ones' do
@@ -624,28 +458,7 @@ RSpec.describe 'update_attributes: Array of Struct Objects' do
             struct.cars << car3
           end
 
-          it 'has all attributes correctly updated' do
-            update_attributes
-
-            expect(struct.name).to                  eq 'McLaren'
-            expect(struct.year).to                  eq 1966
-
-            expect(struct.cars.size).to             eq 2
-
-            expect(struct.cars[0].code).to         eq 'M2B'
-            expect(struct.cars[0].driver).to        eq 'Bruce McLaren'
-            expect(struct.cars[0].engine.power).to  eq 300
-            expect(struct.cars[0].engine.volume).to eq 3.0
-
-            expect(struct.cars[1].code).to         eq 'M7A'
-            expect(struct.cars[1].driver).to        eq 'Denis Hulme'
-            expect(struct.cars[1].engine.power).to  eq 415
-            expect(struct.cars[1].engine.volume).to be_nil
-          end
-
-          it 'returns self' do
-            expect(update_attributes).to eql struct
-          end
+          it_behaves_like 'array of structs', power: 300
         end
       end
     end
@@ -706,28 +519,7 @@ RSpec.describe 'update_attributes: Array of Struct Objects' do
             struct.year = 1950
           end
 
-          it 'has all attributes correctly updated' do
-            update_attributes
-
-            expect(struct.name).to                  eq 'McLaren'
-            expect(struct.year).to                  eq 1966
-
-            expect(struct.cars.size).to             eq 2
-
-            expect(struct.cars[0].code).to         eq 'M2B'
-            expect(struct.cars[0].driver).to        eq 'Bruce McLaren'
-            expect(struct.cars[0].engine.power).to  be_nil
-            expect(struct.cars[0].engine.volume).to eq 3.0
-
-            expect(struct.cars[1].code).to         eq 'M7A'
-            expect(struct.cars[1].driver).to        eq 'Denis Hulme'
-            expect(struct.cars[1].engine.power).to  eq 415
-            expect(struct.cars[1].engine.volume).to be_nil
-          end
-
-          it 'returns self' do
-            expect(update_attributes).to eql struct
-          end
+          it_behaves_like 'array of structs'
         end
 
         context 'struct initially has less elements than updated data' do
@@ -746,28 +538,7 @@ RSpec.describe 'update_attributes: Array of Struct Objects' do
             struct.cars << car1
           end
 
-          it 'has all attributes correctly updated' do
-            update_attributes
-
-            expect(struct.name).to                  eq 'McLaren'
-            expect(struct.year).to                  eq 1966
-
-            expect(struct.cars.size).to             eq 2
-
-            expect(struct.cars[0].code).to         eq 'M2B'
-            expect(struct.cars[0].driver).to        eq 'Bruce McLaren'
-            expect(struct.cars[0].engine.power).to  be_nil
-            expect(struct.cars[0].engine.volume).to eq 3.0
-
-            expect(struct.cars[1].code).to         eq 'M7A'
-            expect(struct.cars[1].driver).to        eq 'Denis Hulme'
-            expect(struct.cars[1].engine.power).to  eq 415
-            expect(struct.cars[1].engine.volume).to be_nil
-          end
-
-          it 'returns self' do
-            expect(update_attributes).to eql struct
-          end
+          it_behaves_like 'array of structs'
         end
 
         context 'struct initially has the same quantity of elements as updated data' do
@@ -796,28 +567,7 @@ RSpec.describe 'update_attributes: Array of Struct Objects' do
             struct.cars << car2
           end
 
-          it 'has all attributes correctly updated' do
-            update_attributes
-
-            expect(struct.name).to                  eq 'McLaren'
-            expect(struct.year).to                  eq 1966
-
-            expect(struct.cars.size).to             eq 2
-
-            expect(struct.cars[0].code).to         eq 'M2B'
-            expect(struct.cars[0].driver).to        eq 'Bruce McLaren'
-            expect(struct.cars[0].engine.power).to  be_nil
-            expect(struct.cars[0].engine.volume).to eq 3.0
-
-            expect(struct.cars[1].code).to         eq 'M7A'
-            expect(struct.cars[1].driver).to        eq 'Denis Hulme'
-            expect(struct.cars[1].engine.power).to  eq 415
-            expect(struct.cars[1].engine.volume).to be_nil
-          end
-
-          it 'returns self' do
-            expect(update_attributes).to eql struct
-          end
+          it_behaves_like 'array of structs'
         end
 
         context 'struct initially has more elements than updated data' do
@@ -856,28 +606,7 @@ RSpec.describe 'update_attributes: Array of Struct Objects' do
             struct.cars << car3
           end
 
-          it 'has all attributes correctly updated' do
-            update_attributes
-
-            expect(struct.name).to                  eq 'McLaren'
-            expect(struct.year).to                  eq 1966
-
-            expect(struct.cars.size).to             eq 2
-
-            expect(struct.cars[0].code).to         eq 'M2B'
-            expect(struct.cars[0].driver).to        eq 'Bruce McLaren'
-            expect(struct.cars[0].engine.power).to  be_nil
-            expect(struct.cars[0].engine.volume).to eq 3.0
-
-            expect(struct.cars[1].code).to         eq 'M7A'
-            expect(struct.cars[1].driver).to        eq 'Denis Hulme'
-            expect(struct.cars[1].engine.power).to  eq 415
-            expect(struct.cars[1].engine.volume).to be_nil
-          end
-
-          it 'returns self' do
-            expect(update_attributes).to eql struct
-          end
+          it_behaves_like 'array of structs'
         end
       end
 
@@ -898,28 +627,7 @@ RSpec.describe 'update_attributes: Array of Struct Objects' do
             struct.cars << car1
           end
 
-          it 'has all attributes correctly updated' do
-            update_attributes
-
-            expect(struct.name).to                  eq 'McLaren'
-            expect(struct.year).to                  eq 1966
-
-            expect(struct.cars.size).to             eq 2
-
-            expect(struct.cars[0].code).to         eq 'M2B'
-            expect(struct.cars[0].driver).to        eq 'Bruce McLaren'
-            expect(struct.cars[0].engine.power).to  be_nil
-            expect(struct.cars[0].engine.volume).to eq 3.0
-
-            expect(struct.cars[1].code).to         eq 'M7A'
-            expect(struct.cars[1].driver).to        eq 'Denis Hulme'
-            expect(struct.cars[1].engine.power).to  eq 415
-            expect(struct.cars[1].engine.volume).to eq 4.1
-          end
-
-          it 'returns self' do
-            expect(update_attributes).to eql struct
-          end
+          it_behaves_like 'array of structs', volume: 4.1
         end
 
         context 'struct initially has three elements one of which is included in the updated ones' do
@@ -958,28 +666,7 @@ RSpec.describe 'update_attributes: Array of Struct Objects' do
             struct.cars << car3
           end
 
-          it 'has all attributes correctly updated' do
-            update_attributes
-
-            expect(struct.name).to                  eq 'McLaren'
-            expect(struct.year).to                  eq 1966
-
-            expect(struct.cars.size).to             eq 2
-
-            expect(struct.cars[0].code).to         eq 'M2B'
-            expect(struct.cars[0].driver).to        eq 'Bruce McLaren'
-            expect(struct.cars[0].engine.power).to  eq 300
-            expect(struct.cars[0].engine.volume).to eq 3.0
-
-            expect(struct.cars[1].code).to         eq 'M7A'
-            expect(struct.cars[1].driver).to        eq 'Denis Hulme'
-            expect(struct.cars[1].engine.power).to  eq 415
-            expect(struct.cars[1].engine.volume).to be_nil
-          end
-
-          it 'returns self' do
-            expect(update_attributes).to eql struct
-          end
+          it_behaves_like 'array of structs', power: 300
         end
       end
     end

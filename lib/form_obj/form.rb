@@ -35,9 +35,10 @@ module FormObj
     attr_accessor :persisted
     attr_reader :errors
 
-    def initialize()
+    def initialize(*args)
       @errors = ActiveModel::Errors.new(self)
       @persisted = false
+      super
     end
 
     def persisted?
@@ -45,7 +46,7 @@ module FormObj
     end
 
     def _set_attribute_value(attribute, value)
-      @persisted = false
+      @persisted = false unless _get_attribute_value(attribute) === value
       super
     end
 
