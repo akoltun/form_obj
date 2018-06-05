@@ -6,10 +6,16 @@
 
 **Implemented enhancements:**
 
+- Initialize FormObj::Struct with hash of attribute values [\#15](https://github.com/akoltun/form_obj/issues/15)
 - Unify "model\_attribute: false" behaviour [\#7](https://github.com/akoltun/form_obj/issues/7)
+
+**Closed issues:**
+
+- Move update\_attributes method to FormObj::Struct class [\#14](https://github.com/akoltun/form_obj/issues/14)
 
 **Merged pull requests:**
 
+- Move update attributes to FormObj::Struct [\#29](https://github.com/akoltun/form_obj/pull/29) ([akoltun](https://github.com/akoltun))
 - Unify model\_attribute: false behaviour [\#28](https://github.com/akoltun/form_obj/pull/28) ([akoltun](https://github.com/akoltun))
 
 ## [v0.4.0](https://github.com/akoltun/form_obj/tree/v0.4.0) (2018-06-04)
