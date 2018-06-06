@@ -10,6 +10,7 @@ module FormObj
         @parent = parent
 
         @nested_class = binding.local_variable_get(:class)
+        @nested_class = @nested_class.constantize if @nested_class.is_a? String
         @nested_class = Class.new(@parent.nested_class, &block) if !@nested_class && block_given?
 
         raise ArgumentError.new('Nested structure has to be defined (either with :class parameter or with block) for arrays if :default parameter is not specified') if @array && @nested_class.nil? && @default_value.nil?
