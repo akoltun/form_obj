@@ -12,7 +12,8 @@ Ruby: 2.2.8+
 ActiveSupport: 3.2+
 ActiveModel: 3.2+
 
-The gem is tested against all ruby versions and all versions of its dependencies.
+The gem is tested against all ruby versions and all versions of its dependencies 
+except ActiveSupport and ActiveModel version 4.0.x because they requires Minitest 4 which is not compatible with Minitest 5.
 
 ## Installation
 
