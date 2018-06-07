@@ -11,10 +11,12 @@
 
 **Closed issues:**
 
+- Add to documentation and tests the description of :default parameter [\#23](https://github.com/akoltun/form_obj/issues/23)
 - Move update\_attributes method to FormObj::Struct class [\#14](https://github.com/akoltun/form_obj/issues/14)
 
 **Merged pull requests:**
 
+- Add test and doc for default parameter [\#33](https://github.com/akoltun/form_obj/pull/33) ([akoltun](https://github.com/akoltun))
 - Run minitests against all ruby and rails versions. Do not tests again… [\#32](https://github.com/akoltun/form_obj/pull/32) ([akoltun](https://github.com/akoltun))
 - Migrate struct tests from rspec to minitest [\#31](https://github.com/akoltun/form_obj/pull/31) ([akoltun](https://github.com/akoltun))
 - Move update attributes to FormObj::Struct [\#29](https://github.com/akoltun/form_obj/pull/29) ([akoltun](https://github.com/akoltun))
