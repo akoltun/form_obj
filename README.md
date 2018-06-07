@@ -349,6 +349,105 @@ array_struct.cars[1].engine.power     # => 330
 array_struct.cars[1].engine.volume    # => 3.3
 ```
 
+#### 1.3 Default value
+
+Define default attribute value using `default` parameter.
+Use `Proc` to calculate default value dynamically. 
+`Proc` is calculated only once at the moment of first access to attribute. 
+`Proc` receives two arguments:
+- `struct_class` - class (!!! not an instance) where attribute is defined
+- `attribute` - internal representation of attribute 
+
+```ruby
+class SimpleStruct < FormObj::Struct
+  attribute :name, default: 'Ferrari'
+  attribute :year, default: ->(struct_class, attribute) { struct_class.default_year(attribute) }
+  
+  def self.default_year(attribute)
+    "#{attribute.name} = 1950"
+  end
+end
+
+simple_struct = SimpleStruct.new      # => #<SimpleStruct name: "Ferrari", year: "year = 1950"> 
+simple_struct.name                    # => "Ferrari"  
+simple_struct.year                    # => "year = 1950" 
+```
+
+##### 1.3.1 Default Nested Struct Object
+
+Use hash to define default value of nested struct object defined with block.
+
+```ruby
+class NestedStruct < FormObj::Struct
+  attribute :car, default: { code: '340 F1', driver: 'Ascari' } do
+    attribute :code
+    attribute :driver
+  end
+end
+
+nested_struct = NestedStruct.new      # => #<NestedStruct car: #< code: "340 F1", driver: "Ascari">>  
+nested_struct.car.code                # => "340 F1"  
+nested_struct.car.driver              # => "Ascari" 
+```
+
+Use hash or struct instance to define default value of nested object defined with class. 
+The struct instance class should correspond to nested attribute class!
+
+```ruby
+class Car < FormObj::Struct
+  attribute :code
+  attribute :driver
+end
+
+class NestedStruct < FormObj::Struct
+  attribute :car, class: Car, default: Car.new(code: '340 F1', driver: 'Ascari')
+end
+
+nested_struct = NestedStruct.new      # => #<NestedStruct car: #<Car code: "340 F1", driver: "Ascari">>  
+nested_struct.car.code                # => "340 F1"  
+nested_struct.car.driver              # => "Ascari" 
+```
+
+##### 1.3.2 Default Array of Struct Objects
+
+Use array of hashes to define default array of nested struct objects defined with block.
+
+```ruby
+class ArrayStruct < FormObj::Struct
+  attribute :cars, array: true, default: [{ code: '340 F1', driver: 'Ascari' }, { code: '275 F1', driver: 'Villoresi' }] do
+    attribute :code
+    attribute :driver
+  end
+end
+
+array_struct = ArrayStruct.new      # => #<ArrayStruct cars: [#< code: "340 F1", driver: "Ascari">, #< code: "275 F1", driver: "Villoresi">]>   
+array_struct.cars.size              # => 2  
+array_struct.cars[0].code           # => "340 F1"  
+array_struct.cars[0].driver         # => "Ascari"  
+array_struct.cars[1].code           # => "275 F1"  
+array_struct.cars[1].driver         # => "Villoresi"  
+```
+
+Use array of hashes or struct instances to define default array of nested struct objects defined with class.
+
+```ruby
+class Car < FormObj::Struct
+  attribute :code
+  attribute :driver
+end
+
+class ArrayStruct < FormObj::Struct
+  attribute :cars, class: Car, array: true, default: [Car.new(code: '340 F1', driver: 'Ascari'), { code: '275 F1', driver: 'Villoresi' }]
+end
+
+array_struct = ArrayStruct.new      # => #<ArrayStruct cars: [#<Car code: "340 F1", driver: "Ascari">, #<Car code: "275 F1", driver: "Villoresi">]>    
+array_struct.cars.size              # => 2  
+array_struct.cars[0].code           # => "340 F1"  
+array_struct.cars[0].driver         # => "Ascari"  
+array_struct.cars[1].code           # => "275 F1"  
+array_struct.cars[1].driver         # => "Villoresi"  
+```
+
 ### 2. Update Attributes
 
 Update form object attributes with the hash of new values. 
