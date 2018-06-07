@@ -15,6 +15,7 @@
 
 **Merged pull requests:**
 
+- Migrate struct tests from rspec to minitest [\#31](https://github.com/akoltun/form_obj/pull/31) ([akoltun](https://github.com/akoltun))
 - Move update attributes to FormObj::Struct [\#29](https://github.com/akoltun/form_obj/pull/29) ([akoltun](https://github.com/akoltun))
 - Unify model\_attribute: false behaviour [\#28](https://github.com/akoltun/form_obj/pull/28) ([akoltun](https://github.com/akoltun))
 
