@@ -83,6 +83,7 @@ DEPENDENCIES
   appraisal
   bundler (~> 1.16)
   form_obj!
+  minitest (~> 5.0)
   rake (~> 10.0)
   rspec (~> 3.0)
 
