@@ -56,22 +56,39 @@ module FormObj
             end
           end
 
-        elsif @default_value.is_a? Proc
-          @default_value.call(@parent, self)
-
         else
-          @default_value
+          value = if @default_value.is_a? ::Proc
+                    @default_value.call(@parent, self)
+                  else
+                    @default_value
+                  end
+
+          if @nested_class
+            if @array
+              raise FormObj::WrongDefaultValueClass unless value.is_a? ::Array
+              value = create_array(value.map do |val|
+                val = create_nested(val) if val.is_a?(::Hash)
+                raise FormObj::WrongDefaultValueClass if val.class != @nested_class
+                val
+              end)
+            else
+              value = create_nested(value) if value.is_a? ::Hash
+              raise FormObj::WrongDefaultValueClass if value.class != @nested_class
+            end
+          end
+
+          value
         end
       end
 
       private
 
-      def create_nested
-        @nested_class.new
+      def create_nested(*args)
+        @nested_class.new(*args)
       end
 
-      def create_array
-        @parent.array_class.new(@nested_class)
+      def create_array(*args)
+        @parent.array_class.new(@nested_class, *args)
       end
     end
   end
