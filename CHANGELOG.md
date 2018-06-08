@@ -13,9 +13,12 @@
 
 - Add to documentation and tests the description of :default parameter [\#23](https://github.com/akoltun/form_obj/issues/23)
 - Move update\_attributes method to FormObj::Struct class [\#14](https://github.com/akoltun/form_obj/issues/14)
+- Transform initialization or `update\_attributes` hash into HashWithIndifferentAccess before applying its values. [\#5](https://github.com/akoltun/form_obj/issues/5)
 
 **Merged pull requests:**
 
+- Rework struct documentation [\#35](https://github.com/akoltun/form_obj/pull/35) ([akoltun](https://github.com/akoltun))
+- Transform initialization or `update\_attributes` hash into HashWithInd… [\#34](https://github.com/akoltun/form_obj/pull/34) ([akoltun](https://github.com/akoltun))
 - Add test and doc for default parameter [\#33](https://github.com/akoltun/form_obj/pull/33) ([akoltun](https://github.com/akoltun))
 - Run minitests against all ruby and rails versions. Do not tests again… [\#32](https://github.com/akoltun/form_obj/pull/32) ([akoltun](https://github.com/akoltun))
 - Migrate struct tests from rspec to minitest [\#31](https://github.com/akoltun/form_obj/pull/31) ([akoltun](https://github.com/akoltun))
