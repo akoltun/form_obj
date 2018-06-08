@@ -2,6 +2,7 @@ require "form_obj/struct/array"
 require "form_obj/struct/attribute"
 require "form_obj/struct/attributes"
 require "active_support/core_ext/class/attribute"
+require "active_support/core_ext/hash/indifferent_access"
 
 module FormObj
   class UnknownAttributeError < RuntimeError; end
@@ -72,7 +73,7 @@ module FormObj
     end
 
     def update_attributes(new_attrs, raise_if_not_found: true)
-      new_attrs.each_pair do |new_attr, new_val|
+      HashWithIndifferentAccess.new(new_attrs).each_pair do |new_attr, new_val|
         attr = self.class._attributes.find(new_attr)
         if attr.nil?
           raise UnknownAttributeError.new(new_attr) if raise_if_not_found

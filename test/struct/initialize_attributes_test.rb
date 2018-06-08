@@ -30,11 +30,12 @@ class InitializeAttributesTest < Minitest::Test
 
   def test_that_all_attributes_are_correctly_initialized
     team = Team.new(
-        name: 'Ferrari',
+        name: 'McLaren',
+        'name' => 'Ferrari',
         year: 1950,
         cars: [{
                    code: '340 F1',
-                   driver: 'Ascari',
+                   'driver' => 'Ascari',
                    engine: {
                        power: 335,
                        volume: 4.1
@@ -48,6 +49,7 @@ class InitializeAttributesTest < Minitest::Test
                    }
                }, {
                    code: '275 F1',
+                   'driver' => 'Ascari',
                    driver: 'Villoresi',
                    engine: {
                        power: 300,
@@ -63,9 +65,11 @@ class InitializeAttributesTest < Minitest::Test
                }],
         colours: [{
                       name: :red,
-                      rgb: 0xFF0000,
+                      rgb: nil,
+                      'rgb' => 0xFF0000,
                   }, {
                       name: :white,
+                      'rgb' => nil,
                       rgb: 0xFFFFFF,
                   }]
     )
