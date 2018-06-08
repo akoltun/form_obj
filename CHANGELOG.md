@@ -13,10 +13,12 @@
 
 - Add to documentation and tests the description of :default parameter [\#23](https://github.com/akoltun/form_obj/issues/23)
 - Move update\_attributes method to FormObj::Struct class [\#14](https://github.com/akoltun/form_obj/issues/14)
+- Overwritebility for :append, :update and :delete actions in update\_attributes for arrayed form objects [\#10](https://github.com/akoltun/form_obj/issues/10)
 - Transform initialization or `update\_attributes` hash into HashWithIndifferentAccess before applying its values. [\#5](https://github.com/akoltun/form_obj/issues/5)
 
 **Merged pull requests:**
 
+- Refactor FormObj::Struct so update\_attributes behaviour could be easily overwritten in descendants [\#37](https://github.com/akoltun/form_obj/pull/37) ([akoltun](https://github.com/akoltun))
 - Rework struct documentation [\#35](https://github.com/akoltun/form_obj/pull/35) ([akoltun](https://github.com/akoltun))
 - Transform initialization or `update\_attributes` hash into HashWithInd… [\#34](https://github.com/akoltun/form_obj/pull/34) ([akoltun](https://github.com/akoltun))
 - Add test and doc for default parameter [\#33](https://github.com/akoltun/form_obj/pull/33) ([akoltun](https://github.com/akoltun))
