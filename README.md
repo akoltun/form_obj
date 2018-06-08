@@ -35,7 +35,7 @@ Or install it yourself as:
 
 **WARNING!!!** The gem is still under development. Expect braking changes.<br/>
 
-Class `FormObj::Struct` allows to describe complicated data structure and update it with `update_attributes` method.
+Class `FormObj::Struct` allows to describe complicated data structure, to update it with `update_attributes` method and to get its hash representation with `to_hash` method.
 
 Class `FormObj::Form` inherits from `FormObj::Struct` and adds form builder compatibility and includes ActiveModel validations.
 
@@ -49,15 +49,10 @@ model attributes name) and
 
 ### Table of Contents
 
-1. [Definition](#1-definition)
-   1. [Nested Form Objects](11-nested-form-objects)
-   2. [Array of Form Objects](12-array-of-form-objects)
-2. [Update Attributes](2-update-attributes)
-   1. [Nested Form Objects](21-nested-form-objects)
-   2. [Array of Form Objects](22-array-of-form-objects)
-3. [Serialize to Hash](3-serialize-to-hash)
-   1. [Nested Form Objects](31-nested-form-objects)
-   2. [Array of Form Objects](32-array-of-form-objects)
+1. [`FormObj::Struct`](#1-formobjstruct)
+   1. [Nesting `FormObj::Struct`](#11-nesting-formobjstruct)
+   2. [Array of `FormObj::Struct`](#12-array-of-formobjstruct)
+   3. [Serialize `FormObj::Struct` to Hash](#13-serialize-formobjstruct-to-hash)
 4. [Map Form Object to Models](4-map-form-objects-to-models)
    1. [Multiple Models Example](41-multiple-models-example)
    2. [Skip Attribute Mapping](42-skip-attribute-mapping)
@@ -72,12 +67,12 @@ model attributes name) and
 10. [Rails Example](10-rails-example)
 11. [Reference Guide](11-reference-guide-attribute-parameters)
 
-### 1. Definition
+### 1. `FormObj::Struct`
 
 Inherit your class from `FormObj::Struct` and define its attributes.
 
 ```ruby
-class SimpleStruct < FormObj::Struct
+class Team < FormObj::Struct
   attribute :name
   attribute :year
 end
@@ -86,43 +81,102 @@ end
 Read and write attribute values using dot-notation.
 
 ```ruby
-simple_struct = SimpleStruct.new    # => #<SimpleStruct name: nil, year: nil> 
-simple_struct.name = 'Ferrari'      # => "Ferrari"
-simple_struct.year = 1950           # => 1950
+team = Team.new             # => #<Team name: nil, year: nil> 
+team.name = 'Ferrari'       # => "Ferrari"
+team.year = 1950            # => 1950
 
-simple_struct.name                  # => "Ferrari"
-simple_struct.year                  # => 1950
+team.name                   # => "Ferrari"
+team.year                   # => 1950
 ```
 
 Initialize attributes in constructor.
 
 ```ruby
-simple_struct = SimpleStruct.new(
+team = Team.new(
     name: 'Ferrari', 
     year: 1950
-)                                   # => #<SimpleStruct name: "Ferrari", year: 1950>  
-simple_struct.name                  # => "Ferrari"
-simple_struct.year                  # => 1950
+)                           # => #<Team name: "Ferrari", year: 1950>  
+team.name                   # => "Ferrari"
+team.year                   # => 1950
 ```
 
-Initializing constructor with unknown attribute causes `UnknownAttributeError`
+Update attributes using `update_attributes` method.
 
 ```ruby
-SimpleStruct.new(a: 1)    # => FormObj::UnknownAttributeError: a
+team.update_attributes(
+    name: 'McLaren',
+    year: 1966
+)                           # => #<Team name: "McLaren", year: 1966>
+team.name                   # => "McLaren"
+team.year                   # => 1966
 ```
 
-In order to ignore unknown attributes instead of raising pass `raise_if_not_found: false` as the second parameter.
+In both cases (initialization or `update_attributes`) hash is transformed to `HashWithIndifferentAccess` before applying its values
+so it doesn't matter whether keys are symbols or strings.
 
 ```ruby
-SimpleStruct.new({a: 1}, raise_if_not_found: false)    # => #<SimpleStruct name: nil, year: nil> 
+team.update_attributes(
+    'name' => 'Ferrari', 
+    'year' => 1950
+)                           # => #<Team name: "Ferrari", year: 1950>
 ```
 
-#### 1.1. Nested Struct Objects
+Attribute value stays unchanged if hash doesn't have corresponding key.
+
+```ruby
+team = Team.new(name: 'Ferrari')    # => #<Team name: "Ferrari", year: nil>
+team.update_attributes(year: 1950)  # => #<Team name: "Ferrari", year: 1950>
+```
+
+Exception `UnknownAttributeError` is raised if there is key that doesn't correspond to any attribute.
+
+```ruby
+Team.new(name: 'Ferrari', a: 1)     # => FormObj::UnknownAttributeError: a
+Team.new.update_attributes(a: 1)    # => FormObj::UnknownAttributeError: a
+```
+
+Use parameter `raise_if_not_found: false` in order to avoid exception and silently skip unknown key in the hash.
+
+```ruby
+team = Team.new({
+    name: 'Ferrari', 
+    a: 1
+}, raise_if_not_found: false)    # => #<Team name: "Ferrari", year: nil> 
+
+team.update_attributes({
+    name: 'McLaren',
+    a: 1
+}, raise_if_not_found: false)    # => #<Team name: "McLaren", year: nil>
+```
+
+Define default attribute value using `default` parameter.
+Use `Proc` to calculate default value dynamically. 
+`Proc` is calculated only once at the moment of first access to attribute. 
+`Proc` receives two arguments:
+- `struct_class` - class (!!! not an instance) where attribute is defined
+- `attribute` - internal representation of attribute 
+
+```ruby
+class Team < FormObj::Struct
+  attribute :name, default: 'Ferrari'
+  attribute :year, default: ->(struct_class, attribute) { struct_class.default_year(attribute) }
+  
+  def self.default_year(attribute)
+    "#{attribute.name} = 1950"
+  end
+end
+
+team = Team.new      # => #<Team name: "Ferrari", year: "year = 1950"> 
+team.name            # => "Ferrari"  
+team.year            # => "year = 1950" 
+```
+
+#### 1.1. Nesting `FormObj::Struct`
 
 Use blocks to define nested structs.
 
 ```ruby
-class NestedStruct < FormObj::Struct
+class Team < FormObj::Struct
   attribute :name
   attribute :year
   attribute :car do
@@ -139,45 +193,45 @@ end
 Or explicitly define nested struct classes.
 
 ```ruby
-class EngineStruct < FormObj::Struct
+class Engine < FormObj::Struct
   attribute :power
   attribute :volume
 end
-class CarStruct < FormObj::Struct
+class Car < FormObj::Struct
   attribute :code
   attribute :driver
-  attribute :engine, class: EngineStruct
+  attribute :engine, class: Engine
 end
-class NestedStruct < FormObj::Struct
+class Team < FormObj::Struct
   attribute :name
   attribute :year
-  attribute :car, class: CarStruct
+  attribute :car, class: Car
 end
 ```
 
 Read and write attribute values using dot-notation.
 
 ```ruby
-nested_struct = NestedStruct.new        # => #<NestedStruct name: nil, year: nil, car: #< code: nil, driver: nil, engine: #< power: nil, volume: nil>>> 
-nested_struct.name = 'Ferrari'          # => "Ferrari"
-nested_struct.year = 1950               # => 1950
-nested_struct.car.code = '340 F1'       # => "340 F1"
-nested_struct.car.driver = 'Ascari'     # => "Ascari"
-nested_struct.car.engine.power = 335    # => 335
-nested_struct.car.engine.volume = 4.1   # => 4.1
+team = Team.new                # => #<Team name: nil, year: nil, car: #< code: nil, driver: nil, engine: #< power: nil, volume: nil>>> 
+team.name = 'Ferrari'          # => "Ferrari"
+team.year = 1950               # => 1950
+team.car.code = '340 F1'       # => "340 F1"
+team.car.driver = 'Ascari'     # => "Ascari"
+team.car.engine.power = 335    # => 335
+team.car.engine.volume = 4.1   # => 4.1
 
-nested_struct.name                      # => "Ferrari"
-nested_struct.year                      # => 1950
-nested_struct.car.code                  # => "340 F1"
-nested_struct.car.driver                # => "Ascari"
-nested_struct.car.engine.power          # => 335
-nested_struct.car.engine.volume         # => 4.1
+team.name                      # => "Ferrari"
+team.year                      # => 1950
+team.car.code                  # => "340 F1"
+team.car.driver                # => "Ascari"
+team.car.engine.power          # => 335
+team.car.engine.volume         # => 4.1
 ```
 
-Initialize attributes in constructor.
+Initialize nested struct using nested hash.
 
 ```ruby
-nested_struct = NestedStruct.new(
+team = Team.new(
     name: 'Ferrari',
     year: 1950,
     car: {
@@ -188,23 +242,90 @@ nested_struct = NestedStruct.new(
             volume: 4.1,
         }
     }
-)                                       # => #<NestedStruct name: "Ferrari", year: 1950, car: #< code: "340 F1", driver: "Ascari", engine: #< power: 335, volume: 4.1>>>  
+)                        # => #<Team name: "Ferrari", year: 1950, car: #< code: "340 F1", driver: "Ascari", engine: #< power: 335, volume: 4.1>>>  
 
-nested_struct.name                      # => "Ferrari"
-nested_struct.year                      # => 1950
-nested_struct.car.code                  # => "340 F1"
-nested_struct.car.driver                # => "Ascari"
-nested_struct.car.engine.power          # => 335
-nested_struct.car.engine.volume         # => 4.1
+team.name                # => "Ferrari"
+team.year                # => 1950
+team.car.code            # => "340 F1"
+team.car.driver          # => "Ascari"
+team.car.engine.power    # => 335
+team.car.engine.volume   # => 4.1
 ```
 
-#### 1.2. Array of Struct Objects
-
-Specify attribute parameter `array: true` in order to define an array of structs. 
-Specify primary key for struct in array either on an attribute level:
+Update nested struct using nested hash.
 
 ```ruby
-class ArrayStruct < FormObj::Struct
+team.update_attributes(
+    name: 'McLaren',
+    year: 1966,
+    car: {
+      code: 'M2B',
+      driver: 'Bruce McLaren',
+      engine: {
+        power: 300,
+        volume: 3.0
+      }
+    }
+)                           # => #<Team name: "McLaren", year: 1966, car: #< code: "M2B", driver: "Bruce McLaren", engine: #< power: 300, volume: 3.0>>>
+
+team.name                   # => "McLaren"
+team.year                   # => 1966
+team.car.code               # => "M2B"
+team.car.driver             # => "Bruce McLaren"
+team.car.engine.power       # => 300
+team.car.engine.volume      # => 3.0
+```
+
+Use hash to define default value of nested struct defined with block.
+
+```ruby
+class Team < FormObj::Struct
+  attribute :car, default: { code: '340 F1', driver: 'Ascari' } do
+    attribute :code
+    attribute :driver
+  end
+end
+
+team = Team.new      # => #<Team car: #< code: "340 F1", driver: "Ascari">>  
+team.car.code        # => "340 F1"  
+team.car.driver      # => "Ascari" 
+```
+
+Use hash or struct instance to define default value of nested struct defined with class. 
+
+```ruby
+class Car < FormObj::Struct
+  attribute :code
+  attribute :driver
+end
+
+class Team < FormObj::Struct
+  attribute :car, class: Car, default: Car.new(code: '340 F1', driver: 'Ascari')
+end
+
+team = Team.new      # => #<Team car: #<Car code: "340 F1", driver: "Ascari">>  
+team.car.code        # => "340 F1"  
+team.car.driver      # => "Ascari" 
+```
+
+The struct instance class should correspond to nested attribute class!
+
+```ruby
+class Team < FormObj::Struct
+  attribute :car, class: Car, default: 36
+end
+
+Team.new      # => FormObj::WrongDefaultValueClass: FormObj::WrongDefaultValueClass  
+```
+
+#### 1.2. Array of `FormObj::Struct`
+
+Use parameter `array: true` in order to define an array of nested structs.
+Define `primary_key` so that `update_attribute` method be able to distinguish 
+whether to update existing array element or create a new one.  
+
+```ruby
+class Team < FormObj::Struct
   attribute :name
   attribute :year
   attribute :cars, array: true do
@@ -218,10 +339,10 @@ class ArrayStruct < FormObj::Struct
 end
 ```
 
-or on a struct level:
+or
 
 ```ruby
-class ArrayStruct < FormObj::Struct
+class Team < FormObj::Struct
   attribute :name
   attribute :year
   attribute :cars, array: true, primary_key: :code do     # <- primary key is specified on struct level
@@ -235,85 +356,85 @@ class ArrayStruct < FormObj::Struct
 end
 ```
 
-Or explicitly define each class with primary key defined either on attribute level:
+or
 
 ```ruby
-class EngineStruct < FormObj::Struct
+class Engine < FormObj::Struct
   attribute :power
   attribute :volume
 end
-class CarStruct < FormObj::Struct
+class Car < FormObj::Struct
   attribute :code, primary_key: true      # <- primary key is specified on attribute level
   attribute :driver
-  attribute :engine, class: EngineStruct
+  attribute :engine, class: Engine
 end
-class ArrayStruct < FormObj::Struct
+class Team < FormObj::Struct
   attribute :name
   attribute :year
-  attribute :cars, array: true, class: CarStruct
+  attribute :cars, array: true, class: Car
 end
 ```
 
-or on struct level:
+or
 
 ```ruby
-class EngineStruct < FormObj::Struct
+class Engine < FormObj::Struct
   attribute :power
   attribute :volume
 end
-class CarStruct < FormObj::Struct
+class Car < FormObj::Struct
   attribute :code
   attribute :driver
-  attribute :engine, class: EngineStruct
+  attribute :engine, class: Engine
 end
-class ArrayStruct < FormObj::Struct
+class Team < FormObj::Struct
   attribute :name
   attribute :year
-  attribute :cars, array: true, class: CarStruct, primary_key: :code      # <- primary key is specified on struct level 
+  attribute :cars, array: true, class: Car, primary_key: :code      # <- primary key is specified on struct level 
 end
 ```
 
 Read and write attribute values using dot-notation.
-Add new elements in the array using method :create.
+Add new elements in the array using method `create`.
 
 ```ruby
-array_struct = ArrayStruct.new        # => #<ArrayStruct name: nil, year: nil, cars: []>
-array_struct.name = 'Ferrari'         # => "Ferrari"
-array_struct.year = 1950              # => 1950
+team = Team.new               # => #<Team name: nil, year: nil, cars: []>
+team.name = 'Ferrari'         # => "Ferrari"
+team.year = 1950              # => 1950
 
-array_struct.cars.size 				  # => 0
-car1 = array_struct.cars.create       # => #< code: nil, driver: nil, engine: #< power: nil, volume: nil>> 
-array_struct.cars.size 				  # => 1
-car1.code = '340 F1'                  # => "340 F1"
-car1.driver = 'Ascari'                # => "Ascari"
-car1.engine.power = 335               # => 335
-car1.engine.volume = 4.1              # => 4.1
+team.cars.size 				  # => 0
+car1 = team.cars.create       # => #< code: nil, driver: nil, engine: #< power: nil, volume: nil>> 
+team.cars.size 				  # => 1
+car1.code = '340 F1'          # => "340 F1"
+car1.driver = 'Ascari'        # => "Ascari"
+car1.engine.power = 335       # => 335
+car1.engine.volume = 4.1      # => 4.1
 
-car2 = array_struct.cars.create       # => #< code: nil, driver: nil, engine: #< power: nil, volume: nil>>
-array_struct.cars.size 				  # => 2
-car2.code = '275 F1'                  # => "275 F1"        
-car2.driver = 'Villoresi'             # => "Villoresi"                
-car2.engine.power = 330               # => 330              
-car2.engine.volume = 3.3              # => 3.3                
+car2 = team.cars.create       # => #< code: nil, driver: nil, engine: #< power: nil, volume: nil>>
+team.cars.size 				  # => 2
+car2.code = '275 F1'          # => "275 F1"        
+car2.driver = 'Villoresi'     # => "Villoresi"                
+car2.engine.power = 330       # => 330              
+car2.engine.volume = 3.3      # => 3.3                
 
-array_struct.name                     # => "Ferrari"
-array_struct.year                     # => 1950
+team.name                     # => "Ferrari"
+team.year                     # => 1950
 
-array_struct.cars[0].code             # => "340 F1"
-array_struct.cars[0].driver           # => "Ascari"
-array_struct.cars[0].engine.power     # => 335
-array_struct.cars[0].engine.volume    # => 4.1
+team.cars[0].code             # => "340 F1"
+team.cars[0].driver           # => "Ascari"
+team.cars[0].engine.power     # => 335
+team.cars[0].engine.volume    # => 4.1
 
-array_struct.cars[1].code             # => "275 F1"
-array_struct.cars[1].driver           # => "Villoresi"
-array_struct.cars[1].engine.power     # => 330
-array_struct.cars[1].engine.volume    # => 3.3
+team.cars[1].code             # => "275 F1"
+team.cars[1].driver           # => "Villoresi"
+team.cars[1].engine.power     # => 330
+team.cars[1].engine.volume    # => 3.3
 ```
 
-Initialize attributes in constructor.
+Initialize attributes using hash with array of hashes.
 
 ```ruby
-array_struct = ArrayStruct.new(
+team = Team.new(
     name: 'Ferrari',
     year: 1950,
     cars: [
@@ -333,102 +454,78 @@ array_struct = ArrayStruct.new(
           }
       }
     ],
-)                                     # => #<ArrayStruct name: "Ferrari", year: 1950, cars: [#< code: "340 F1", driver: "Ascari", engine: #< power: 335, volume: 4.1>>, #< code: "275 F1", driver: "Villoresi", engine: #< power: 330, volume: 3.3>>]>
+)                             # => #<Team name: "Ferrari", year: 1950, cars: [#< code: "340 F1", driver: "Ascari", engine: #< power: 335, volume: 4.1>>, #< code: "275 F1", driver: "Villoresi", engine: #< power: 330, volume: 3.3>>]>
                             
-array_struct.name                     # => "Ferrari"
-array_struct.year                     # => 1950
+team.name                     # => "Ferrari"
+team.year                     # => 1950
 
-array_struct.cars[0].code             # => "340 F1"
-array_struct.cars[0].driver           # => "Ascari"
-array_struct.cars[0].engine.power     # => 335
-array_struct.cars[0].engine.volume    # => 4.1
+team.cars[0].code             # => "340 F1"
+team.cars[0].driver           # => "Ascari"
+team.cars[0].engine.power     # => 335
+team.cars[0].engine.volume    # => 4.1
 
-array_struct.cars[1].code             # => "275 F1"
-array_struct.cars[1].driver           # => "Villoresi"
-array_struct.cars[1].engine.power     # => 330
-array_struct.cars[1].engine.volume    # => 3.3
+team.cars[1].code             # => "275 F1"
+team.cars[1].driver           # => "Villoresi"
+team.cars[1].engine.power     # => 330
+team.cars[1].engine.volume    # => 3.3
 ```
 
-#### 1.3 Default value
-
-Define default attribute value using `default` parameter.
-Use `Proc` to calculate default value dynamically. 
-`Proc` is calculated only once at the moment of first access to attribute. 
-`Proc` receives two arguments:
-- `struct_class` - class (!!! not an instance) where attribute is defined
-- `attribute` - internal representation of attribute 
+Update attributes using hash with array of hashes.
 
 ```ruby
-class SimpleStruct < FormObj::Struct
-  attribute :name, default: 'Ferrari'
-  attribute :year, default: ->(struct_class, attribute) { struct_class.default_year(attribute) }
-  
-  def self.default_year(attribute)
-    "#{attribute.name} = 1950"
-  end
-end
+team.update_attributes(
+    name: 'McLaren',
+    year: 1966,
+    cars: [
+      {
+          code: '275 F1',
+          driver: 'Bruce McLaren',
+          engine: {
+              volume: 3.0
+          }
+      }, {
+          code: 'M7A',
+          driver: 'Denis Hulme',
+          engine: {
+              power: 415,
+          }
+      }
+    ],
+)                               # => #<Team name: "McLaren", year: 1966, cars: [#< code: "M2B", driver: "Bruce McLaren", engine: #< power: nil, volume: 3.0>>, #< code: "M7A", driver: "Denis Hulme", engine: #< power: 415, volume: nil>>]>
+                            
+team.name                       # => "McLaren"
+team.year                       # => 1966
 
-simple_struct = SimpleStruct.new      # => #<SimpleStruct name: "Ferrari", year: "year = 1950"> 
-simple_struct.name                    # => "Ferrari"  
-simple_struct.year                    # => "year = 1950" 
+team.cars[0].code               # => "275 F1"
+team.cars[0].driver             # => "Bruce McLaren"
+team.cars[0].engine.power       # => 330    - this value was not updated in :update_attributes method
+team.cars[0].engine.volume      # => 3.0
+
+team.cars[1].code               # => "M7A"
+team.cars[1].driver             # => "Denis Hulme"
+team.cars[1].engine.power       # => 415
+team.cars[1].engine.volume      # => nil    - this value is nil because this car was created in :updated_attributes method
 ```
 
-##### 1.3.1 Default Nested Struct Object
-
-Use hash to define default value of nested struct object defined with block.
+Use array of hashes to define default array of nested structs defined with block.
 
 ```ruby
-class NestedStruct < FormObj::Struct
-  attribute :car, default: { code: '340 F1', driver: 'Ascari' } do
-    attribute :code
-    attribute :driver
-  end
-end
-
-nested_struct = NestedStruct.new      # => #<NestedStruct car: #< code: "340 F1", driver: "Ascari">>  
-nested_struct.car.code                # => "340 F1"  
-nested_struct.car.driver              # => "Ascari" 
-```
-
-Use hash or struct instance to define default value of nested object defined with class. 
-The struct instance class should correspond to nested attribute class!
-
-```ruby
-class Car < FormObj::Struct
-  attribute :code
-  attribute :driver
-end
-
-class NestedStruct < FormObj::Struct
-  attribute :car, class: Car, default: Car.new(code: '340 F1', driver: 'Ascari')
-end
-
-nested_struct = NestedStruct.new      # => #<NestedStruct car: #<Car code: "340 F1", driver: "Ascari">>  
-nested_struct.car.code                # => "340 F1"  
-nested_struct.car.driver              # => "Ascari" 
-```
-
-##### 1.3.2 Default Array of Struct Objects
-
-Use array of hashes to define default array of nested struct objects defined with block.
-
-```ruby
-class ArrayStruct < FormObj::Struct
+class Team < FormObj::Struct
   attribute :cars, array: true, default: [{ code: '340 F1', driver: 'Ascari' }, { code: '275 F1', driver: 'Villoresi' }] do
     attribute :code
     attribute :driver
   end
 end
 
-array_struct = ArrayStruct.new      # => #<ArrayStruct cars: [#< code: "340 F1", driver: "Ascari">, #< code: "275 F1", driver: "Villoresi">]>   
-array_struct.cars.size              # => 2  
-array_struct.cars[0].code           # => "340 F1"  
-array_struct.cars[0].driver         # => "Ascari"  
-array_struct.cars[1].code           # => "275 F1"  
-array_struct.cars[1].driver         # => "Villoresi"  
+team = Team.new         # => #<Team cars: [#< code: "340 F1", driver: "Ascari">, #< code: "275 F1", driver: "Villoresi">]>   
+team.cars.size          # => 2  
+team.cars[0].code       # => "340 F1"  
+team.cars[0].driver     # => "Ascari"  
+team.cars[1].code       # => "275 F1"  
+team.cars[1].driver     # => "Villoresi"  
 ```
 
-Use array of hashes or struct instances to define default array of nested struct objects defined with class.
+Use array of hashes or struct instances to define default array of nested structs defined with class.
 
 ```ruby
 class Car < FormObj::Struct
@@ -436,84 +533,47 @@ class Car < FormObj::Struct
   attribute :driver
 end
 
-class ArrayStruct < FormObj::Struct
+class Team < FormObj::Struct
   attribute :cars, class: Car, array: true, default: [Car.new(code: '340 F1', driver: 'Ascari'), { code: '275 F1', driver: 'Villoresi' }]
 end
 
-array_struct = ArrayStruct.new      # => #<ArrayStruct cars: [#<Car code: "340 F1", driver: "Ascari">, #<Car code: "275 F1", driver: "Villoresi">]>    
-array_struct.cars.size              # => 2  
-array_struct.cars[0].code           # => "340 F1"  
-array_struct.cars[0].driver         # => "Ascari"  
-array_struct.cars[1].code           # => "275 F1"  
-array_struct.cars[1].driver         # => "Villoresi"  
+team = Team.new         # => #<Team cars: [#<Car code: "340 F1", driver: "Ascari">, #<Car code: "275 F1", driver: "Villoresi">]>    
+team.cars.size          # => 2  
+team.cars[0].code       # => "340 F1"  
+team.cars[0].driver     # => "Ascari"  
+team.cars[1].code       # => "275 F1"  
+team.cars[1].driver     # => "Villoresi"  
 ```
 
-### 2. Update Attributes
-
-Update form object attributes with the hash of new values. 
-Method `update_attributes(new_attrs_hash, options_hash = {})` returns self so one can chain calls.
+The struct instance class should correspond to nested attribute class!
 
 ```ruby
-simple_struct = SimpleStruct.new(name: 'Ferrari', year: 1950)   # => #<SimpleStruct name: "Ferrari", year: 1950> 
-simple_struct.update_attributes(
-                                  name: 'McLaren',
-                                  year: 1966
-                               )                                # => #<SimpleStruct name: "McLaren", year: 1966>  
-simple_struct.name                                              # => "McLaren"                             
-simple_struct.year                                              # => 1966                             
+class Team < FormObj::Struct
+  attribute :cars, class: Car, array: true, default: [36]
+end
+
+Team.new      # => FormObj::WrongDefaultValueClass: FormObj::WrongDefaultValueClass  
 ```
 
-`options_hash` can have `:raise_if_not_found` key which has `true` value by default.
-If `new_attrs_hash` has key that does not correspond to any attributes 
-and `raise_if_not_found` is `true` than `UnknownAttributeError` will be generated.
-`raise_if_not_found` equals to `false` prevents error generation 
-and non existent attribute will be just ignored.
+#### 1.3. Serialize `FormObj::Struct` to Hash
+
+Call `to_hash()` method in order to get a hash representation of `FormObj::Struct`
 
 ```ruby
-simple_struct.update_attributes(a: 1)                                 # => FormObj::UnknownAttributeError: a
-simple_struct.update_attributes({ a: 1 }, raise_if_not_found: true)   # => FormObj::UnknownAttributeError: a
-simple_struct.update_attributes({ a: 1 }, raise_if_not_found: false)  # => => #<SimpleStruct name: "Ferrari", year: 1950> 
-```
+class Team < FormObj::Struct
+  attribute :name
+  attribute :year
+  attribute :cars, array: true do
+    attribute :code, primary_key: true
+    attribute :driver
+    attribute :engine do
+      attribute :power
+      attribute :volume
+    end
+  end
+end
 
-#### 2.1. Update Attributes of Nested Struct
-
-```ruby
-nested_struct = NestedStruct.new(
-    name: 'Ferrari',
-    year: 1950,
-    car: {
-        code: '340 F1',
-        driver: 'Ascari',
-        engine: {
-            power: 335,
-            volume: 4.1,
-        }
-    }
-)                                                               # => #<NestedStruct name: "Ferrari", year: 1950, car: #< code: "340 F1", driver: "Ascari", engine: #< power: 335, volume: 4.1>>>
-nested_struct.update_attributes(
-                                    name: 'McLaren',
-                                    year: 1966,
-                                    car: {
-                                      code: 'M2B',
-                                      driver: 'Bruce McLaren',
-                                      engine: {
-                                        power: 300,
-                                        volume: 3.0
-                                      }
-                                    }
-                               )                                # => #<NestedStruct name: "McLaren", year: 1966, car: #< code: "M2B", driver: "Bruce McLaren", engine: #< power: 300, volume: 3.0>>>
-nested_struct.name                                              # => "McLaren"
-nested_struct.year                                              # => 1966
-nested_struct.car.code                                          # => "M2B"
-nested_struct.car.driver                                        # => "Bruce McLaren"
-nested_struct.car.engine.power                                  # => 300
-nested_struct.car.engine.volume                                 # => 3.0
-```
-
-#### 2.2. Update Attributes of Array of Structs
-
-```ruby
-array_struct = ArrayStruct.new(
+team = Team.new(
     name: 'Ferrari',
     year: 1950,
     cars: [
@@ -533,93 +593,45 @@ array_struct = ArrayStruct.new(
           }
       }
     ],
-)                                                                   # => #<ArrayStruct name: "Ferrari", year: 1950, cars: [#< code: "340 F1", driver: "Ascari", engine: #< power: 335, volume: 4.1>>, #< code: "275 F1", driver: "Villoresi", engine: #< power: 330, volume: 3.3>>]> 
+)                 # => #<Team name: "Ferrari", year: 1950, cars: [#< code: "340 F1", driver: "Ascari", engine: #< power: 335, volume: 4.1>>, #< code: "275 F1", driver: "Villoresi", engine: #< power: 330, volume: 3.3>>]>
 
-array_struct.update_attributes(
-                                  name: 'McLaren',
-                                  year: 1966,
-                                  cars: [
-                                      {
-                                          code: '275 F1',
-                                          driver: 'Bruce McLaren',
-                                          engine: {
-                                              volume: 3.0
-                                          }
-                                      }, {
-                                          code: 'M7A',
-                                          driver: 'Denis Hulme',
-                                          engine: {
-                                              power: 415,
-                                          }
-                                      }
-                                  ],
-                              )                                     # => #<ArrayStruct name: "McLaren", year: 1966, cars: [#< code: "M2B", driver: "Bruce McLaren", engine: #< power: nil, volume: 3.0>>, #< code: "M7A", driver: "Denis Hulme", engine: #< power: 415, volume: nil>>]>
-                            
-array_struct.name                                                   # => "McLaren"
-array_struct.year                                                   # => 1966
-
-array_struct.cars[0].code                                           # => "275 F1"
-array_struct.cars[0].driver                                         # => "Bruce McLaren"
-array_struct.cars[0].engine.power                                   # => 330    - this value was not updated in update_attributes
-array_struct.cars[0].engine.volume                                  # => 3.0
-
-array_struct.cars[1].code                                           # => "M7A"
-array_struct.cars[1].driver                                         # => "Denis Hulme"
-array_struct.cars[1].engine.power                                   # => 415
-array_struct.cars[1].engine.volume                                  # => nil    - this value is nil because this car was created in updated_attributes
+team.to_hash      # => {
+                  # =>    :name => "Ferrari",
+                  # =>    :year => 1950,
+                  # =>    :cars => [{
+                  # =>      :code => "340 F1",
+                  # =>      :driver => "Ascari",
+                  # =>      :engine => {
+                  # =>        :power => 335,
+                  # =>        :volume => 4.1
+                  # =>      }
+                  # =>    }, {
+                  # =>      :code => "275 F1",
+                  # =>      :driver => "Villoresi",
+                  # =>      :engine => {
+                  # =>        :power => 330,
+                  # =>        :volume => 3.3
+                  # =>      }
+                  # =>    }] 
+                  # => }
 ```
 
-### 3. Serialize to Hash
 
-Call `to_hash()` method in order to get a hash representation of the form object
 
-```ruby
-simple_struct.to_hash     # => {
-                          # =>    :name => "McLaren",
-                          # =>    :year => 1966  
-                          # => }
-```
 
-#### 3.1. Serialize to Hash Nested Struct
 
-```ruby
-nested_struct.to_hash     # => {
-                          # =>    :name => "McLaren",
-                          # =>    :year => 1966,
-                          # =>    :car  => {
-                          # =>      :code => "340 F1",
-                          # =>      :driver => "Ascari",
-                          # =>      :engine => {
-                          # =>        :power => 335,
-                          # =>        :volume => 4.1
-                          # =>      }   
-                          # =>    }
-                          # => }
-```
 
-#### 3.2. Serialize to Hash Array of Structs
 
-```ruby
-array_struct.to_hash      # => {
-                          # =>    :name => "McLaren",
-                          # =>    :year => 1966,
-                          # =>    :cars => [{
-                          # =>      :code => "M2B",
-                          # =>      :driver => "Bruce McLaren",
-                          # =>      :engine => {
-                          # =>        :power => 300,
-                          # =>        :volume => 3.0
-                          # =>      }
-                          # =>    }, {
-                          # =>      :code => "M7A",
-                          # =>      :driver => "Denis Hulme",
-                          # =>      :engine => {
-                          # =>        :power => 415,
-                          # =>        : volume => nil
-                          # =>      }
-                          # =>    }] 
-                          # => }
-```
+
+
+
+
+
+
+
+
+
+
 
 
 ### 4. Using Form Object in Form Builder
@@ -1231,6 +1243,7 @@ end
 | --- |:---:|:---:|:---:| --- |
 | array | block* or `:class`** | `false` | `FormObj::Struct` | This attribute is an array of form objects. The structure of array element form object is described either in the block or in the separate class referenced by `:class` parameter |
 | class | - | - | `FormObj::Struct` | This attribute is either nested form object or array of form objects. The value of this parameter is the class of this form object or the name of the class. |
+| default | - | - | `FormObj::Struct` | Defines default value for the attribute. Nested structures default value can be defined either with Hash or with object. | 
 | model_hash | block* or `:class`** | `false` | `FormObj::ModelMapper` | This attribute is either nested form object or array of form objects. This form object is mapped to a model of the class `Hash` so all its attributes should be accessed by `[:<attribute_name>]` instead of `.<attribute_name>` | 
 | model | - | `:default` | `FormObj::ModelMapper` | The name of the model to which this attribute is mapped |
 | model_attribute | - | `<attribute_name>` | `FormObj::ModelMapper` | The name of the model attribute to which this form object attribute is mapped. Dot notation is used in order to map to nested model, ex. `"car.engine.power"`. Colon is used in front of the name if the model is hash, ex. `"car.:engine.power"` - means call to `#car` returns `Hash` so the model attribute should be accessed like `car[:engine].power`. `false` value means that attribute is not mapped. |
