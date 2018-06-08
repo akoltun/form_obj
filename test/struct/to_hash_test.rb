@@ -1,6 +1,6 @@
 require "test_helper"
 
-class ToHashTest < Minitest::Test
+class StructToHashTest < Minitest::Test
   class Suspension < FormObj::Struct
     attribute :front
     attribute :rear
@@ -23,7 +23,7 @@ class ToHashTest < Minitest::Test
         attribute :power
         attribute :volume
       end
-      attribute :chassis, class: 'ToHashTest::Chassis'
+      attribute :chassis, class: 'StructToHashTest::Chassis'
     end
     attribute :colours, class: Colour, array: true, primary_key: :name
   end

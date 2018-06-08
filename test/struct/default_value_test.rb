@@ -1,6 +1,6 @@
 require "test_helper"
 
-class DefaultValueTest < Minitest::Test
+class StructDefaultValueTest < Minitest::Test
   class Suspension < FormObj::Struct
     attribute :front
     attribute :rear

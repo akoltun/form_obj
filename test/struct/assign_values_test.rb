@@ -1,6 +1,6 @@
 require "test_helper"
 
-class AssignValuesTest < Minitest::Test
+class StructAssignValuesTest < Minitest::Test
   class Suspension < FormObj::Struct
     attribute :front
     attribute :rear
@@ -23,7 +23,7 @@ class AssignValuesTest < Minitest::Test
         attribute :power
         attribute :volume
       end
-      attribute :chassis, class: 'AssignValuesTest::Chassis'
+      attribute :chassis, class: 'StructAssignValuesTest::Chassis'
     end
     attribute :colours, class: Colour, array: true
   end

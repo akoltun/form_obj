@@ -1,6 +1,6 @@
 require "test_helper"
 
-class DuplicateAttributeTest < Minitest::Test
+class StructDuplicateAttributeTest < Minitest::Test
   class Suspension < FormObj::Struct
     attribute :front, default: 'dependant'
     attribute :front
@@ -53,8 +53,8 @@ class DuplicateAttributeTest < Minitest::Test
         attribute :volume
       end
 
-      attribute :chassis, class: 'DuplicateAttributeTest::OldChassis'
-      attribute :chassis, class: 'DuplicateAttributeTest::Chassis'
+      attribute :chassis, class: 'StructDuplicateAttributeTest::OldChassis'
+      attribute :chassis, class: 'StructDuplicateAttributeTest::Chassis'
     end
 
     attribute :colours, class: Colour, array: true

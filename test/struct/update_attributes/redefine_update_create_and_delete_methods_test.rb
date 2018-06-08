@@ -1,22 +1,22 @@
 require "test_helper"
 
-class UpdateAttributesRedefineCreateUpdateDeleteMethodsTest < Minitest::Test
+class StructUpdateAttributesRedefineCreateUpdateDeleteMethodsTest < Minitest::Test
   class MyStruct < FormObj::Struct
     class Array < FormObj::Struct::Array
       private
 
-      def create_item(hash, raise_if_not_found:)
-        puts "Create new element from #{hash}"
+      def destroy_items(items)
+        items.each { |item| item._destroy = true; puts "Mark element #{item.primary_key} for destruction" }
+      end
+
+      def update_items(items, params)
+        items.each_pair { |item, attr_values| puts "Update element #{item.primary_key} with #{attr_values}" }
         super
       end
 
-      def delete_items(ids)
-        each do |item|
-          if ids.include? item.primary_key
-            item._destroy = true
-            puts "Mark item #{item.primary_key} for deletion"
-          end
-        end
+      def build_items(items, params)
+        items.each { |item| puts "Create new element from #{item}" }
+        super
       end
     end
 
@@ -40,13 +40,13 @@ class UpdateAttributesRedefineCreateUpdateDeleteMethodsTest < Minitest::Test
     attribute :name
     attribute :year
     attribute :cars, array: true, primary_key: :code do
+      attribute :_destroy, default: false
       attribute :code
       attribute :driver
       attribute :engine do
         attribute :power
         attribute :volume
       end
-      attr_accessor :_destroy
     end
   end
 
@@ -56,16 +56,17 @@ class UpdateAttributesRedefineCreateUpdateDeleteMethodsTest < Minitest::Test
     assert_output(
         "Update attribute :name value from  to Ferrari\n" +
             "Create new element from {\"code\"=>\"340 F1\"}\n" +
-            "Update attribute :code value from  to 340 F1\n" +
             "Create new element from {\"code\"=>\"275 F1\"}\n" +
+            "Update attribute :code value from  to 340 F1\n" +
             "Update attribute :code value from  to 275 F1\n"
     ) do
       team = Team.new(name: 'Ferrari', cars: [{ code: '340 F1' }, { code: '275 F1' }])
     end
 
     assert_output(
-        "Update attribute :code value from 275 F1 to 275 F1\n" +
-            "Mark item 340 F1 for deletion\n"
+        "Mark element 340 F1 for destruction\n" +
+        "Update element 275 F1 with {\"code\"=>\"275 F1\"}\n" +
+        "Update attribute :code value from 275 F1 to 275 F1\n"
     ) do
       team.update_attributes(cars: [{ code: '275 F1' }])
     end
