@@ -32,7 +32,7 @@ module FormObj
       end
     end
 
-    attr_accessor :persisted
+    attr_writer :persisted
     attr_reader :errors
 
     def initialize(*args)
@@ -45,14 +45,19 @@ module FormObj
       @persisted
     end
 
+    def mark_for_destruction
+      @marked_for_destruction = true
+    end
+
+    def marked_for_destruction?
+      @marked_for_destruction
+    end
+
+    private
+
     def _set_attribute_value(attribute, value)
       @persisted = false unless _get_attribute_value(attribute) === value
       super
-    end
-
-    def saved
-      @persisted = true
-      self
     end
   end
 end
