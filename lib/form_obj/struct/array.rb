@@ -17,7 +17,7 @@ module FormObj
         items_to_add = []
 
         vals.each do |val|
-          id = primary_key(val)
+          id = primary_key(HashWithIndifferentAccess.new(val))
           item = self.find { |i| i.primary_key == id }
           if item
             item.update_attributes(val, raise_if_not_found: raise_if_not_found)
@@ -44,7 +44,7 @@ module FormObj
       end
 
       def primary_key(hash)
-        hash.key?(item_class.primary_key.to_sym) ? hash[item_class.primary_key.to_sym] : hash[item_class.primary_key.to_s]
+        hash[item_class.primary_key]
       end
     end
   end
