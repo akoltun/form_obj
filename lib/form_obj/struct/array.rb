@@ -3,8 +3,8 @@ require 'typed_array'
 module FormObj
   class Struct
     class Array < TypedArray
-      def create
-        self << (item = create_item)
+      def create(hash = nil, raise_if_not_found: true)
+        self << (item = create_item(hash, raise_if_not_found: raise_if_not_found))
         item
       end
 
@@ -27,20 +27,23 @@ module FormObj
           end
         end
 
-        ids_to_remove = self.map(&:primary_key) - ids_exists
-        self.delete_if { |item| ids_to_remove.include? item.primary_key }
+        delete_items(self.map(&:primary_key) - ids_exists)
 
         items_to_add.each do |item|
-          self.create.update_attributes(item, raise_if_not_found: raise_if_not_found)
+          self << create_item(item, raise_if_not_found: raise_if_not_found)
         end
 
-        sort! { |a, b| vals.index { |val| primary_key(val) == a.primary_key } <=> vals.index { |val| primary_key(val) == b.primary_key } }
+        sort! { |a, b| (vals.index { |val| primary_key(val) == a.primary_key } || -1) <=> (vals.index { |val| primary_key(val) == b.primary_key } || -1) }
       end
 
       private
 
-      def create_item
-        item_class.new
+      def delete_items(ids)
+        self.delete_if { |item| ids.include? item.primary_key }
+      end
+
+      def create_item(hash, raise_if_not_found:)
+        item_class.new(hash, raise_if_not_found: raise_if_not_found)
       end
 
       def primary_key(hash)
