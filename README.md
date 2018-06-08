@@ -322,7 +322,8 @@ Team.new      # => FormObj::WrongDefaultValueClass: FormObj::WrongDefaultValueCl
 
 Use parameter `array: true` in order to define an array of nested structs.
 Define `primary_key` so that `update_attribute` method be able to distinguish 
-whether to update existing array element or create a new one.  
+whether to update existing array element or create a new one. 
+By default attribute `id` is considered to be a primary key.
 
 ```ruby
 class Team < FormObj::Struct
@@ -506,6 +507,88 @@ team.cars[1].driver             # => "Denis Hulme"
 team.cars[1].engine.power       # => 415
 team.cars[1].engine.volume      # => nil    - this value is nil because this car was created in :updated_attributes method
 ```
+
+Use `primary_key` method on class to get primary key attribute name.
+Use `primary_key` and `primary_key=` method on instance to get and set primary key attribute value.
+
+```ruby
+Team.primary_key                # => :id  - By default primary key is :id even if there is no such attribute
+Car.primary_key                 # => :code 
+team.cars.first.primary_key     # => "275 F1"
+team.cars.last.primary_key      # => "M7A"
+```
+
+`update_attributes` compares present elements in the array with new elements in hash by using primary key.
+By default `update_attributes`:
+- calls attribute setter under hood to update attribute value of present elements,
+- calls `FormObj::Struct` constructor to create all new elements (that exists in the hash but absent in the present array),
+- calls `delete_if` to delete all removed elements (that exists in the present array but absent in the hash).
+
+Default behaviour could be easily redefined by overwriting corresponding methods.
+
+```ruby
+class MyStruct < FormObj::Struct
+  class Array < FormObj::Struct::Array
+    private
+
+    def create_item(hash, raise_if_not_found:)
+      puts "Create new element from #{hash}"
+      super
+    end
+
+    def delete_items(ids)
+      each do |item|
+        if ids.include? item.primary_key
+          item._destroy = true
+          puts "Mark item #{item.primary_key} for deletion"
+        end
+      end
+    end
+  end
+
+  def self.array_class
+    MyStruct::Array
+  end
+
+  def self.nested_class
+    MyStruct
+  end
+
+  private
+
+  def update_attribute(attribute, new_value)
+    puts "Update attribute :#{attribute.name} value from #{send(attribute.name)} to #{new_value}"
+    super
+  end
+end
+
+class Team < MyStruct
+  attribute :name
+  attribute :year
+  attribute :cars, array: true, primary_key: :code do
+    attribute :code
+    attribute :driver
+    attribute :engine do
+      attribute :power
+      attribute :volume
+    end
+    attr_accessor :_destroy
+  end
+end
+
+team = Team.new(name: 'Ferrari', cars: [{ code: '340 F1' }, { code: '275 F1' }])
+# => Update attribute :name value from  to Ferrari
+# => Create new element from {"code"=>"340 F1"}
+# => Update attribute :code value from  to 340 F1
+# => Create new element from {"code"=>"275 F1"}
+# => Update attribute :code value from  to 275 F1
+# => => #<Team name: "Ferrari", year: nil, cars: [#< code: "340 F1", driver: nil, engine: #< power: nil, volume: nil>>, #< code: "275 F1", driver: nil, engine: #< power: nil, volume: nil>>]> 
+
+team.update_attributes(cars: [{ code: '275 F1' }])
+# => Update attribute :code value from 275 F1 to 275 F1
+# => Mark item 340 F1 for deletion
+# => => #<Team name: "Ferrari", year: nil, cars: [#< code: "340 F1", driver: nil, engine: #< power: nil, volume: nil>>, #< code: "275 F1", driver: nil, engine: #< power: nil, volume: nil>>]> 
+``` 
 
 Use array of hashes to define default array of nested structs defined with block.
 

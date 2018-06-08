@@ -61,7 +61,7 @@ module FormObj
 
     def initialize(*args)
       super()
-      update_attributes(*args) if args.size > 0
+      update_attributes(*args) if args.size > 0 && args[0]
     end
 
     def primary_key
@@ -81,7 +81,7 @@ module FormObj
           if attr.subform?
             self.send(new_attr).update_attributes(new_val, raise_if_not_found: raise_if_not_found)
           else
-            self.send("#{new_attr}=", new_val)
+            update_attribute(attr, new_val)
           end
         end
       end
@@ -98,6 +98,10 @@ module FormObj
     end
 
     private
+
+    def update_attribute(attribute, new_value)
+      self.send("#{attribute.name}=", new_value)
+    end
 
     def _get_attribute_value(attribute)
       value = instance_variable_get("@#{attribute.name}")
