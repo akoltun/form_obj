@@ -1,6 +1,14 @@
 module FormObj
   class Form < FormObj::Struct
-    class Array < FormObj::Struct::Array;
+    class Array < FormObj::Struct::Array
+      def persisted?
+        all?(&:persisted?)
+      end
+
+      def mark_as_persisted
+        each(&:mark_as_persisted)
+      end
+
       private
 
       # items_to_add - array of hashes of new attribute values

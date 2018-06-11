@@ -42,7 +42,17 @@ module FormObj
     end
 
     def persisted?
-      @persisted
+      @persisted && self.class._attributes.reduce(true) { |persisted, attr|
+        persisted && (!attr.subform? || read_attribute(attr).persisted?)
+      }
+    end
+
+    def mark_as_persisted
+      self.persisted = true
+      self.class._attributes.each { |attr|
+        read_attribute(attr).mark_as_persisted if attr.subform?
+      }
+      self
     end
 
     def mark_for_destruction
@@ -50,6 +60,7 @@ module FormObj
       self.class._attributes.each { |attr|
         read_attribute(attr).mark_for_destruction if attr.subform?
       }
+      self.persisted = false
       self
     end
 
