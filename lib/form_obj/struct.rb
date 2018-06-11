@@ -73,7 +73,8 @@ module FormObj
     end
 
     def update_attributes(new_attrs, raise_if_not_found: true)
-      HashWithIndifferentAccess.new(new_attrs).each_pair do |new_attr, new_val|
+      new_attrs = HashWithIndifferentAccess.new(new_attrs) unless new_attrs.is_a? HashWithIndifferentAccess
+      new_attrs.each_pair do |new_attr, new_val|
         attr = self.class._attributes.find(new_attr)
         if attr.nil?
           raise UnknownAttributeError.new(new_attr) if raise_if_not_found

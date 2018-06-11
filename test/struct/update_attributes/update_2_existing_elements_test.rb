@@ -1,6 +1,6 @@
 require "test_helper"
 
-class UpdateAttributesOfTwoExistingElementsTest < Minitest::Test
+class StructUpdateAttributesOfTwoExistingElementsTest < Minitest::Test
   class Suspension < FormObj::Struct
     attribute :front
     attribute :rear
@@ -23,7 +23,7 @@ class UpdateAttributesOfTwoExistingElementsTest < Minitest::Test
         attribute :power
         attribute :volume
       end
-      attribute :chassis, class: 'UpdateAttributesOfTwoExistingElementsTest::Chassis'
+      attribute :chassis, class: 'StructUpdateAttributesOfTwoExistingElementsTest::Chassis'
     end
     attribute :colours, class: Colour, array: true, primary_key: :name
   end

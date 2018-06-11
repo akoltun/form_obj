@@ -1,6 +1,6 @@
 require "test_helper"
 
-class UpdateAttributesAndRemoveTwoExistingElementsAndAddTwoNewElementsTest < Minitest::Test
+class StructUpdateAttributesAndRemoveThreeExistingElementsAndAddTwoNewElementsTest < Minitest::Test
   class Suspension < FormObj::Struct
     attribute :front
     attribute :rear
@@ -23,7 +23,7 @@ class UpdateAttributesAndRemoveTwoExistingElementsAndAddTwoNewElementsTest < Min
         attribute :power
         attribute :volume
       end
-      attribute :chassis, class: 'UpdateAttributesAndRemoveTwoExistingElementsAndAddTwoNewElementsTest::Chassis'
+      attribute :chassis, class: 'StructUpdateAttributesAndRemoveThreeExistingElementsAndAddTwoNewElementsTest::Chassis'
     end
     attribute :colours, class: Colour, array: true, primary_key: :name
   end

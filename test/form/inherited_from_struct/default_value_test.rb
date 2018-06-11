@@ -1,17 +1,17 @@
 require "test_helper"
 
-class StructDefaultValueTest < Minitest::Test
-  class Suspension < FormObj::Struct
+class FormDefaultValueTest < Minitest::Test
+  class Suspension < FormObj::Form
     attribute :front
     attribute :rear
   end
 
-  class Chassis < FormObj::Struct
+  class Chassis < FormObj::Form
     attribute :suspension, class: Suspension
     attribute :brakes
   end
 
-  class Car < FormObj::Struct
+  class Car < FormObj::Form
     attribute :code, primary_key: true
     attribute :driver
     attribute :engine, default: ->(struct_class, attribute) { {power: 100, volume: 5.0} } do
@@ -25,7 +25,7 @@ class StructDefaultValueTest < Minitest::Test
     end
   end
 
-  class Team < FormObj::Struct
+  class Team < FormObj::Form
     attribute :name, default: 'Ferrari'
     attribute :year, default: ->(struct_class, attribute) { struct_class.default_year(attribute) }
 

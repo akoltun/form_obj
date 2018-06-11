@@ -1,7 +1,7 @@
 require "test_helper"
 
-class StructDuplicateAttributeTest < Minitest::Test
-  class Suspension < FormObj::Struct
+class FormDuplicateAttributeTest < Minitest::Test
+  class Suspension < FormObj::Form
     attribute :front, default: 'dependant'
     attribute :front
 
@@ -12,22 +12,22 @@ class StructDuplicateAttributeTest < Minitest::Test
     attribute :rear, default: 'de Dion'
   end
 
-  class OldChassis < FormObj::Struct
+  class OldChassis < FormObj::Form
     attribute :old_suspension, class: Suspension
     attribute :old_brakes
   end
 
-  class Chassis < FormObj::Struct
+  class Chassis < FormObj::Form
     attribute :suspension, class: Suspension
     attribute :brakes
   end
 
-  class Colour < FormObj::Struct
+  class Colour < FormObj::Form
     attribute :name
     attribute :rgb
   end
 
-  class Team < FormObj::Struct
+  class Team < FormObj::Form
     attribute :full_name, default: 'Scuderia Ferrari'
     attribute :full_name
 
@@ -53,8 +53,8 @@ class StructDuplicateAttributeTest < Minitest::Test
         attribute :volume
       end
 
-      attribute :chassis, class: 'StructDuplicateAttributeTest::OldChassis'
-      attribute :chassis, class: 'StructDuplicateAttributeTest::Chassis'
+      attribute :chassis, class: 'FormDuplicateAttributeTest::OldChassis'
+      attribute :chassis, class: 'FormDuplicateAttributeTest::Chassis'
     end
 
     attribute :colours, class: Colour, array: true

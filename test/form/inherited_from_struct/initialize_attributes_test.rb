@@ -1,19 +1,19 @@
 require "test_helper"
 
-class StructInitializeAttributesTest < Minitest::Test
-  class Suspension < FormObj::Struct
+class FormInitializeAttributesTest < Minitest::Test
+  class Suspension < FormObj::Form
     attribute :front
     attribute :rear
   end
-  class Chassis < FormObj::Struct
+  class Chassis < FormObj::Form
     attribute :suspension, class: Suspension
     attribute :brakes
   end
-  class Colour < FormObj::Struct
+  class Colour < FormObj::Form
     attribute :name
     attribute :rgb
   end
-  class Team < FormObj::Struct
+  class Team < FormObj::Form
     attribute :name
     attribute :year
     attribute :cars, array: true do
@@ -23,7 +23,7 @@ class StructInitializeAttributesTest < Minitest::Test
         attribute :power
         attribute :volume
       end
-      attribute :chassis, class: 'StructInitializeAttributesTest::Chassis'
+      attribute :chassis, class: 'FormInitializeAttributesTest::Chassis'
     end
     attribute :colours, class: Colour, array: true, primary_key: :name
   end

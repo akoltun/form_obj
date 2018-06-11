@@ -32,7 +32,7 @@ module FormObj
       end
     end
 
-    attr_accessor :persisted
+    attr_writer :persisted
     attr_reader :errors
 
     def initialize(*args)
@@ -45,14 +45,23 @@ module FormObj
       @persisted
     end
 
+    def mark_for_destruction
+      @marked_for_destruction = true
+      self.class._attributes.each { |attr|
+        read_attribute(attr).mark_for_destruction if attr.subform?
+      }
+      self
+    end
+
+    def marked_for_destruction?
+      @marked_for_destruction ||= false
+    end
+
+    private
+
     def _set_attribute_value(attribute, value)
       @persisted = false unless _get_attribute_value(attribute) === value
       super
-    end
-
-    def saved
-      @persisted = true
-      self
     end
   end
 end
