@@ -47,10 +47,14 @@ module FormObj
 
     def mark_for_destruction
       @marked_for_destruction = true
+      self.class._attributes.each { |attr|
+        read_attribute(attr).mark_for_destruction if attr.subform?
+      }
+      self
     end
 
     def marked_for_destruction?
-      @marked_for_destruction
+      @marked_for_destruction ||= false
     end
 
     private

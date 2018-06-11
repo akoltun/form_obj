@@ -699,96 +699,100 @@ team.to_hash      # => {
                   # => }
 ```
 
+### 2. `FormObj::Form`
 
+`FormObj::Form` is inherited from `FormObj::Struct` and adds support for Rails compatible form builders and ActiveModel validations. 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-### 4. Using Form Object in Form Builder
-
-Inherit your class from `FormObj::Form` in order to use it in form builder.
+#### 2.1. `FormObj::Form` Validation
 
 ```ruby
-class SimpleForm < FormObj::Form
+class Team < FormObj::Form
   attribute :name
   attribute :year
+  
+  validates :name, length: { minimum: 10 }
 end
 
-@simple_form = SimpleForm.new
+team = Team.new(name: 'Ferrari')      # => #<Team name: "Ferrari", year: nil> 
+team.valid?                           # => false
+team.errors.messages                  # => {:name=>["is too short (minimum is 10 characters)"]} 
 ```
 
-```erb
-<%= form_for(@simple_form) do |f| %>
-  <%= f.label :name %>
-  <%= f.text_field :name %>
 
-  <%= f.label :year %>
-  <%= f.text_field :year %>
-<% end %>
-```
 
-#### 4.1. Nested Form Objects in Form Builder
+
+
+
+
+
+
+
+
+
+
+
+#### 2.3. Delete from Array of `FormObj::Form` via `update_attributes` method
+
+`FormObj::Struct` `update_attributes` method by default deletes all array elements that are not present in the new hash.
 
 ```ruby
-class NestedForm < FormObj::Form
-  attribute :name
-  attribute :year
-  attribute :car do
+class Team < FormObj::Struct
+  attribute :cars, array: true, primary_key: :code do
     attribute :code
     attribute :driver
-    attribute :engine do
-      attribute :power
-      attribute :volume
-    end
   end
 end
 
-@nested_form = NestedForm.new
+team = Team.new(cars: [{code: 1, driver: 'Ascari'}, {code: 2, driver: 'Villoresi'}])
+team.update_attributes(cars: [{code: 1}])
+team.cars     # => [#< code: 1, driver: "Ascari">]                                     
 ```
 
-```erb
-<%= form_for(@nested_form) do |f| %>
-  <%= f.label :name %>
-  <%= f.text_field :name %>
-
-  <%= f.label :year %>
-  <%= f.text_field :year %>
-
-  <%= f.fields_for(:car) do |fc| %>
-    <%= fc.label :code %>
-    <%= fc.text_field :code %>
-
-    <%= fc.label :driver %>
-    <%= fc.text_field :driver %>
-
-    <%= fc.field_for(:engine) do |fce| %>
-      <%= fce.label :power %>
-      <%= fce.text_field :power %>
-
-      <%= fce.label :volume %>
-      <%= fce.text_field :volume %>
-    <% end %>
-  <% end %>
-<% end %>
-```
-
-#### 4.2. Array of Form Objects in Form Builder
+In oppose to this `FormObj::Form` `update_attributes` method ignores elements that are absent in the hash but
+marks for destruction those elements that has `_destroy: true` key in the hash.
 
 ```ruby
-class ArrayForm < FormObj::Form
+class Team < FormObj::Form
+  attribute :cars, array: true, primary_key: :code do
+    attribute :code
+    attribute :driver
+  end
+end
+
+team = Team.new(cars: [{code: 1, driver: 'Ascari'}, {code: 2, driver: 'Villoresi'}])
+team.update_attributes(cars: [{code: 2, driver: 'James Hunt'}])
+
+team.cars[0].code                       # => 1
+team.cars[0].driver                     # => 'Ascari'
+team.cars[0].marked_for_destruction?    # => false
+
+team.cars[1].code                       # => 2
+team.cars[1].driver                     # => 'James Hunt'
+team.cars[1].marked_for_destruction?    # => false
+
+team.update_attributes(cars: [{code: 1, _destroy: true}])
+
+team.cars[0].code                       # => 2
+team.cars[0].driver                     # => 'James Hunt'
+team.cars[0].marked_for_destruction?    # => false
+
+team.cars[1].code                       # => 1
+team.cars[1].driver                     # => 'Ascari'
+team.cars[1].marked_for_destruction?    # => true                                 
+```
+
+Use `mark_for_destruction` in order to forcefully mark an array element for destruction.
+
+```ruby
+team.cars[0].marked_for_destruction?    # => false
+team.cars[0].mark_for_destruction      
+team.cars[0].marked_for_destruction?    # => true
+```
+
+#### 2.4. Using `FormObj::Form` in Form Builder
+
+```ruby
+class Team < FormObj::Form
   attribute :name
   attribute :year
   attribute :cars, array: true, primary_key: :code do
@@ -801,11 +805,11 @@ class ArrayForm < FormObj::Form
   end
 end
 
-@array_form = ArrayForm.new
+@team = Team.new
 ```
 
 ```erb
-<%= form_for(@array_form) do |f| %>
+<%= form_for(@team) do |f| %>
   <%= f.label :name %>
   <%= f.text_field :name %>
 
@@ -831,6 +835,15 @@ end
   <% end %>
 <% end %>
 ```
+
+### 3. `FormObj::ModelMapper`
+
+
+
+
+
+
+
 
 ### 5. Map Form Object to/from Models
 

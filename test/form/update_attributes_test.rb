@@ -1,6 +1,6 @@
 require "test_helper"
 
-class FormUpdateAttributesOfTwoExistingElementsAndKeepOneExistingElementTest < Minitest::Test
+class FormUpdateAttributesTest < Minitest::Test
   class Suspension < FormObj::Form
     attribute :front
     attribute :rear
@@ -23,7 +23,7 @@ class FormUpdateAttributesOfTwoExistingElementsAndKeepOneExistingElementTest < M
         attribute :power
         attribute :volume
       end
-      attribute :chassis, class: 'FormUpdateAttributesOfTwoExistingElementsAndKeepOneExistingElementTest::Chassis'
+      attribute :chassis, class: 'FormUpdateAttributesTest::Chassis'
     end
     attribute :colours, class: Colour, array: true, primary_key: :name
   end
@@ -44,11 +44,11 @@ class FormUpdateAttributesOfTwoExistingElementsAndKeepOneExistingElementTest < M
                            front: 'McPherson',
                            rear: 'Chapman',
                        },
-                       brakes: :electromagnetic,
+                       brakes: :fantasctic,
                    }
                }, {
                    code: '275 F1',
-                   driver: 'Denis Hulme',
+                   driver: 'Villoresi',
                    engine: {
                        power: 333,
                        volume: 5.7
@@ -58,7 +58,7 @@ class FormUpdateAttributesOfTwoExistingElementsAndKeepOneExistingElementTest < M
                            front: 'multi-link',
                            rear: 'leaf springs',
                        },
-                       brakes: :pumping,
+                       brakes: :electromagnetic,
                    }
                }, {
                    code: '350 F1',
@@ -74,16 +74,33 @@ class FormUpdateAttributesOfTwoExistingElementsAndKeepOneExistingElementTest < M
                        },
                        brakes: :frictional,
                    }
+               }, {
+                   code: '360 F1',
+                   driver: 'Jim Clark',
+                   engine: {
+                       power: 415,
+                       volume: 3.2
+                   },
+                   chassis: {
+                       suspension: {
+                           front: 'fantastic',
+                           rear: 'strange',
+                       },
+                       brakes: :legs,
+                   }
                }],
         colours: [{
                       name: :red,
                       rgb: 0x00FF00,
                   }, {
-                      name: :white,
-                      rgb: 0x0000FF,
-                  }, {
                       name: :green,
                       rgb: 0x00FF00,
+                  }, {
+                      name: :blue,
+                      rgb: 0x0000FF,
+                  }, {
+                      name: :white,
+                      rgb: 0xFFFFFF,
                   }]
     )
 
@@ -104,8 +121,8 @@ class FormUpdateAttributesOfTwoExistingElementsAndKeepOneExistingElementTest < M
                        brakes: :drum,
                    }
                }, {
-                   code: '275 F1',
-                   driver: 'Villoresi',
+                   code: '350 F1',
+                   driver: 'Denis Hulme',
                    engine: {
                        power: 300,
                    },
@@ -117,49 +134,68 @@ class FormUpdateAttributesOfTwoExistingElementsAndKeepOneExistingElementTest < M
                        brakes: :disc,
                    },
                    _destroy: false,
+               }, {
+                   code: '360 F1',
+                   _destroy: true,
+                   chassis: {
+                       brakes: :hands,
+                   }
                }],
         colours: [{
                       name: :red,
-                      rgb: 0xFF0000,
+                      rgb: 0xFE0000,
+                  }, {
+                      name: :blue,
+                      rgb: 0x0000FE,
+                      _destroy: false
                   }, {
                       name: :white,
-                      rgb: 0xFFFFFF,
+                      _destroy: true,
                   }]
     )
 
     assert_equal('Ferrari', team.name)
     assert_equal(1950,      team.year)
 
-    assert_equal(3, team.cars.size)
+    assert_equal(4, team.cars.size)
 
     refute(                           team.cars[0].marked_for_destruction?)
-    assert_equal('350 F1',            team.cars[0].code)
-    assert_equal('James Hunt',        team.cars[0].driver)
-    assert_equal(408,                 team.cars[0].engine.power)
-    assert_equal(3.0,                 team.cars[0].engine.volume)
-    assert_equal('semi trailing arm', team.cars[0].chassis.suspension.front)
-    assert_equal('swing axle',        team.cars[0].chassis.suspension.rear)
-    assert_equal(:frictional,         team.cars[0].chassis.brakes)
+    assert_equal('275 F1',            team.cars[0].code)
+    assert_equal('Villoresi',         team.cars[0].driver)
+    assert_equal(333,                 team.cars[0].engine.power)
+    assert_equal(5.7,                 team.cars[0].engine.volume)
+    assert_equal('multi-link',        team.cars[0].chassis.suspension.front)
+    assert_equal('leaf springs',      team.cars[0].chassis.suspension.rear)
+    assert_equal(:electromagnetic,    team.cars[0].chassis.brakes)
 
-    refute(                           team.cars[0].marked_for_destruction?)
+    refute(                           team.cars[1].marked_for_destruction?)
     assert_equal('340 F1',            team.cars[1].code)
     assert_equal('Ascari',            team.cars[1].driver)
-    assert_equal(363,                 team.cars[1].engine.power)              # <- this attribute keeps value because it was not updated and this is old element in the array
+    assert_equal(363,                 team.cars[1].engine.power)                # <- this attribute keeps value because it was not updated and this is old element in the array
     assert_equal(4.1,                 team.cars[1].engine.volume)
     assert_equal('independent',       team.cars[1].chassis.suspension.front)
     assert_equal('de Dion',           team.cars[1].chassis.suspension.rear)
     assert_equal(:drum,               team.cars[1].chassis.brakes)
 
-    refute(                           team.cars[0].marked_for_destruction?)
-    assert_equal('275 F1',            team.cars[2].code)
-    assert_equal('Villoresi',         team.cars[2].driver)
+    refute(                           team.cars[2].marked_for_destruction?)
+    assert_equal('350 F1',            team.cars[2].code)
+    assert_equal('Denis Hulme',       team.cars[2].driver)
     assert_equal(300,                 team.cars[2].engine.power)
-    assert_equal(5.7,                 team.cars[2].engine.volume)               # <- this attribute keeps value because it was not updated and this is old element in the array
+    assert_equal(3.0,                 team.cars[2].engine.volume)               # <- this attribute keeps value because it was not updated and this is old element in the array
     assert_equal('dependent',         team.cars[2].chassis.suspension.front)
     assert_equal('de Lion',           team.cars[2].chassis.suspension.rear)
     assert_equal(:disc,               team.cars[2].chassis.brakes)
 
-    assert_equal(3, team.colours.size)
+    assert(                           team.cars[3].marked_for_destruction?)
+    assert_equal('360 F1',            team.cars[3].code)
+    assert_equal('Jim Clark',         team.cars[3].driver)
+    assert_equal(415,                 team.cars[3].engine.power)
+    assert_equal(3.2,                 team.cars[3].engine.volume)               # <- this attribute keeps value because it was not updated and this is old element in the array
+    assert_equal('fantastic',         team.cars[3].chassis.suspension.front)
+    assert_equal('strange',           team.cars[3].chassis.suspension.rear)
+    assert_equal(:legs,               team.cars[3].chassis.brakes)
+
+    assert_equal(4, team.colours.size)
 
     refute(                 team.colours[0].marked_for_destruction?)
     assert_equal(:green,    team.colours[0].name)
@@ -167,10 +203,14 @@ class FormUpdateAttributesOfTwoExistingElementsAndKeepOneExistingElementTest < M
 
     refute(                 team.colours[1].marked_for_destruction?)
     assert_equal(:red,      team.colours[1].name)
-    assert_equal(0xFF0000,  team.colours[1].rgb)
+    assert_equal(0xFE0000,  team.colours[1].rgb)
 
     refute(                 team.colours[2].marked_for_destruction?)
-    assert_equal(:white,    team.colours[2].name)
-    assert_equal(0xFFFFFF,  team.colours[2].rgb)
+    assert_equal(:blue,     team.colours[2].name)
+    assert_equal(0x0000FE,  team.colours[2].rgb)
+
+    assert(                 team.colours[3].marked_for_destruction?)
+    assert_equal(:white,    team.colours[3].name)
+    assert_equal(0xFFFFFF,  team.colours[3].rgb)
   end
 end
