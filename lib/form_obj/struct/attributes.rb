@@ -24,6 +24,10 @@ module FormObj
       def map(*args, &block)
         @items.map(*args, &block)
       end
+
+      def reduce(*args, &block)
+        @items.reduce(*args, &block)
+      end
     end
   end
 end

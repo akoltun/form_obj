@@ -718,18 +718,64 @@ team.valid?                           # => false
 team.errors.messages                  # => {:name=>["is too short (minimum is 10 characters)"]} 
 ```
 
+#### 2.2. `FormObj::Form` Persistence
 
+In order to make `FormObj::Form` compatible with form builder it has to respond to `:persisted?` message.
+It maintains persistence status. Initial form is not persisted. 
+It can be marked as persisted by assigning `persisted = true` which marks as persisted only form itself or
+by calling `mark_as_persisted` method which marks as persisted the form itself and all nested forms and arrays.
 
+```ruby
+class Team < FormObj::Form
+  attribute :name
+  attribute :year
+  attribute :cars, array: true do
+    attribute :code, primary_key: true
+    attribute :driver
+    attribute :engine do
+      attribute :power
+      attribute :volume
+    end
+  end
+end
 
+team = Team.new(cars: [{code: 1}])
 
+team.persisted?                         # => false
+team.cars[0].persisted?                 # => false
+team.cars[0].engine.persisted?          # => false
 
+team.persisted = true
 
+team.persisted?                         # => false  - because nested forms are not persisted
+team.cars[0].persisted?                 # => false
+team.cars[0].engine.persisted?          # => false
 
+team.cars[0].engine.persisted = true
 
+team.persisted?                         # => false  - because nested forms are not persisted
+team.cars[0].persisted?                 # => false
+team.cars[0].engine.persisted?          # => true
 
+team.mark_as_persisted
 
+team.persisted?                         # => true
+team.cars[0].persisted?                 # => true
+team.cars[0].engine.persisted?          # => true
+```
 
+Change of attribute value (directly or by `update_attributes` call) will change persistence status to `false`.
 
+```ruby
+team.name = 'Ferrari'
+team.persisted?                         # => false
+
+team.mark_as_persisted
+team.persisted?                         # => true
+
+team.update_attributes(name: 'McLaren')
+team.persisted?                         # => false
+```
 
 #### 2.3. Delete from Array of `FormObj::Form` via `update_attributes` method
 

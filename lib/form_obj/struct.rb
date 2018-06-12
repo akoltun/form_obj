@@ -91,17 +91,25 @@ module FormObj
     end
 
     def to_hash
-      Hash[self.class._attributes.map { |attribute| [attribute.name, attribute.subform? ? send(attribute.name).to_hash : send(attribute.name)] }]
+      Hash[self.class._attributes.map { |attribute| [attribute.name, attribute.subform? ? read_attribute(attribute).to_hash : read_attribute(attribute)] }]
     end
 
     def inspect
-      "#<#{self.class.name} #{self.class._attributes.map { |attribute| "#{attribute.name}: #{send(attribute.name).inspect}"}.join(', ')}>"
+      "#<#{self.class.name} #{self.class._attributes.map { |attribute| "#{attribute.name}: #{read_attribute(attribute).inspect}"}.join(', ')}>"
     end
 
     private
 
     def update_attribute(attribute, new_value)
-      self.send("#{attribute.name}=", new_value)
+      write_attribute(attribute, new_value)
+    end
+
+    def read_attribute(attribute)
+      send(attribute.name)
+    end
+
+    def write_attribute(attribute, value)
+      send("#{attribute.name}=", value)
     end
 
     def _get_attribute_value(attribute)
