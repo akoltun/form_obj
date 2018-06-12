@@ -9,6 +9,10 @@ module FormObj
         each(&:mark_as_persisted)
       end
 
+      def mark_for_destruction
+        each(&:mark_for_destruction)
+      end
+
       private
 
       # items_to_add - array of hashes of new attribute values
