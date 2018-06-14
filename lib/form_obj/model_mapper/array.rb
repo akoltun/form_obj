@@ -1,15 +1,15 @@
 module FormObj
   module ModelMapper
     class Array < FormObj::Form::Array
-      def initialize(item_class, model_attribute:)
+      def initialize(item_class, model_attribute, *args)
         @model_attribute = model_attribute
-        super(item_class)
+        super(item_class, *args)
       end
 
-      def load_from_models(models)
+      def load_from_models(models, *args)
         clear
-        (models[:default] || []).each do |model|
-          create.load_from_models(models.merge(default: model))
+        iterate_through_models_to_load_them(models[:default] || [], *args) do |model|
+          build.load_from_models(models.merge(default: model), *args)
         end
         self
       end
@@ -32,7 +32,7 @@ module FormObj
         delete_models(model_array, ids_to_remove)
 
         items_to_add.each do |item|
-          model_array << model = @model_attribute.create_model # || model_array.create_model
+          model_array << model = model_attribute.create_model
           item.sync_to_models(models.merge(default: model))
         end
       end
@@ -60,6 +60,14 @@ module FormObj
       def to_models_hash(models)
         self.each { |item| models[:default] << item.to_models_hash(models.merge(default: {}))[:default] }
         models
+      end
+
+      private
+
+      attr_reader :model_attribute
+
+      def iterate_through_models_to_load_them(models, *args, &block)
+        models.each { |model| block.call(model) }
       end
     end
   end

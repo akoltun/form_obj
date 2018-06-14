@@ -1,7 +1,9 @@
 require "test_helper"
 
-class FormMarkForDestructionTest < Minitest::Test
+class ModelMapperMarkForDestructionTest < Minitest::Test
   class Team < FormObj::Form
+    include FormObj::ModelMapper
+
     attribute :name
     attribute :cars, array: true, default: [{code: '1'}, {code: '2'}] do
       attribute :code

@@ -16,7 +16,6 @@ module FormObj
         end
         super(name, array: array, class: binding.local_variable_get(:class), default: default, parent: parent, primary_key: primary_key, &new_block)
 
-        @nested_class            = Class.new(@nested_class) if binding.local_variable_get(:class)
         @nested_class.model_hash = model_hash if @nested_class
       end
 
@@ -26,8 +25,8 @@ module FormObj
 
       private
 
-      def create_array
-        @parent.array_class.new(@nested_class, model_attribute: @model_attribute)
+      def create_array(*args)
+        @parent.array_class.new(@nested_class, @model_attribute, *args)
       end
     end
   end
