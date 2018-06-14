@@ -884,83 +884,149 @@ end
 
 ### 3. `FormObj::ModelMapper`
 
+Include `FormObj::ModelMapper` module and map form object attributes to one or more models by using `:model` and `:model_attribute` parameters.
+Use dot notation to map model attribute to a nested model. Use colon to specify a "hash's attribute".
 
+#### 3.1. `load_from_model` - Initialize Form Object from Model
 
-
-
-
-
-
-### 5. Map Form Object to/from Models
-
-Include `ModelMapper` mix-in and map form object attributes to one or more models by using `:model` and `:model_attribute` parameters.
-By default each form object attribute is mapped to the model attribute with the same name of the `:default` model. 
-
-Use dot notation to map model attribute to a nested model. Use colon to specify a "hash" attribute.
+Use `load_from_model(model)` method to initialize form object from the model.
 
 ```ruby
-class SingleForm < FormObj::Form
-  include ModelMapper
+class Team < FormObj::Form
+  include FormObj::ModelMapper
   
   attribute :name, model_attribute: :team_name
   attribute :year
   attribute :engine_power, model_attribute: 'car.:engine.power'
 end
+
+car_model = { engine: Struct.new(:power).new(335) }
+team_model = Struct.new(:team_name, :year, :car).new('Ferrari', 1950, car_model)
+
+team = Team.new.load_from_model(team_model)
+team.to_hash      # => {
+                  # =>    :name => "Ferrari"
+                  # =>    :year => 1950
+                  # =>    :engine_power => 335
+                  # => }
 ```
 
-Suppose `single_form = SingleForm.new` and `model` to be an instance of a model.
+So attributes are mapped as follows:
 
 | Form Object attribute | Model attribute |
 | --------------------- | --------------- |
-| `single_form.name` | `model.team_name` |
-| `single_form.year` | `model.year` |
-| `single_form.engine_power` | `model.car[:engine].power` |
+| `team.name` | `team_model.team_name` |
+| `team.year` | `team_model.year` |
+| `team.engine_power` | `team_model.car[:engine].power` |
 
-#### 4.1. Multiple Models Example
+
+#### 3.2. `load_from_models` - Initialize Form Object from Few Models
+
+Use `load_from_models(models)` method to initialize form object from few models. 
+`models` parameter is a hash where keys are the name of models and values are models themselves. 
+
+By default each form object attribute is mapped to `:default` model.
+Use parameter `:model` to map it to another model. 
 
 ```ruby
-class MultiForm < FormObj::Form
-  include ModelMapper
+class Team < FormObj::Form
+  include FormObj::ModelMapper
   
   attribute :name, model_attribute: :team_name
   attribute :year
   attribute :engine_power, model: :car, model_attribute: ':engine.power'
 end
+
+car_model = { engine: Struct.new(:power).new(335) }
+team_model = Struct.new(:team_name, :year).new('Ferrari', 1950)    # <- doesn't have car attribute !!!
+
+team = Team.new.load_from_models(default: team_model, car: car_model)
+team.to_hash      # => {
+                  # =>    :name => "Ferrari"
+                  # =>    :year => 1950
+                  # =>    :engine_power => 335
+                  # => }
 ```
 
-Suppose `multi_form = MultiForm.new` and `default`, `car` to be instances of two models.
+So attributes are mapped as follows:
 
 | Form Object attribute | Model attribute |
 | --------------------- | --------------- |
-| `multi_form.name` | `default.team_name` |
-| `multi_form.year` | `default.year` |
-| `multi_form.engine_power` | `car[:engine].power` |
+| `team.name` | `team_model.team_name` |
+| `team.year` | `team_model.year` |
+| `team.engine_power` | `car_model[:engine].power` |
 
-#### 4.2. Skip Attribute Mapping
+#### 3.3. Do Not Map Certain Attribute
 
-Use `model_attribute: false` in order to avoid attribute mapping to the model.
+Use `model_attribute: false` in order to avoid mapping of this attribute.
 
 ```ruby
-class SimpleForm < FormObj::Form
+class Team < FormObj::Form
   include ModelMapper
   
-   attribute :name, model_attribute: :team_name
+  attribute :name, model_attribute: :team_name
   attribute :year
   attribute :engine_power, model_attribute: false
 end
+
+team_model = Struct.new(:team_name, :year, :engine_power).new('Ferrari', 1950, 335)
+
+team = Team.new.load_from_model(team_model)
+team.to_hash      # => {
+                  # =>    :name => "Ferrari"
+                  # =>    :year => 1950
+                  # =>    :engine_power => nil
+                  # => }
 ```
 
-Suppose `form = SimpleForm.new` and `model` to be an instance of a model.
+So attributes are mapped as follows:
 
 | Form Object attribute | Model attribute |
 | --------------------- | --------------- |
-| `form.name` | `model.team_name` |
-| `form.year` | `model.year` |
+| `form.name` | `team_model.team_name` |
+| `form.year` | `team_model.year` |
 | `form.engine_power` | - |
 
-#### 4.3. Map Nested Form Object Attribute to Parent Level Model Attribute
+#### 3.4. Map Nested Form Objects
 
-Use `model_nesting: false` for nested form object in order to map its attributes to the parent level of the model.
+Nested forms are mapped by default to corresponding nested models.
+
+```ruby
+class Team < FormObj::Form
+  include ModelMapper
+    
+  attribute :name, model_attribute: :team_name
+  attribute :year
+  attribute :car do
+    attribute :code
+    attribute :driver
+  end
+end
+
+car_model = Struct.new(:code, :driver).new('340 F1', 'Ascari')
+team_model = Struct.new(:team_name, :year, :car).new('Ferrari', 1950, car_model)
+
+team = Team.new.load_from_model(team_model)
+team.to_hash      # => {
+                  # =>    :name => "Ferrari",
+                  # =>    :year => 1950,
+                  # =>    :car => {
+                  # =>        :code => "340 F1",
+                  # =>        :driver => "Ascari"   
+                  # =>    }
+                  # => }
+```
+
+So attributes are mapped as follows:
+
+| Form Object attribute | Model attribute |
+| --------------------- | --------------- |
+| `team.name` | `team_model.team_name` |
+| `team.year` | `team_model.year` |
+| `team.car.code` | `team_model.car.code` |
+| `team.car.driver` | `team_model.car.driver` |
+
+Use `model_nesting: false` parameter to map nested form object to map parent level model.
 
 ```ruby
 class NestedForm < FormObj::Form
@@ -971,31 +1037,37 @@ class NestedForm < FormObj::Form
   attribute :car, model_nesting: false do   # nesting only in form object but not in a model
     attribute :code
     attribute :driver
-    attribute :engine do
-      attribute :power
-      attribute :volume
-    end
   end
 end
+
+team_model = Struct.new(:team_name, :year, :code, :driver).new('Ferrari', 1950, '340 F1', 'Ascari')
+
+team = Team.new.load_from_model(team_model)
+team.to_hash      # => {
+                  # =>    :name => "Ferrari",
+                  # =>    :year => 1950,
+                  # =>    :car => {
+                  # =>        :code => "340 F1",
+                  # =>        :driver => "Ascari"   
+                  # =>    }
+                  # => }
 ```
 
-Suppose `form = NestedForm.new` and `model` to be an instance of a model.
+So attributes are mapped as follows:
 
 | Form Object attribute | Model attribute |
 | --------------------- | --------------- |
-| `form.name` | `model.team_name` |
-| `form.year` | `model.year` |
-| `form.car.code` | `model.code` |
-| `form.car.driver` | `model.driver` |
-| `form.car.engine.power` | `model.engine.power` |
-| `form.car.engine.volume` | `model.engine.volume` |
+| `team.name` | `team_model.team_name` |
+| `team.year` | `team_model.year` |
+| `team.car.code` | `team_model.code` |
+| `team.car.driver` | `team_model.driver` |
 
-#### 4.4. Map Nested Form Object to A Hash Model
+#### 3.5. Map Nested Form Object to A Hash Model
 
 Use `model_hash: true` in order to map a nested form object to a hash as a model.
 
 ```ruby
-class NestedForm < FormObj::Form
+class Team < FormObj::Form
   include ModelMapper
   
   attribute :name, model_attribute: :team_name
@@ -1003,24 +1075,31 @@ class NestedForm < FormObj::Form
   attribute :car, model_hash: true do   # nesting only in form object but not in a model
     attribute :code
     attribute :driver
-    attribute :engine do
-      attribute :power
-      attribute :volume
-    end
   end
 end
+
+car_model = { code: '340 F1', driver: 'Ascari' }
+team_model = Struct.new(:team_name, :year, :car).new('Ferrari', 1950, car_model)
+
+team = Team.new.load_from_model(team_model)
+team.to_hash      # => {
+                  # =>    :name => "Ferrari",
+                  # =>    :year => 1950,
+                  # =>    :car => {
+                  # =>        :code => "340 F1",
+                  # =>        :driver => "Ascari"   
+                  # =>    }
+                  # => }
 ```
 
-Suppose `form = NestedForm.new` and `model` to be an instance of a model.
+So attributes are mapped as follows:
 
 | Form Object attribute | Model attribute |
 | --------------------- | --------------- |
-| `form.name` | `model.team_name` |
-| `form.year` | `model.year` |
-| `form.car.code` | `model.car[:code]` |
-| `form.car.driver` | `model.car[:driver]` |
-| `form.car.engine.power` | `model.car[:engine].power` |
-| `form.car.engine.volume` | `model.car[:engine].volume` |
+| `team.name` | `team_model.team_name` |
+| `team.year` | `team_model.year` |
+| `team.car.code` | `team_model.car[:code]` |
+| `team.car.driver` | `team_model.car[:driver]` |
 
 ### 5. Load Form Object from Models
 
