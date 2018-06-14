@@ -29,12 +29,12 @@ module FormObj
       end
     end
 
-    def load_from_model(model)
-      load_from_models(default: model)
+    def load_from_model(model, *args)
+      load_from_models({ default: model }, *args)
     end
 
-    def load_from_models(models)
-      self.class._attributes.each { |attribute| load_attribute_from_model(attribute, models) }
+    def load_from_models(models, *args)
+      self.class._attributes.each { |attribute| load_attribute_from_model(attribute, models, *args) }
       self.persisted = true
       self
     end
@@ -81,14 +81,14 @@ module FormObj
 
     private
 
-    def load_attribute_from_model(attribute, models)
+    def load_attribute_from_model(attribute, models, *args)
       return unless attribute.model_attribute.read_from_model?
 
       if attribute.subform?
         if attribute.model_attribute.nesting?
-          read_attribute(attribute).load_from_models(models.merge(default: attribute.model_attribute.read_from_models(models)))
+          read_attribute(attribute).load_from_models(models.merge(default: attribute.model_attribute.read_from_models(models)), *args)
         else
-          read_attribute(attribute).load_from_models(models.merge(default: models[attribute.model_attribute.model]))
+          read_attribute(attribute).load_from_models(models.merge(default: models[attribute.model_attribute.model]), *args)
         end
       else
         write_attribute(attribute, attribute.model_attribute.read_from_models(models))

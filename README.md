@@ -1101,32 +1101,159 @@ So attributes are mapped as follows:
 | `team.car.code` | `team_model.car[:code]` |
 | `team.car.driver` | `team_model.car[:driver]` |
 
-### 5. Load Form Object from Models
+#### 3.6. Custom Implementation of Loading of Array of Models  
 
-Use `load_from_models(models)` to load form object attributes from mapped models. 
-Method returns self so one can chain calls.
+By default `load_from_model(s)` methods loads all models from arrays.
 
 ```ruby
-class MultiForm < FormObj::Form
+class Team < FormObj::Form
   include ModelMapper
-  
+    
   attribute :name, model_attribute: :team_name
   attribute :year
-  attribute :engine_power, model: :car, model_attribute: ':engine.power'
+  attribute :cars, array: true do
+    attribute :code
+    attribute :driver
+  end
+  attribute :colours, array: true do
+    attribute :name
+    attribute :rgb
+  end
 end
 
-default_model = Struct.new(:team_name, :year).new('Ferrari', 1950)
-car_model = { engine: Struct.new(:power).new(335) }
+CarModel = Struct.new(:code, :driver)
+ColourModel = Struct.new(:name, :rgb)
 
-multi_form = MultiForm.new.load_from_models(default: default_model, car: car_model)
-multi_form.to_hash    # => {
-                      # =>    :name => "Ferrari"
-                      # =>    :year => 1950
-                      # =>    :engine_power => 335
-                      # => }
-``` 
+cars_model = [CarModel.new('340 F1', 'Ascari'), CarModel.new('275 F1', 'Villoresi')]
+colours_model = [ColourModel.new(:red, 0xFF0000), ColourModel.new(:white, 0xFFFFFF)]
+team_model = Struct.new(:team_name, :year, :cars, :colours).new('Ferrari', 1950, cars_model, colours_model)
 
-Use `load_from_models(default: model)` or `load_from_model(model)` to load from single model.
+team = Team.new.load_from_model(team_model)
+team.to_hash      # => {
+                  # =>    :name => "Ferrari",
+                  # =>    :year => 1950,
+                  # =>    :cars => [{
+                  # =>        :code => "340 F1",
+                  # =>        :driver => "Ascari"   
+                  # =>    }, {
+                  # =>        :code => "275 F1",
+                  # =>        :driver => "Villoresi"   
+                  # =>    }],
+                  # =>    :colours => [{
+                  # =>        :name => :red,
+                  # =>        :rgb => 0xFF0000   
+                  # =>    }, {
+                  # =>        :name => :white,
+                  # =>        :rgb => 0xFFFFFF   
+                  # =>    }]
+                  # => }
+```
+
+`FormObj::ModelMapper::Array` class implements method (where `*args` are additional params passed to `load_from_model(s)` methods)
+
+```ruby
+  def iterate_through_models_to_load_them(models, *args, &block)
+    models.each { |model| block.call(model) }
+  end
+```
+
+This method should iterate through all models that has to be loaded and call a block for each of them.
+In the example above it will receive `cars_model` as the value of `models` parameter. 
+Overwrite this method in order to implement your own logic.
+
+```ruby
+class ArrayLoadLimit < FormObj::ModelMapper::Array
+  private
+  
+  def iterate_through_models_to_load_them(models, params = {}, &block)
+    models = models.slice(params[:offset] || 0, params[:limit] || 999999999) if model_attribute.names.last == :cars
+    super(models, &block)
+  end
+end
+
+class LoadLimitForm < FormObj::Form
+  include FormObj::ModelMapper
+
+  def self.array_class
+    ArrayLoadLimit
+  end
+end
+
+class Team < LoadLimitForm
+  attribute :name, model_attribute: :team_name
+  attribute :year
+  attribute :cars, array: true do
+    attribute :code
+    attribute :driver
+  end
+  attribute :colours, array: true do
+    attribute :name
+    attribute :rgb
+  end
+end
+
+CarModel = Struct.new(:code, :driver)
+ColourModel = Struct.new(:name, :rgb)
+
+cars_model = [CarModel.new('340 F1', 'Ascari'), CarModel.new('275 F1', 'Villoresi')]
+colours_model = [ColourModel.new(:red, 0xFF0000), ColourModel.new(:white, 0xFFFFFF)]
+team_model = Struct.new(:team_name, :year, :cars, :colours).new('Ferrari', 1950, cars_model, colours_model)
+
+team = Team.new.load_from_model(team_model, offset: 0, limit: 1)
+team.to_hash      # => {
+                  # =>    :name => "Ferrari",
+                  # =>    :year => 1950,
+                  # =>    :cars => [{
+                  # =>        :code => "340 F1",
+                  # =>        :driver => "Ascari"   
+                  # =>    }],
+                  # =>    :colours => [{
+                  # =>        :name => :red,
+                  # =>        :rgb => 0xFF0000   
+                  # =>    }, {
+                  # =>        :name => :white,
+                  # =>        :rgb => 0xFFFFFF   
+                  # =>    }] 
+#                 # => }
+
+team = Team.new.load_from_model(team_model, offset: 1, limit: 1)
+team.to_hash      # => {
+                  # =>    :name => "Ferrari",
+                  # =>    :year => 1950,
+                  # =>    :cars => [{
+                  # =>        :code => "275 F1",
+                  # =>        :driver => "Villoresi"   
+                  # =>    }],
+                  # =>    :colours => [{
+                  # =>        :name => :red,
+                  # =>        :rgb => 0xFF0000   
+                  # =>    }, {
+                  # =>        :name => :white,
+                  # =>        :rgb => 0xFFFFFF   
+                  # =>    }]
+                  # => }
+```
+
+Note that our new implementation of `iterate_through_models_to_load_them` limits only cars but not colours.
+It identifies requested model attribute using `model_attribute.names` which returns 
+an array of model attribute accessors (in our example `[:cars]`)
+ 
+In case of `ActiveRecord` model `iterate_through_models_to_load_them` will receive an instance of `ActiveRecord::Relation` as `models` parameter.
+This allows to load in the memory only necessary association models.
+
+```ruby
+class ArrayLoadLimit < FormObj::ModelMapper::Array
+  private
+  
+  def iterate_through_models_to_load_them(models, params = {}, &block)
+    models = models.offset(params[:offset] || 0).limit(params[:limit] || 999999999) if model_attribute.names.last == :cars
+    super(models, &block)
+  end
+end
+```
+     
+
+
 
 ### 6. Sync Form Object to Models
 

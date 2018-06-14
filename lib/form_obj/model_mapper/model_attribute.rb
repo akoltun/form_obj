@@ -30,6 +30,10 @@ module FormObj
         end
       end
 
+      def names
+        @items.map(&:name)
+      end
+
       def last_name
         @items.last.name
       end
