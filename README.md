@@ -33,7 +33,7 @@ Or install it yourself as:
 
 ## Usage
 
-**WARNING!!!** The gem is still under development. Expect braking changes.<br/>
+**WARNING!!!** The gem is still under development. Expect braking changes in `FormObj::ModelMapper` module.<br/>
 
 Class `FormObj::Struct` allows to describe complicated data structure, to update it with `update_attributes` method and to get its hash representation with `to_hash` method.
 
@@ -53,19 +53,24 @@ model attributes name) and
    1. [Nesting `FormObj::Struct`](#11-nesting-formobjstruct)
    2. [Array of `FormObj::Struct`](#12-array-of-formobjstruct)
    3. [Serialize `FormObj::Struct` to Hash](#13-serialize-formobjstruct-to-hash)
-4. [Map Form Object to Models](4-map-form-objects-to-models)
-   1. [Multiple Models Example](41-multiple-models-example)
-   2. [Skip Attribute Mapping](42-skip-attribute-mapping)
-   3. [Map Nested Form Object Attribute to Parent Level Model Attribute](43-map-nested-form-object-attribute-to-parent-level-model-attribute)
-   4. [Map Nested Form Object to A Hash Model](44-map-nested-form-object-to-a-hash-model)
-5. [Load Form Object from Models](5-load-form-object-from-models)
-6. [Save Form Object to Models](6-save-form-object-to-models)
-   1. [Array of Form Objects and Models](61-array-of-form-objects-and-models)
-7. [Serialize Form Object to Model Hash](7-serialize-form-object-to-model-hash)
-8. [Validation and Coercion](8-validation-and-coercion)
-9. [Copy Model Validation Errors into Form Object](9-copy-model-validation-errors-into-form-object)   
-10. [Rails Example](10-rails-example)
-11. [Reference Guide](11-reference-guide-attribute-parameters)
+2. [`FormObj::Form`](#2-formobjform)
+   1. [`FormObj::Form` Validation](#21-formobjform-validation)
+   2. [`FormObj::Form` Persistence](#22-formobjform-persistence)
+   3. [Delete from Array of `FormObj::Form` via `update_attributes` method](#23-delete-from-array-of-formobjform-via-update_attributes-method)
+   4. [Using `FormObj::Form` in Form Builder](#24-using-formobjform-in-form-builder)
+3. [`FormObj::ModelMapper`](#3-formobjmodelmapper)
+   1. [`load_from_model` - Initialize Form Object from Model](#31-load_from_model---initialize-form-object-from-model)
+   2. [`load_from_models` - Initialize Form Object from Few Models](#32-load_from_models---initialize-form-object-from-few-models)
+   3. [Do Not Map Certain Attribute](#33-do-not-map-certain-attribute)
+   4. [Map Nested Form Objects](#34-map-nested-form-objects)
+   5. [Map Nested Form Objects to A Hash Model](#35-map-nested-form-object-to-a-hash-model)
+   6. [Custom Implementation of Loading of Array of Models](#36-custom-implementation-of-loading-of-array-of-models)
+   7. [Sync Form Object to Models](#37-sync-form-object-to-models)
+      1. [Array of Form Objects and Models](#371-array-of-form-objects-and-models)
+   8. [Serialize Form Object to Model Hash](#38-serialize-form-object-to-model-hash)
+   9. [Copy Model Validation Errors into Form Object](#39-copy-model-validation-errors-into-form-object)   
+4. [Rails Example](#4-rails-example)
+5. [Reference Guide](#5-reference-guide-attribute-parameters)
 
 ### 1. `FormObj::Struct`
 
@@ -1214,7 +1219,7 @@ team.to_hash      # => {
                   # =>        :name => :white,
                   # =>        :rgb => 0xFFFFFF   
                   # =>    }] 
-#                 # => }
+                  # => }
 
 team = Team.new.load_from_model(team_model, offset: 1, limit: 1)
 team.to_hash      # => {
