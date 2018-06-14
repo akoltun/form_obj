@@ -1,15 +1,19 @@
 module FormObj
   module ModelMapper
     class Array < FormObj::Form::Array
-      def initialize(item_class, model_attribute:)
+      def initialize(item_class, model_attribute, *args)
         @model_attribute = model_attribute
-        super(item_class)
+        super(item_class, *args)
+      end
+
+      def each_model_to_load(models, &block)
+        models.each { |model| block.call(model) }
       end
 
       def load_from_models(models)
         clear
-        (models[:default] || []).each do |model|
-          create.load_from_models(models.merge(default: model))
+        each_model_to_load(models[:default] || []) do |model|
+          build.load_from_models(models.merge(default: model))
         end
         self
       end
