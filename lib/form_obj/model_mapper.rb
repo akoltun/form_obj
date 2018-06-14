@@ -86,12 +86,12 @@ module FormObj
 
       if attribute.subform?
         if attribute.model_attribute.nesting?
-          self.send(attribute.name).load_from_models(models.merge(default: attribute.model_attribute.read_from_models(models)))
+          read_attribute(attribute).load_from_models(models.merge(default: attribute.model_attribute.read_from_models(models)))
         else
-          self.send(attribute.name).load_from_models(models.merge(default: models[attribute.model_attribute.model]))
+          read_attribute(attribute).load_from_models(models.merge(default: models[attribute.model_attribute.model]))
         end
       else
-        self.send("#{attribute.name}=", attribute.model_attribute.read_from_models(models))
+        write_attribute(attribute, attribute.model_attribute.read_from_models(models))
       end
     end
 
@@ -100,12 +100,12 @@ module FormObj
 
       if attribute.subform?
         if attribute.model_attribute.nesting?
-          self.send(attribute.name).sync_to_models(models.merge(default: attribute.model_attribute.read_from_models(models, create_nested_model_if_nil: true)))
+          read_attribute(attribute).sync_to_models(models.merge(default: attribute.model_attribute.read_from_models(models, create_nested_model_if_nil: true)))
         else
-          self.send(attribute.name).sync_to_models(models.merge(default: models[attribute.model_attribute.model]))
+          read_attribute(attribute).sync_to_models(models.merge(default: models[attribute.model_attribute.model]))
         end
       else
-        attribute.model_attribute.write_to_models(models, self.send(attribute.name))
+        attribute.model_attribute.write_to_models(models, read_attribute(attribute))
       end
     end
 
@@ -119,7 +119,7 @@ module FormObj
                 attribute.model_attribute.nesting? ? {} : (models[attribute.model_attribute.model] ||= {})
               end
             else
-              send(attribute.name)
+              read_attribute(attribute)
             end
 
       value = if attribute.subform? && !attribute.model_attribute.nesting?
@@ -129,7 +129,7 @@ module FormObj
               end
 
       (models[attribute.model_attribute.model] ||= {}).merge!(value)
-      send(attribute.name).to_models_hash(models.merge(default: val)) if attribute.subform?
+      read_attribute(attribute).to_models_hash(models.merge(default: val)) if attribute.subform?
     end
   end
 end
