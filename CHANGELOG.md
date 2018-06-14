@@ -1,16 +1,17 @@
 # Change Log
 
-## [Unreleased](https://github.com/akoltun/form_obj/tree/HEAD)
-
-[Full Changelog](https://github.com/akoltun/form_obj/compare/v0.4.0...HEAD)
+## [v0.5.0](https://github.com/akoltun/form_obj/tree/v0.5.0) (2018-06-14)
+[Full Changelog](https://github.com/akoltun/form_obj/compare/v0.4.0...v0.5.0)
 
 **Implemented enhancements:**
 
 - Initialize FormObj::Struct with hash of attribute values [\#15](https://github.com/akoltun/form_obj/issues/15)
+- Redesign deletion FormObj::Form in array in FormObj::Form.update\_attribute method [\#11](https://github.com/akoltun/form_obj/issues/11)
 - Unify "model\_attribute: false" behaviour [\#7](https://github.com/akoltun/form_obj/issues/7)
 
 **Closed issues:**
 
+- Rewrite FormObj::Form tests in Minitest [\#30](https://github.com/akoltun/form_obj/issues/30)
 - Add to documentation and tests the description of :default parameter [\#23](https://github.com/akoltun/form_obj/issues/23)
 - Move update\_attributes method to FormObj::Struct class [\#14](https://github.com/akoltun/form_obj/issues/14)
 - Overwritebility for :append, :update and :delete actions in update\_attributes for arrayed form objects [\#10](https://github.com/akoltun/form_obj/issues/10)
@@ -18,6 +19,9 @@
 
 **Merged pull requests:**
 
+- Redesign model mapper: load\_from\_models [\#40](https://github.com/akoltun/form_obj/pull/40) ([akoltun](https://github.com/akoltun))
+- Migrate FormObj::Form tests to minitest [\#39](https://github.com/akoltun/form_obj/pull/39) ([akoltun](https://github.com/akoltun))
+- Refactor form update attributes [\#38](https://github.com/akoltun/form_obj/pull/38) ([akoltun](https://github.com/akoltun))
 - Refactor FormObj::Struct so update\_attributes behaviour could be easily overwritten in descendants [\#37](https://github.com/akoltun/form_obj/pull/37) ([akoltun](https://github.com/akoltun))
 - Rework struct documentation [\#35](https://github.com/akoltun/form_obj/pull/35) ([akoltun](https://github.com/akoltun))
 - Transform initialization or `update\_attributes` hash into HashWithInd… [\#34](https://github.com/akoltun/form_obj/pull/34) ([akoltun](https://github.com/akoltun))
