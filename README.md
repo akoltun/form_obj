@@ -1252,17 +1252,14 @@ class ArrayLoadLimit < FormObj::ModelMapper::Array
 end
 ```
      
-
-
-
-### 6. Sync Form Object to Models
+#### 3.7. Sync Form Object to Models
 
 Use `sync_to_models(models)` to sync form object attributes to mapped models.
 Method returns self so one can chain calls.
 
 ```ruby
 class MultiForm < FormObj::Form
-  include ModelMapper
+  include FormObj::ModelMapper
   
   attribute :name, model_attribute: :team_name
   attribute :year
@@ -1290,7 +1287,7 @@ using `<attribute_name>=` accessors on the model(s).
 
 It is completely up to developer to do any additional validations on the model(s) and save it(them).
 
-#### 6.1. Array of Form Objects and Models
+##### 3.7.1. Array of Form Objects and Models
 
 Saving array of form objects to corresponding array of models requires the class of the model to be known by the form object
 because it could create new instances of the model array elements.
@@ -1299,7 +1296,7 @@ Form object will try to guess the name of the class from the name of the attribu
 
 ```ruby
 class ArrayForm < FormObj::Form
-  include ModelMapper
+  include FormObj::ModelMapper
   
   attribute :name
   attribute :year
@@ -1315,7 +1312,7 @@ nested models the value of `:model_class` parameter should be an array of corres
 
 ```ruby
 class ArrayForm < FormObj::Form
-  include ModelMapper
+  include FormObj::ModelMapper
   
   attribute :name
   attribute :year
@@ -1326,13 +1323,13 @@ class ArrayForm < FormObj::Form
 end
 ``` 
 
-### 7. Serialize Form Object to Model Hash
+#### 3.8. Serialize Form Object to Model Hash
 
 Use `to_model_hash(model = :default)` to get hash representation of the model that mapped to the form object.
 
 ```ruby
 class MultiForm < FormObj::Form
-  include ModelMapper
+  include FormObj::ModelMapper
   
   attribute :name, model_attribute: :team_name
   attribute :year
@@ -1360,7 +1357,7 @@ If array of form objects mapped to the parent model (`model_attribute: false`) i
 
 ```ruby
 class ArrayForm < FormObj::Form
-  include ModelMapper
+  include FormObj::ModelMapper
   
   attribute :name
   attribute :year
@@ -1396,38 +1393,7 @@ array_form.to_model_hash    # => {
                             # => }
 ```
 
-### 8. Validation and Coercion
-
-Form Object is just a Ruby class. By default it includes (could be changed in future releases):
-
-```ruby
-  extend ::ActiveModel::Naming
-  extend ::ActiveModel::Translation
-
-  include ::ActiveModel::Conversion
-  include ::ActiveModel::Validations
-```
-
-So add ActiveModel validations directly to Form Object class definition.
-
-```ruby
-class MultiForm < FormObj::Form
-  include ModelMapper
-  
-  attribute :name, model_attribute: :team_name
-  attribute :year
-  attribute :engine_power, model: :car, model_attribute: ':engine.power'
-  
-  validates :name, :year, presence: true
-end
-```
-
-There is no coercion during assigning/updating form object attributes. 
-Coercion can be done manually by redefining assigning methods `<attribute_name>=`
-or it will happen in the model when the form object will be saved to it. 
-This is the standard way how coercion happens in Rails for example.  
-
-### 9. Copy Model Validation Errors into Form Object
+#### 3.9. Copy Model Validation Errors into Form Object
 
 Even though validation could and should happen in the form object it is possible to have (additional) validation(s) in the model(s).
 In this case it is handy to copy model validation errors to form object in order to be able to present them to the user in a standard way.
@@ -1444,7 +1410,7 @@ In case of single model:
 single_form.copy_errors_from_model(model)
 ```
 
-### 10. Rails Example
+### 4. Rails Example
 
 ```ruby
 # db/migrate/yyyymmddhhmiss_create_team.rb
@@ -1488,7 +1454,7 @@ end
 ```ruby
 # app/form_objects/team_form.rb
 class TeamForm < FormObj::Form
-  include ModelMapper
+  include FormObj::ModelMapper
   
   attribute :id
   attribute :name, model_attribute: :team_name
@@ -1585,7 +1551,7 @@ end
 <% end %>
 ```
 
-### 11. Reference Guide: `attribute` parameters
+### 5. Reference Guide: `attribute` parameters
 
 | Parameter | Condition | Default value | Defined in | Description |
 | --- |:---:|:---:|:---:| --- |
