@@ -6,7 +6,6 @@ class FormMarkForDestructionTest < Minitest::Test
     attribute :cars, array: true, default: [{code: '1'}, {code: '2'}] do
       attribute :code
       attribute :driver
-
     end
     attribute :colour do
       attribute :rgb
