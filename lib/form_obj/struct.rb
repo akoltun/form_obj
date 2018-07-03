@@ -37,7 +37,7 @@ module FormObj
       end
 
       def attributes
-        self._attributes.map(&:name)
+        _attributes.map(&:name)
       end
 
       def inspect
