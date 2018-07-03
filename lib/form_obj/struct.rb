@@ -37,7 +37,7 @@ module FormObj
       end
 
       def attributes
-        self._attributes.map(&:name)
+        _attributes.map(&:name)
       end
 
       def inspect
@@ -72,17 +72,17 @@ module FormObj
       send("#{self.class.primary_key}=", val)
     end
 
-    def update_attributes(new_attrs, raise_if_not_found: true)
-      new_attrs = HashWithIndifferentAccess.new(new_attrs) unless new_attrs.is_a? HashWithIndifferentAccess
-      new_attrs.each_pair do |new_attr, new_val|
-        attr = self.class._attributes.find(new_attr)
+    def update_attributes(attrs, raise_if_not_found: true)
+      attrs = HashWithIndifferentAccess.new(attrs) unless attrs.is_a? HashWithIndifferentAccess
+      attrs.each_pair do |attr_name, attr_value|
+        attr = self.class._attributes.find(attr_name)
         if attr.nil?
-          raise UnknownAttributeError.new(new_attr) if raise_if_not_found
+          raise UnknownAttributeError.new(attr_name) if raise_if_not_found
         else
           if attr.subform?
-            self.send(new_attr).update_attributes(new_val, raise_if_not_found: raise_if_not_found)
+            read_attribute(attr).update_attributes(attr_value, raise_if_not_found: raise_if_not_found)
           else
-            update_attribute(attr, new_val)
+            update_attribute(attr, attr_value)
           end
         end
       end

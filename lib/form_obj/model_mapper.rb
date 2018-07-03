@@ -25,7 +25,7 @@ module FormObj
       end
 
       def model_primary_key
-        ModelMapper::ModelPrimaryKey.new(self._attributes.find(self.primary_key).model_attribute)
+        ModelMapper::ModelPrimaryKey.new(_attributes.find(primary_key).model_attribute)
       end
     end
 
