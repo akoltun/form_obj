@@ -66,7 +66,7 @@ class ModelMapperLoadFromModelTest < Minitest::Test
     @team_model.team_name = 'Ferrari'
     @team_model.year = 1950
     @team_model.cars = [
-        CarModel.new('340 F1', 'Ascari', EngineModel.new(335, 4.1)),
+        CarModel.new('340 F1', 'Ascari', EngineModel.new(335, nil)),
         CarModel.new('275 F1', 'Villoresi', EngineModel.new(300, 3.3)),
     ]
     @team_model.finance = {
@@ -87,6 +87,54 @@ class ModelMapperLoadFromModelTest < Minitest::Test
     @team_model.push(ColourModel.new('red', 0xFF0000), ColourModel.new('green', 0x00FF00), ColourModel.new('blue', 0x0000FF))
   end
 
+  def fill_in_form
+    @team.name = 'McLaren'
+    @team.year = 1966
+
+    car = @team.cars.create
+    car.code = '340 F1'
+    car.driver = 'Bruce McLaren'
+    car.engine.power = 300
+    car.engine.volume = 3.0
+
+    car = @team.cars.create
+    car.code = 'M7A'
+    car.driver = 'Denis Hulme'
+    car.engine.power = 415
+    car.engine.volume = 4.3
+
+    sponsor = @team.sponsors.create
+    sponsor.title = 'Total'
+    sponsor.money = 250
+
+    sponsor = @team.sponsors.create
+    sponsor.title = 'Shell'
+    sponsor.money = 3000
+
+    chassis = @team.chassis.create
+    chassis.suspension.front = 'old'
+    chassis.suspension.rear = 'very old'
+    chassis.brakes = :hand
+
+    colour = @team.colours.create
+    colour.name = 'white'
+    colour.rgb = 0xFFFFFF
+
+    drivers_championship = @team.drivers_championships.create
+    drivers_championship.driver = 'Ascari'
+    drivers_championship.year = 1952
+
+    drivers_championship = @team.drivers_championships.create
+    drivers_championship.driver = 'Hawthorn'
+    drivers_championship.year = 1958
+
+    constructors_championship = @team.constructors_championships.create
+    constructors_championship.year = 1961
+
+    constructors_championship = @team.constructors_championships.create
+    constructors_championship.year = 1964
+  end
+
   def test_that_load_from_model_returns_form_itself
     assert_same(@team, @team.load_from_model(@team_model))  
   end
@@ -96,7 +144,7 @@ class ModelMapperLoadFromModelTest < Minitest::Test
   end
 
   def test_that_all_attributes_value_are_correctly_loaded_from_filled_model_into_filled_form
-    2.times { @team.cars.build }
+    fill_in_form
 
     check_that_all_attributes_value_are_correctly_loaded_from_filled_model
   end
@@ -106,7 +154,7 @@ class ModelMapperLoadFromModelTest < Minitest::Test
   end
 
   def test_that_all_attributes_value_are_correctly_loaded_from_filled_model_into_filled_form
-    2.times { @team.cars.build }
+    fill_in_form
 
     check_that_all_attributes_value_are_correctly_loaded_from_empty_model
   end
@@ -143,7 +191,7 @@ class ModelMapperLoadFromModelTest < Minitest::Test
     assert_equal(@team_model.cars[0].code, @team.cars[0].code)
     assert_equal(@team_model.cars[0].driver, @team.cars[0].driver)
     assert_equal(@team_model.cars[0].engine.power, @team.cars[0].engine.power)
-    assert_equal(@team_model.cars[0].engine.volume, @team.cars[0].engine.volume)
+    assert_nil(@team.cars[0].engine.volume)
 
     assert_equal(@team_model.cars[1].code, @team.cars[1].code)
     assert_equal(@team_model.cars[1].driver, @team.cars[1].driver)
