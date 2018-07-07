@@ -85,7 +85,7 @@ class ModelMapperLoadFromModelTest < Minitest::Test
         DriversChampionshipModel.new('Hawthorn', 1958),
     ]
 
-    @team_model.push(ColourModel.new('red', 0xFF0000), ColourModel.new('green', 0x00FF00), ColourModel.new('blue', 0x0000FF))
+    @team_model.push(ColourModel.new('white', 0xFFFFFF))
   end
 
   def fill_in_form
@@ -119,16 +119,24 @@ class ModelMapperLoadFromModelTest < Minitest::Test
     chassis.brakes = :hand
 
     colour = @team.colours.create
-    colour.name = 'white'
-    colour.rgb = 0xFFFFFF
+    colour.name = 'red'
+    colour.rgb = 0xFF0000
+
+    colour = @team.colours.create
+    colour.name = 'green'
+    colour.rgb = 0x00FF00
+
+    colour = @team.colours.create
+    colour.name = 'blue'
+    colour.rgb = 0x0000FF
 
     drivers_championship = @team.drivers_championships.create
-    drivers_championship.driver = 'Ascari'
-    drivers_championship.year = 1952
+    drivers_championship.driver = 'Surtees'
+    drivers_championship.year = 1964
 
     drivers_championship = @team.drivers_championships.create
-    drivers_championship.driver = 'Hawthorn'
-    drivers_championship.year = 1958
+    drivers_championship.driver = 'Rindt'
+    drivers_championship.year = 1970
 
     constructors_championship = @team.constructors_championships.create
     constructors_championship.year = 1961
@@ -143,21 +151,21 @@ class ModelMapperLoadFromModelTest < Minitest::Test
 
   def test_that_all_attributes_value_are_correctly_loaded_from_empty_model_into_empty_form
     check_that_all_attributes_value_are_correctly_loaded_from_empty_model
-    check_that_not_synched_attributes_are_still_empty
+    check_that_not_synced_attributes_are_still_empty
   end
 
   def test_that_all_attributes_value_are_correctly_loaded_from_empty_model_into_filled_form
     fill_in_form
 
     check_that_all_attributes_value_are_correctly_loaded_from_empty_model
-    check_that_not_synched_attributes_keep_their_values
+    check_that_not_synced_attributes_keep_their_values
   end
 
   def test_that_all_attributes_value_are_correctly_loaded_from_filled_model_into_empty_form
     fill_in_model
 
     check_that_all_attributes_value_are_correctly_loaded_from_filled_model
-    check_that_not_synched_attributes_are_still_empty
+    check_that_not_synced_attributes_are_still_empty
   end
 
   def test_that_all_attributes_value_are_correctly_loaded_from_filled_model_into_filled_form
@@ -165,10 +173,10 @@ class ModelMapperLoadFromModelTest < Minitest::Test
     fill_in_form
 
     check_that_all_attributes_value_are_correctly_loaded_from_filled_model
-    check_that_not_synched_attributes_keep_their_values
+    check_that_not_synced_attributes_keep_their_values
   end
 
-  def check_that_not_synched_attributes_are_still_empty
+  def check_that_not_synced_attributes_are_still_empty
     assert_kind_of(FormObj::ModelMapper::Array, @team.drivers_championships)
     assert_equal(0, @team.drivers_championships.size)
 
@@ -176,15 +184,15 @@ class ModelMapperLoadFromModelTest < Minitest::Test
     assert_equal(0, @team.constructors_championships.size)
   end
 
-  def check_that_not_synched_attributes_keep_their_values
+  def check_that_not_synced_attributes_keep_their_values
     assert_kind_of(FormObj::ModelMapper::Array, @team.drivers_championships)
     assert_equal(2, @team.drivers_championships.size)
 
-    assert_equal('Ascari', @team.drivers_championships[0].driver)
-    assert_equal(1952, @team.drivers_championships[0].year)
+    assert_equal('Surtees', @team.drivers_championships[0].driver)
+    assert_equal(1964, @team.drivers_championships[0].year)
 
-    assert_equal('Hawthorn', @team.drivers_championships[1].driver)
-    assert_equal(1958, @team.drivers_championships[1].year)
+    assert_equal('Rindt', @team.drivers_championships[1].driver)
+    assert_equal(1970, @team.drivers_championships[1].year)
 
     assert_kind_of(FormObj::ModelMapper::Array, @team.constructors_championships)
     assert_equal(2, @team.constructors_championships.size)
@@ -253,15 +261,9 @@ class ModelMapperLoadFromModelTest < Minitest::Test
     assert_equal(@team_model.chassis[1][:brakes], @team.chassis[1].brakes)
 
     assert_kind_of(FormObj::ModelMapper::Array, @team.colours)
-    assert_equal(3, @team.colours.size)
+    assert_equal(1, @team.colours.size)
 
     assert_equal(@team_model[0].name, @team.colours[0].name)
     assert_equal(@team_model[0].rgb, @team.colours[0].rgb)
-
-    assert_equal(@team_model[1].name, @team.colours[1].name)
-    assert_equal(@team_model[1].rgb, @team.colours[1].rgb)
-
-    assert_equal(@team_model[2].name, @team.colours[2].name)
-    assert_equal(@team_model[2].rgb, @team.colours[2].rgb)
   end
 end
