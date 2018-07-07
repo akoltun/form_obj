@@ -4,7 +4,7 @@ Suspension = Struct.new(:front, :rear)
 
 class ModelMapperSyncToModelTest < Minitest::Test
   EngineModel = Struct.new(:power, :volume)
-  CarModel = Struct.new(:code, :driver, :engine)
+  CarModel = Struct.new(:code, :driver, :engine, :secret)
   SponsorModel = Struct.new(:title, :money)
   ColourModel = Struct.new(:name, :rgb)
   DriversChampionshipModel = Struct.new(:driver, :year)
@@ -72,8 +72,8 @@ class ModelMapperSyncToModelTest < Minitest::Test
     @team_model.team_name = 'Ferrari'
     @team_model.year = 1950
     @team_model.cars = [
-        CarModel.new('340 F1', 'Ascari', EngineModel.new(335, 3.0)),
-        CarModel.new('275 F1', 'Villoresi', EngineModel.new(300, 3.3)),
+        CarModel.new('340 F1', 'Ascari', EngineModel.new(335, 3.0), 1),
+        CarModel.new('275 F1', 'Villoresi', EngineModel.new(300, 3.3), 2),
     ]
     @team_model.finance = {
         sponsors: [
@@ -166,6 +166,9 @@ class ModelMapperSyncToModelTest < Minitest::Test
 
     check_that_all_attributes_value_are_correctly_synced_from_filled_form
     check_that_not_synced_attributes_are_still_empty
+
+    assert_nil(@team_model.cars[0].secret)
+    assert_nil(@team_model.cars[1].secret)
   end
 
   def test_that_all_attributes_value_are_correctly_synced_from_filled_form_into_filled_model
@@ -174,6 +177,9 @@ class ModelMapperSyncToModelTest < Minitest::Test
 
     check_that_all_attributes_value_are_correctly_synced_from_filled_form
     check_that_not_synced_attributes_keep_their_values
+
+    assert_equal(1, @team_model.cars[0].secret)
+    assert_nil(@team_model.cars[1].secret)
   end
 
   def check_that_not_synced_attributes_are_still_empty
