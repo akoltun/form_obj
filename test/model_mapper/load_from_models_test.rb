@@ -31,7 +31,7 @@ class ModelMapperLoadFromModelsTest < Minitest::Test
 
     attribute :name, model_attribute: :team_name
     attribute :year
-    attribute :cars, array: true do
+    attribute :cars, array: true, primary_key: :code do
       attribute :code
       attribute :driver
       attribute :engine do
@@ -39,23 +39,24 @@ class ModelMapperLoadFromModelsTest < Minitest::Test
         attribute :volume
       end
     end
-    attribute :sponsors, array: true, model_attribute: 'finance.:sponsors' do
+    attribute :sponsors, array: true, model_attribute: 'finance.:sponsors', primary_key: :title do
       attribute :title
       attribute :money
     end
     attribute :chassis, array: true, model_hash: true, model: :chassis do
+      attribute :id
       attribute :suspension do
         attribute :front
         attribute :rear
       end
       attribute :brakes
     end
-    attribute :colours, array: true, model_nesting: false do
+    attribute :colours, array: true, model_nesting: false, primary_key: :name do
       attribute :name
       attribute :rgb
     end
-    attribute :drivers_championships, array: true, model_attribute: false, class: DriversChampionship
-    attribute :constructors_championships, array: true, model_attribute: false, class: ConstructorsChampionship
+    attribute :drivers_championships, array: true, model_attribute: false, class: DriversChampionship, primary_key: :year
+    attribute :constructors_championships, array: true, model_attribute: false, class: ConstructorsChampionship, primary_key: :year
   end
 
   def setup
@@ -86,8 +87,8 @@ class ModelMapperLoadFromModelsTest < Minitest::Test
     @team_model.push(ColourModel.new('red', 0xFF0000), ColourModel.new('green', 0x00FF00), ColourModel.new('blue', 0x0000FF))
 
     @chassis_model.chassis = [
-        { suspension: SuspensionModel.new('independant', 'de Dion'), brakes: :drum },
-        { suspension: SuspensionModel.new('dependant', 'de Dion'), brakes: :disc }
+        { id: 1, suspension: SuspensionModel.new('independant', 'de Dion'), brakes: :drum },
+        { id: 2, suspension: SuspensionModel.new('dependant', 'de Dion'), brakes: :disc }
     ]
   end
 
@@ -116,6 +117,7 @@ class ModelMapperLoadFromModelsTest < Minitest::Test
     sponsor.money = 3000
 
     chassis = @team.chassis.create
+    chassis.id = 2
     chassis.suspension.front = 'old'
     chassis.suspension.rear = 'very old'
     chassis.brakes = :hand
@@ -244,10 +246,12 @@ class ModelMapperLoadFromModelsTest < Minitest::Test
     assert_kind_of(FormObj::ModelMapper::Array, @team.chassis)
     assert_equal(2, @team.chassis.size)
 
+    assert_equal(@chassis_model.chassis[0][:id], @team.chassis[0].id)
     assert_equal(@chassis_model.chassis[0][:suspension].front, @team.chassis[0].suspension.front)
     assert_equal(@chassis_model.chassis[0][:suspension].rear, @team.chassis[0].suspension.rear)
     assert_equal(@chassis_model.chassis[0][:brakes], @team.chassis[0].brakes)
 
+    assert_equal(@chassis_model.chassis[1][:id], @team.chassis[1].id)
     assert_equal(@chassis_model.chassis[1][:suspension].front, @team.chassis[1].suspension.front)
     assert_equal(@chassis_model.chassis[1][:suspension].rear, @team.chassis[1].suspension.rear)
     assert_equal(@chassis_model.chassis[1][:brakes], @team.chassis[1].brakes)

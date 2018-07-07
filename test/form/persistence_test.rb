@@ -3,7 +3,7 @@ require "test_helper"
 class FormPersistenceTest < Minitest::Test
   class Team < FormObj::Form
     attribute :name
-    attribute :cars, array: true, default: [{code: '1'}, {code: '2'}] do
+    attribute :cars, array: true, default: [{code: '1'}, {code: '2'}], primary_key: :code do
       attribute :code
       attribute :driver
 

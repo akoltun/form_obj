@@ -22,6 +22,10 @@ module FormObj
             parent.primary_key = name.to_sym
           end
         end
+
+        if @array && @nested_class._attributes.find(@nested_class.primary_key).nil?
+          raise FormObj::NonexistentPrimaryKeyError.new("#{@nested_class.inspect} has no attribute :#{@nested_class.primary_key} which is specified/defaulted as primary key")
+        end
       end
 
       def subform?

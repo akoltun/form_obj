@@ -5,10 +5,9 @@ class ModelMapperPersistenceTest < Minitest::Test
     include FormObj::ModelMapper
 
     attribute :name
-    attribute :cars, array: true, default: [{code: '1'}, {code: '2'}] do
+    attribute :cars, array: true, default: [{code: '1'}, {code: '2'}], primary_key: :code do
       attribute :code
       attribute :driver
-
     end
     attribute :colour do
       attribute :rgb

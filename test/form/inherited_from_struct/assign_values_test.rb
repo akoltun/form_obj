@@ -16,7 +16,7 @@ class FormAssignValuesTest < Minitest::Test
   class Team < FormObj::Form
     attribute :name
     attribute :year
-    attribute :cars, array: true do
+    attribute :cars, array: true, primary_key: :code do
       attribute :code
       attribute :driver
       attribute :engine do
@@ -25,7 +25,7 @@ class FormAssignValuesTest < Minitest::Test
       end
       attribute :chassis, class: 'FormAssignValuesTest::Chassis'
     end
-    attribute :colours, class: Colour, array: true
+    attribute :colours, class: Colour, array: true, primary_key: :name
   end
 
   def setup
