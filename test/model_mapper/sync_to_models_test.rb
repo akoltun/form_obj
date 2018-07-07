@@ -121,13 +121,13 @@ class ModelMapperSyncToModelsTest < Minitest::Test
 
     chassis = @team.chassis.create
     chassis.id = 1
-    chassis.suspension.front = 'independant'
+    chassis.suspension.front = 'independent'
     chassis.suspension.rear = 'de Dion'
     chassis.brakes = :drum
 
     chassis = @team.chassis.create
     chassis.id = 3
-    chassis.suspension.front = 'dependant'
+    chassis.suspension.front = 'dependent'
     chassis.suspension.rear = 'de Lion'
     chassis.brakes = :disc
 

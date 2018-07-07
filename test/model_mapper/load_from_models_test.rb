@@ -91,8 +91,8 @@ class ModelMapperLoadFromModelsTest < Minitest::Test
     @team_model.push(ColourModel.new('white', 0xFFFFFF))
 
     @chassis_model.chassis = [
-        { id: 1, suspension: SuspensionModel.new('independant', 'de Dion'), brakes: :drum },
-        { id: 2, suspension: SuspensionModel.new('dependant', 'de Dion'), brakes: :disc }
+        { id: 1, suspension: SuspensionModel.new('independent', 'de Dion'), brakes: :drum },
+        { id: 2, suspension: SuspensionModel.new('dependent', 'de Dion'), brakes: :disc }
     ]
   end
 

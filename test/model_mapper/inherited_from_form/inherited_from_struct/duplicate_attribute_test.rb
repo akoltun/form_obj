@@ -4,7 +4,7 @@ class ModelMapperDuplicateAttributeTest < Minitest::Test
   class Suspension < FormObj::Form
     include FormObj::ModelMapper
 
-    attribute :front, default: 'dependant'
+    attribute :front, default: 'dependent'
     attribute :front
 
     attribute :fantastic, default: :flying

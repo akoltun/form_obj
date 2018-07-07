@@ -81,8 +81,8 @@ class ModelMapperLoadFromModelTest < Minitest::Test
         ]
     }
     @team_model.chassis = [
-        { id: 1, suspension: SuspensionModel.new('independant', 'de Dion'), brakes: :drum },
-        { id: 2, suspension: SuspensionModel.new('dependant', 'de Lion'), brakes: :disc }
+        { id: 1, suspension: SuspensionModel.new('independent', 'de Dion'), brakes: :drum },
+        { id: 2, suspension: SuspensionModel.new('dependent', 'de Lion'), brakes: :disc }
     ]
     @team_model.drivers_championships = [
         DriversChampionshipModel.new('Ascari', 1952),

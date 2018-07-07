@@ -2,7 +2,7 @@ require "test_helper"
 
 class FormDuplicateAttributeTest < Minitest::Test
   class Suspension < FormObj::Form
-    attribute :front, default: 'dependant'
+    attribute :front, default: 'dependent'
     attribute :front
 
     attribute :fantastic, default: :flying
