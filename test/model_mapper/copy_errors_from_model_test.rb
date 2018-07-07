@@ -35,6 +35,6 @@ class ModelMapperCopyErrorsFromModelTest < Minitest::Test
     assert_equal(['too long', 'not nice'],      @team.errors[:name])
     assert_equal(['not a number'],              @team.errors[:year])
     assert_equal(['too low', 'in wrong units'], @team.errors[:engine_power])
-    refute(@team.errors.key? :month)
+    refute(@team.errors.include? :month)
   end
 end
