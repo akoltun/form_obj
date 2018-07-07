@@ -1031,7 +1031,7 @@ So attributes are mapped as follows:
 | `team.car.code` | `team_model.car.code` |
 | `team.car.driver` | `team_model.car.driver` |
 
-Use `model_nesting: false` parameter to map nested form object to map parent level model.
+Use `model_nesting: false` parameter to map nested form object to parent level model.
 
 ```ruby
 class NestedForm < FormObj::Form
