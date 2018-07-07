@@ -203,7 +203,7 @@ class FormDefaultValueTest < Minitest::Test
     assert_equal(:white,        team.forth_car.colours[1].name)
     assert_equal(0xFFFFFF,      team.forth_car.colours[1].rgb)
 
-    assert_raises(FormObj::WrongDefaultValueClass) { team.wrong_car }
+    assert_raises(FormObj::WrongDefaultValueClassError) { team.wrong_car }
 
     assert_equal(2, team.main_cars.size)
 
@@ -261,7 +261,7 @@ class FormDefaultValueTest < Minitest::Test
     assert_equal(:green,        team.additional_cars[1].colours[1].name)
     assert_equal(0x00FF00,      team.additional_cars[1].colours[1].rgb)
 
-    assert_raises(FormObj::WrongDefaultValueClass) { team.wrong_cars1 }
-    assert_raises(FormObj::WrongDefaultValueClass) { team.wrong_cars2 }
+    assert_raises(FormObj::WrongDefaultValueClassError) { team.wrong_cars1 }
+    assert_raises(FormObj::WrongDefaultValueClassError) { team.wrong_cars2 }
   end
 end

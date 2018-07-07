@@ -6,7 +6,7 @@ require "active_support/core_ext/hash/indifferent_access"
 
 module FormObj
   class UnknownAttributeError < RuntimeError; end
-  class WrongDefaultValueClass < RuntimeError; end
+  class WrongDefaultValueClassError < RuntimeError; end
 
   class Struct
     class_attribute :_attributes, instance_predicate: false, instance_reader: false, instance_writer: false
