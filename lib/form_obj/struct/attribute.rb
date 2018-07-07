@@ -22,6 +22,10 @@ module FormObj
             parent.primary_key = name.to_sym
           end
         end
+
+        if @array && @nested_class._attributes.find(@nested_class.primary_key).nil?
+          raise FormObj::NonexistentPrimaryKeyError.new("#{@nested_class.inspect} has no attribute :#{@nested_class.primary_key} which is specified/defaulted as primary key")
+        end
       end
 
       def subform?
@@ -65,15 +69,15 @@ module FormObj
 
           if @nested_class
             if @array
-              raise FormObj::WrongDefaultValueClass unless value.is_a? ::Array
+              raise FormObj::WrongDefaultValueClassError unless value.is_a? ::Array
               value = create_array(value.map do |val|
                 val = create_nested(val) if val.is_a?(::Hash)
-                raise FormObj::WrongDefaultValueClass if val.class != @nested_class
+                raise FormObj::WrongDefaultValueClassError if val.class != @nested_class
                 val
               end)
             else
               value = create_nested(value) if value.is_a? ::Hash
-              raise FormObj::WrongDefaultValueClass if value.class != @nested_class
+              raise FormObj::WrongDefaultValueClassError if value.class != @nested_class
             end
           end
 

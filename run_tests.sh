@@ -23,7 +23,6 @@ do
   echo "$i: Start Test"
   echo "====================================================="
   rvm $i exec bundle exec appraisal rake test
-  rvm $i exec bundle exec appraisal rake spec
   echo "====================================================="
   echo "$i: End Test"
   echo "====================================================="

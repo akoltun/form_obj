@@ -2,7 +2,7 @@ require "test_helper"
 
 class FormDuplicateAttributeTest < Minitest::Test
   class Suspension < FormObj::Form
-    attribute :front, default: 'dependant'
+    attribute :front, default: 'dependent'
     attribute :front
 
     attribute :fantastic, default: :flying
@@ -37,10 +37,10 @@ class FormDuplicateAttributeTest < Minitest::Test
     attribute :year
     attribute :year, default: 1950
 
-    attribute :cars, array: true do
+    attribute :cars, array: true, primary_key: :wheel do
       attribute :wheel
     end
-    attribute :cars, array: true do
+    attribute :cars, array: true, primary_key: :code do
       attribute :code
       attribute :driver
 
@@ -57,7 +57,7 @@ class FormDuplicateAttributeTest < Minitest::Test
       attribute :chassis, class: 'FormDuplicateAttributeTest::Chassis'
     end
 
-    attribute :colours, class: Colour, array: true
+    attribute :colours, class: Colour, array: true, primary_key: :name
     attribute :colours
   end
 

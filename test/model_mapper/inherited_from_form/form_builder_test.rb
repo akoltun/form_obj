@@ -28,7 +28,7 @@ class ModelMapperFormBuilderTest < Minitest::Test
 
     attribute :name
     attribute :year
-    attribute :cars, array: true, default: [{code: 'M1'}, {code: 'M2'}] do
+    attribute :cars, array: true, default: [{code: 'M1'}, {code: 'M2'}], primary_key: :code do
       attribute :code
       attribute :driver
       attribute :engine do

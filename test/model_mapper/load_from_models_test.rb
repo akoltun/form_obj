@@ -13,6 +13,13 @@ class ModelMapperLoadFromModelsTest < Minitest::Test
     attr_accessor :team_name, :year, :cars, :finance, :chassis, :drivers_championships
   end
 
+  class Sponsor < FormObj::Form
+    include FormObj::ModelMapper
+
+    attribute :title
+    attribute :money
+  end
+
   class DriversChampionship < FormObj::Form
     include FormObj::ModelMapper
 
@@ -31,7 +38,7 @@ class ModelMapperLoadFromModelsTest < Minitest::Test
 
     attribute :name, model_attribute: :team_name
     attribute :year
-    attribute :cars, array: true do
+    attribute :cars, array: true, primary_key: :code do
       attribute :code
       attribute :driver
       attribute :engine do
@@ -39,23 +46,21 @@ class ModelMapperLoadFromModelsTest < Minitest::Test
         attribute :volume
       end
     end
-    attribute :sponsors, array: true, model_attribute: 'finance.:sponsors' do
-      attribute :title
-      attribute :money
-    end
+    attribute :sponsors, class: Sponsor, array: true, model_attribute: 'finance.:sponsors', primary_key: :title
     attribute :chassis, array: true, model_hash: true, model: :chassis do
+      attribute :id
       attribute :suspension do
         attribute :front
         attribute :rear
       end
       attribute :brakes
     end
-    attribute :colours, array: true, model_nesting: false do
+    attribute :colours, array: true, model_nesting: false, primary_key: :name do
       attribute :name
       attribute :rgb
     end
-    attribute :drivers_championships, array: true, model_attribute: false, class: DriversChampionship
-    attribute :constructors_championships, array: true, model_attribute: false, class: ConstructorsChampionship
+    attribute :drivers_championships, array: true, model_attribute: false, class: DriversChampionship, primary_key: :year
+    attribute :constructors_championships, array: true, model_attribute: false, class: ConstructorsChampionship, primary_key: :year
   end
 
   def setup
@@ -83,36 +88,124 @@ class ModelMapperLoadFromModelsTest < Minitest::Test
         DriversChampionshipModel.new('Hawthorn', 1958),
     ]
 
-    @team_model.push(ColourModel.new('red', 0xFF0000), ColourModel.new('green', 0x00FF00), ColourModel.new('blue', 0x0000FF))
+    @team_model.push(ColourModel.new('white', 0xFFFFFF))
 
     @chassis_model.chassis = [
-        { suspension: SuspensionModel.new('independant', 'de Dion'), brakes: :drum },
-        { suspension: SuspensionModel.new('dependant', 'de Dion'), brakes: :disc }
+        { id: 1, suspension: SuspensionModel.new('independent', 'de Dion'), brakes: :drum },
+        { id: 2, suspension: SuspensionModel.new('dependent', 'de Dion'), brakes: :disc }
     ]
+  end
+
+  def fill_in_form
+    @team.name = 'McLaren'
+    @team.year = 1966
+
+    car = @team.cars.create
+    car.code = '340 F1'
+    car.driver = 'Bruce McLaren'
+    car.engine.power = 300
+    car.engine.volume = 3.0
+
+    car = @team.cars.create
+    car.code = 'M7A'
+    car.driver = 'Denis Hulme'
+    car.engine.power = 415
+    car.engine.volume = 4.3
+
+    sponsor = @team.sponsors.create
+    sponsor.title = 'Total'
+    sponsor.money = 250
+
+    sponsor = @team.sponsors.create
+    sponsor.title = 'Shell'
+    sponsor.money = 3000
+
+    chassis = @team.chassis.create
+    chassis.id = 2
+    chassis.suspension.front = 'old'
+    chassis.suspension.rear = 'very old'
+    chassis.brakes = :hand
+
+    colour = @team.colours.create
+    colour.name = 'red'
+    colour.rgb = 0xFF0000
+
+    colour = @team.colours.create
+    colour.name = 'green'
+    colour.rgb = 0x00FF00
+
+    colour = @team.colours.create
+    colour.name = 'blue'
+    colour.rgb = 0x0000FF
+
+    drivers_championship = @team.drivers_championships.create
+    drivers_championship.driver = 'Surtees'
+    drivers_championship.year = 1964
+
+    drivers_championship = @team.drivers_championships.create
+    drivers_championship.driver = 'Rindt'
+    drivers_championship.year = 1970
+
+    constructors_championship = @team.constructors_championships.create
+    constructors_championship.year = 1961
+
+    constructors_championship = @team.constructors_championships.create
+    constructors_championship.year = 1964
   end
 
   def test_that_load_from_model_returns_form_itself
     assert_same(@team, @team.load_from_model(@team_model))  
   end
 
-  def test_that_all_attributes_value_are_correctly_loaded_from_filled_models_into_empty_form
-    check_that_all_attributes_value_are_correctly_loaded_from_filled_models
+  def test_that_all_attributes_value_are_correctly_loaded_from_empty_models_into_empty_form
+    check_that_all_attributes_value_are_correctly_loaded_from_empty_models
+    check_that_not_synched_attributes_are_still_empty
   end
 
-  def test_that_all_attributes_value_are_correctly_loaded_from_filled_models_into_filled_form
-    2.times { @team.cars.build }
-
-    check_that_all_attributes_value_are_correctly_loaded_from_filled_models
-  end
-
-  def test_that_all_attributes_value_are_correctly_loaded_from_filled_models_into_empty_form
-    check_that_all_attributes_value_are_correctly_loaded_from_filled_models
-  end
-
-  def test_that_all_attributes_value_are_correctly_loaded_from_filled_models_into_filled_form
-    2.times { @team.cars.build }
+  def test_that_all_attributes_value_are_correctly_loaded_from_empty_models_into_filled_form
+    fill_in_form
 
     check_that_all_attributes_value_are_correctly_loaded_from_empty_models
+    check_that_not_synched_attributes_keep_their_values
+  end
+
+  def test_that_all_attributes_value_are_correctly_loaded_from_filled_models_into_empty_form
+    fill_in_models
+
+    check_that_all_attributes_value_are_correctly_loaded_from_filled_models
+    check_that_not_synched_attributes_are_still_empty
+  end
+
+  def test_that_all_attributes_value_are_correctly_loaded_from_filled_models_into_filled_form
+    fill_in_models
+    fill_in_form
+
+    check_that_all_attributes_value_are_correctly_loaded_from_filled_models
+    check_that_not_synched_attributes_keep_their_values
+  end
+
+  def check_that_not_synched_attributes_are_still_empty
+    assert_kind_of(FormObj::ModelMapper::Array, @team.drivers_championships)
+    assert_equal(0, @team.drivers_championships.size)
+
+    assert_kind_of(FormObj::ModelMapper::Array, @team.constructors_championships)
+    assert_equal(0, @team.constructors_championships.size)
+  end
+
+  def check_that_not_synched_attributes_keep_their_values
+    assert_kind_of(FormObj::ModelMapper::Array, @team.drivers_championships)
+    assert_equal(2, @team.drivers_championships.size)
+
+    assert_equal('Surtees', @team.drivers_championships[0].driver)
+    assert_equal(1964, @team.drivers_championships[0].year)
+
+    assert_equal('Rindt', @team.drivers_championships[1].driver)
+    assert_equal(1970, @team.drivers_championships[1].year)
+
+    assert_kind_of(FormObj::ModelMapper::Array, @team.constructors_championships)
+    assert_equal(2, @team.constructors_championships.size)
+    assert_equal(1961, @team.constructors_championships[0].year)
+    assert_equal(1964, @team.constructors_championships[1].year)
   end
 
   def check_that_all_attributes_value_are_correctly_loaded_from_empty_models
@@ -135,7 +228,6 @@ class ModelMapperLoadFromModelsTest < Minitest::Test
   end
 
   def check_that_all_attributes_value_are_correctly_loaded_from_filled_models
-    fill_in_models
     @team.load_from_models(default: @team_model, chassis: @chassis_model)
 
     assert_equal(@team_model.team_name, @team.name)
@@ -166,27 +258,20 @@ class ModelMapperLoadFromModelsTest < Minitest::Test
     assert_kind_of(FormObj::ModelMapper::Array, @team.chassis)
     assert_equal(2, @team.chassis.size)
 
+    assert_equal(@chassis_model.chassis[0][:id], @team.chassis[0].id)
     assert_equal(@chassis_model.chassis[0][:suspension].front, @team.chassis[0].suspension.front)
     assert_equal(@chassis_model.chassis[0][:suspension].rear, @team.chassis[0].suspension.rear)
     assert_equal(@chassis_model.chassis[0][:brakes], @team.chassis[0].brakes)
 
+    assert_equal(@chassis_model.chassis[1][:id], @team.chassis[1].id)
     assert_equal(@chassis_model.chassis[1][:suspension].front, @team.chassis[1].suspension.front)
     assert_equal(@chassis_model.chassis[1][:suspension].rear, @team.chassis[1].suspension.rear)
     assert_equal(@chassis_model.chassis[1][:brakes], @team.chassis[1].brakes)
 
-    assert_equal(Array.new, @team.drivers_championships)
-    assert_equal(Array.new, @team.constructors_championships)
-
-    assert_kind_of(FormObj::ModelMapper::Array, @team.colours)
-    assert_equal(3, @team.colours.size)
+    assert_kind_of(::Array, @team.colours)
+    assert_equal(1, @team.colours.size)
 
     assert_equal(@team_model[0].name, @team.colours[0].name)
     assert_equal(@team_model[0].rgb, @team.colours[0].rgb)
-
-    assert_equal(@team_model[1].name, @team.colours[1].name)
-    assert_equal(@team_model[1].rgb, @team.colours[1].rgb)
-
-    assert_equal(@team_model[2].name, @team.colours[2].name)
-    assert_equal(@team_model[2].rgb, @team.colours[2].rgb)
   end
 end

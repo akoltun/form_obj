@@ -23,11 +23,11 @@ class ModelMapperCustomLoadFromModelTest < Minitest::Test
 
     attribute :name, model_attribute: :team_name
     attribute :year
-    attribute :cars, array: true do
+    attribute :cars, array: true, primary_key: :code do
       attribute :code
       attribute :driver
     end
-    attribute :colours, array: true do
+    attribute :colours, array: true, primary_key: :name do
       attribute :name
       attribute :rgb
     end
