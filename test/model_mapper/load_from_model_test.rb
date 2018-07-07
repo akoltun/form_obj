@@ -12,6 +12,13 @@ class ModelMapperLoadFromModelTest < Minitest::Test
     attr_accessor :team_name, :year, :cars, :finance, :chassis, :drivers_championships
   end
 
+  class Sponsor < FormObj::Form
+    include FormObj::ModelMapper
+
+    attribute :title
+    attribute :money
+  end
+
   class DriversChampionship < FormObj::Form
     include FormObj::ModelMapper
 
@@ -38,10 +45,7 @@ class ModelMapperLoadFromModelTest < Minitest::Test
         attribute :volume
       end
     end
-    attribute :sponsors, array: true, model_attribute: 'finance.:sponsors', primary_key: :title do
-      attribute :title
-      attribute :money
-    end
+    attribute :sponsors, class: Sponsor, array: true, model_attribute: 'finance.:sponsors', primary_key: :title
     attribute :chassis, array: true, model_hash: true do
       attribute :id
       attribute :suspension do

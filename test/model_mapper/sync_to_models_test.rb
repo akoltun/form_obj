@@ -14,6 +14,13 @@ class ModelMapperSyncToModelsTest < Minitest::Test
     attr_accessor :team_name, :year, :cars, :finance, :drivers_championships
   end
 
+  class Sponsor < FormObj::Form
+    include FormObj::ModelMapper
+
+    attribute :title
+    attribute :money
+  end
+
   class DriversChampionship < FormObj::Form
     include FormObj::ModelMapper
 
