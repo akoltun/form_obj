@@ -1,10 +1,11 @@
 require "test_helper"
 
+Suspension = Struct.new(:front, :rear)
+
 class ModelMapperSyncToModelTest < Minitest::Test
   EngineModel = Struct.new(:power, :volume)
   CarModel = Struct.new(:code, :driver, :engine)
   SponsorModel = Struct.new(:title, :money)
-  SuspensionModel = Struct.new(:front, :rear)
   ColourModel = Struct.new(:name, :rgb)
   DriversChampionshipModel = Struct.new(:driver, :year)
 
@@ -44,7 +45,7 @@ class ModelMapperSyncToModelTest < Minitest::Test
     end
     attribute :chassis, array: true, model_hash: true do
       attribute :id
-      attribute :suspension, model_class: SuspensionModel do
+      attribute :suspension do
         attribute :front
         attribute :rear
       end
@@ -76,7 +77,7 @@ class ModelMapperSyncToModelTest < Minitest::Test
             SponsorModel.new('Pirelli', 500000),
         ]
     }
-    @team_model.chassis = [{ id: 2, suspension: SuspensionModel.new('old', 'very old'), brakes: :hand }]
+    @team_model.chassis = [{ id: 2, suspension: Suspension.new('old', 'very old'), brakes: :hand }]
     @team_model.drivers_championships = [
         DriversChampionshipModel.new('Ascari', 1952),
         DriversChampionshipModel.new('Hawthorn', 1958),

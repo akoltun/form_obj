@@ -1,11 +1,12 @@
 require "test_helper"
 
+Colour = Struct.new(:name, :rgb)
+
 class ModelMapperSyncToModelsTest < Minitest::Test
   EngineModel = Struct.new(:power, :volume)
   CarModel = Struct.new(:code, :driver, :engine)
   SponsorModel = Struct.new(:title, :money)
   SuspensionModel = Struct.new(:front, :rear)
-  ColourModel = Struct.new(:name, :rgb)
   DriversChampionshipModel = Struct.new(:driver, :year)
   ChassisModel = Struct.new(:chassis)
 
@@ -51,7 +52,7 @@ class ModelMapperSyncToModelsTest < Minitest::Test
       end
       attribute :brakes
     end
-    attribute :colours, array: true, model_nesting: false, primary_key: :name, model_class: ColourModel do
+    attribute :colours, array: true, model_nesting: false, primary_key: :name do
       attribute :name
       attribute :rgb
     end
@@ -82,7 +83,7 @@ class ModelMapperSyncToModelsTest < Minitest::Test
         DriversChampionshipModel.new('Ascari', 1952),
         DriversChampionshipModel.new('Hawthorn', 1958),
     ]
-    @team_model.push(ColourModel.new('red', 0xFF0000), ColourModel.new('green', 0x00FF00), ColourModel.new('blue', 0x0000FF))
+    @team_model.push(Colour.new('red', 0xFF0000), Colour.new('green', 0x00FF00), Colour.new('blue', 0x0000FF))
 
     @chassis_model = ChassisModel.new([{ id: 2, suspension: SuspensionModel.new('old', 'very old'), brakes: :hand }])
   end
