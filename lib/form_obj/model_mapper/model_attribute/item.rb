@@ -1,4 +1,5 @@
 require 'active_support/inflector'
+require 'active_support/core_ext/object/try'
 
 module FormObj
   module ModelMapper

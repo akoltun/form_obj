@@ -18,7 +18,7 @@ module FormObj
 
         if classes.size > 0
           if (subform && (names.size != classes.size)) || (!subform && (names.size != classes.size + 1))
-            raise "Since the :model_attribute size is #{names.size} the :model_class size should be #{names.size - subform ? 0 : 1} in terms of nested items but it was #{classes.size}" unless names.size == classes.size
+            raise "Since the :model_attribute size is #{names.size} the :model_class size should be #{names.size - (subform ? 0 : 1)} in terms of nested items but it was #{classes.size}" unless names.size == classes.size
           end
         end
 
