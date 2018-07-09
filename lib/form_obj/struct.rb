@@ -96,10 +96,15 @@ module FormObj
     end
 
     def inspect
-      "#<#{self.class.name} #{self.class._attributes.map { |attribute| "#{attribute.name}: #{read_attribute(attribute).inspect}"}.join(', ')}>"
+      "#<#{inner_inspect}>"
     end
 
     private
+
+    def inner_inspect
+      attributes = self.class._attributes.map { |attribute| "#{attribute.name}: #{read_attribute(attribute).inspect}"}.join(', ')
+      "#{self.class.name}#{attributes.size > 0 ? " #{attributes}" : ''}"
+    end
 
     def update_attribute(attribute, new_value)
       write_attribute(attribute, new_value)

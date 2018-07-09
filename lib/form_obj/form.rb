@@ -74,5 +74,9 @@ module FormObj
       @persisted = false unless _get_attribute_value(attribute) === value
       super
     end
+
+    def inner_inspect
+      "#{super}#{marked_for_destruction? ? ' marked_for_destruction' : ''}"
+    end
   end
 end
