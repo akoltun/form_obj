@@ -1,27 +1,6 @@
 require "test_helper"
 
-Suspension = Struct.new(:front, :rear)
-
-module ModelMarkableForDestruction
-  def mark_for_destruction
-    @marked_for_destruction = true
-  end
-
-  def marked_for_destruction?
-    @marked_for_destruction
-  end
-end
-
 class ModelMapperSyncToModelTest < Minitest::Test
-  class ArrayWithWhere < Array
-    def where(condition)
-      key = condition.keys.first
-      values = condition.values.first
-
-      select { |item| values.include?(item.is_a?(::Hash) ? item[key] : item.send(key)) }
-    end
-  end
-
   EngineModel = Struct.new(:power, :volume, :secret) { include ModelMarkableForDestruction }
   CarModel = Struct.new(:code, :driver, :engine, :secret) { include ModelMarkableForDestruction }
   SponsorModel = Struct.new(:title, :money, :secret) { include ModelMarkableForDestruction }
@@ -252,9 +231,9 @@ class ModelMapperSyncToModelTest < Minitest::Test
   def test_that_all_attributes_value_are_correctly_synced_from_empty_form_into_filled_model
     fill_in_model
 
-    check_that_not_synced_attributes_keep_their_values
-
     @team.sync_to_model(@team_model)
+
+    check_that_not_synced_attributes_keep_their_values
 
     assert_nil(@team_model.team_name)
     assert_nil(@team_model.year)
@@ -404,9 +383,9 @@ class ModelMapperSyncToModelTest < Minitest::Test
     fill_in_form
     fill_in_model
 
-    check_that_not_synced_attributes_keep_their_values
-
     @team.sync_to_model(@team_model)
+
+    check_that_not_synced_attributes_keep_their_values
 
     assert_equal('McLaren', @team_model.team_name)
     assert_equal(1966, @team_model.year)
@@ -497,10 +476,6 @@ class ModelMapperSyncToModelTest < Minitest::Test
     colour = @team_model.find { |colour| colour.name == 'white' }
     assert_equal(0xFFFFFF, colour.rgb)
     assert_nil(colour.secret)
-  end
-
-  def check_that_not_synced_attributes_are_still_empty
-    assert_nil(@team_model.drivers_championships)
   end
 
   def check_that_not_synced_attributes_keep_their_values
