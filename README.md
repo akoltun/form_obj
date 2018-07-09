@@ -320,7 +320,7 @@ class Team < FormObj::Struct
   attribute :car, class: Car, default: 36
 end
 
-Team.new      # => FormObj::WrongDefaultValueClass: FormObj::WrongDefaultValueClass  
+Team.new      # => FormObj::WrongDefaultValueClassError: FormObj::WrongDefaultValueClassError  
 ```
 
 #### 1.2. Array of `FormObj::Struct`
@@ -640,7 +640,7 @@ class Team < FormObj::Struct
   attribute :cars, class: Car, array: true, default: [36]
 end
 
-Team.new      # => FormObj::WrongDefaultValueClass: FormObj::WrongDefaultValueClass  
+Team.new      # => FormObj::WrongDefaultValueClassError: FormObj::WrongDefaultValueClassError  
 ```
 
 #### 1.3. Serialize `FormObj::Struct` to Hash
@@ -992,6 +992,8 @@ So attributes are mapped as follows:
 | `form.year` | `team_model.year` |
 | `form.engine_power` | - |
 
+It also works for other methods: `sync_to_model(s)` and `to_model(s)_hash` 
+
 #### 3.4. Map Nested Form Objects
 
 Nested forms are mapped by default to corresponding nested models.
@@ -1031,6 +1033,10 @@ So attributes are mapped as follows:
 | `team.car.code` | `team_model.car.code` |
 | `team.car.driver` | `team_model.car.driver` |
 
+It also works for other methods: `sync_to_model(s)` and `to_model(s)_hash` 
+
+#### 3.5. Map Nested Form Object to Parent Level Model
+
 Use `model_nesting: false` parameter to map nested form object to parent level model.
 
 ```ruby
@@ -1067,7 +1073,9 @@ So attributes are mapped as follows:
 | `team.car.code` | `team_model.code` |
 | `team.car.driver` | `team_model.driver` |
 
-#### 3.5. Map Nested Form Object to A Hash Model
+It also works for other methods: `sync_to_model(s)` and `to_model(s)_hash` 
+
+#### 3.6. Map Nested Form Object to A Hash Model
 
 Use `model_hash: true` in order to map a nested form object to a hash as a model.
 
@@ -1106,7 +1114,44 @@ So attributes are mapped as follows:
 | `team.car.code` | `team_model.car[:code]` |
 | `team.car.driver` | `team_model.car[:driver]` |
 
-#### 3.6. Custom Implementation of Loading of Array of Models  
+It also works for other methods: `sync_to_model(s)` and `to_model(s)_hash` 
+
+#### 3.7. Map Array of Nested Form Objects
+
+Array of nested forms is mapped by default to corresponding array (or for example to `ActiveRecord::Relation` in case of Rails) of nested models.
+
+```ruby
+class Team < FormObj::Form
+  include FormObj::ModelMapper
+  
+  attribute :name
+  attribute :year
+  attribute :cars, array: true, model_class: CarModel do
+    attribute :code, primary_key: true
+    attribute :driver
+  end
+end
+``` 
+
+#### 3.8. Map Array of Nested Form Objects to Nested Array of Nested Models
+
+If corresponding `:model_attribute` parameter uses dot notations to reference
+nested models the value of `:model_class` parameter should be an array of corresponding model classes.
+
+```ruby
+class ArrayForm < FormObj::Form
+  include FormObj::ModelMapper
+  
+  attribute :name
+  attribute :year
+  attribute :cars, array: true, model_attribute: 'equipment.cars', model_class: [Equipment, CarModel] do
+    attribute :code, primary_key: true
+    attribute :driver
+  end
+end
+``` 
+
+#### 3.9. Default Implementation of Loading of Array of Models 
 
 By default `load_from_model(s)` methods loads all models from arrays.
 
@@ -1153,6 +1198,8 @@ team.to_hash      # => {
                   # =>    }]
                   # => }
 ```
+
+#### 3.10. Custom Implementation of Loading of Array of Models  
 
 `FormObj::ModelMapper::Array` class implements method (where `*args` are additional params passed to `load_from_model(s)` methods)
 
@@ -1244,7 +1291,7 @@ It identifies requested model attribute using `model_attribute.names` which retu
 an array of model attribute accessors (in our example `[:cars]`)
  
 In case of `ActiveRecord` model `iterate_through_models_to_load_them` will receive an instance of `ActiveRecord::Relation` as `models` parameter.
-This allows to load in the memory only necessary association models.
+This allows to load in the memory only necessary associated models.
 
 ```ruby
 class ArrayLoadLimit < FormObj::ModelMapper::Array
@@ -1257,13 +1304,13 @@ class ArrayLoadLimit < FormObj::ModelMapper::Array
 end
 ```
      
-#### 3.7. Sync Form Object to Models
+#### 3.11. Sync Form Object to Model(s)
 
 Use `sync_to_models(models)` to sync form object attributes to mapped models.
-Method returns self so one can chain calls.
+Method returns self so calls could be chained.
 
 ```ruby
-class MultiForm < FormObj::Form
+class Team < FormObj::Form
   include FormObj::ModelMapper
   
   attribute :name, model_attribute: :team_name
@@ -1274,66 +1321,118 @@ end
 default_model = Struct.new(:team_name, :year).new('Ferrari', 1950)
 car_model = { engine: Struct.new(:power).new(335) }
 
-multi_form = MultiForm.new
-multi_form.update_attributes(name: 'McLaren', year: 1966, engine_power: 415)
-multi_form.sync_to_models(default: default_model, car: car_model)
+team = Team.new
+team.update_attributes(name: 'McLaren', year: 1966, engine_power: 415)
+team.sync_to_models(default: default_model, car: car_model)
 
-default_model.name          # => "McLaren"
+default_model.team_name     # => "McLaren"
 default_model.year          # => 1966
 car_model[:engine].power    # => 415 
 ``` 
 
-Use `sync_to_models(default: model)` or `sync_to_model(model)` to sync to single model.
+Use `sync_to_model(model)` if form object is mapped to single model.
 
-Neither `sync_to_models` nor `sync_to_model` calls `save` method on the model(s).
-Also they don't call `valid?` method on the model(s). 
-Instead they just assign form object attributes value to mapped model attributes
-using `<attribute_name>=` accessors on the model(s).
+#### 3.12. Sync Array of Nested Form Objects to Model(s)
 
-It is completely up to developer to do any additional validations on the model(s) and save it(them).
-
-##### 3.7.1. Array of Form Objects and Models
-
-Saving array of form objects to corresponding array of models requires the class of the model to be known by the form object
-because it could create new instances of the model array elements.
-Use `:model_class` parameter to specify it. 
-Form object will try to guess the name of the class from the name of the attribute if this parameter is absent.
+By default `FormObj::Form` with included `FormObj::ModelMapper` will try to match Form Objects and Models by primary key.
+Therefore Form Object primary key attribute has to be mapped to top level Model attribute.
 
 ```ruby
-class ArrayForm < FormObj::Form
+TeamModel = Struct.new(:cars)
+CarModel = Struct.new(:code, :driver)
+
+class Team < FormObj::Form
   include FormObj::ModelMapper
   
-  attribute :name
-  attribute :year
-  attribute :cars, array: true, model_class: Car do
-    attribute :code, primary_key: true     # <- primary key is specified on attribute level
+  attribute :cars, array: true, model_class: CarModel do
+    attribute :code, primary_key: true
     attribute :driver
   end
 end
-``` 
+```
 
-If corresponding `:model_attribute` parameter uses dot notations to reference
-nested models the value of `:model_class` parameter should be an array of corresponding model classes.
+Attributes of successfully matched models will be updated from corresponding form objects. 
 
 ```ruby
-class ArrayForm < FormObj::Form
+team_model = TeamModel.new([CarModel.new('275 F1', 'Ascari')])
+team = Team.new(cars: [{ code: '275 F1', driver: 'Villoresi' }])
+
+team_model.cars                     # => [#<struct CarModel code="275 F1", driver="Ascari">]
+team.sync_to_model(team_model)  
+team_model.cars                     # => [#<struct CarModel code="275 F1", driver="Villoresi">]
+```
+
+New models will be created for form object that doesn't have corresponding models. 
+In order to create a new model the model class has to be known.
+It can be specified by `:model_class` parameter. 
+Otherwise form object will try to guess it from the attribute name.
+
+```ruby
+team_model = TeamModel.new([])
+team = Team.new(cars: [{ code: '275 F1', driver: 'Villoresi' }])
+
+team_model.cars                     # => []
+team.sync_to_model(team_model)  
+team_model.cars                     # => [#<struct CarModel code="275 F1", driver="Villoresi">]
+```
+
+Models that does not have corresponding objects will stay without changes.
+
+```ruby
+team_model = TeamModel.new([CarModel.new('275 F1', 'Ascari')])
+team = Team.new(cars: [{ code: '275 F1', driver: 'Villoresi' }, { code: '340 F1', driver: 'Hunt' }])
+
+team_model.cars                     # => [#<struct CarModel code="275 F1", driver="Ascari">]
+team.sync_to_model(team_model)  
+team_model.cars                     # => [#<struct CarModel code="275 F1", driver="Villoresi">, #<struct CarModel code="340 F1", driver="Hunt">]
+```
+
+If array does not respond to `:where` models that correspond to form objects marked for destruction will be destroyed.
+
+```ruby
+team_model = TeamModel.new([CarModel.new('275 F1', 'Ascari')])
+team = Team.new(cars: [{ code: '275 F1', _destroy: true }])       # => #<Team cars: [#< code: "275 F1", driver: nil marked_for_destruction>]>
+
+team_model.cars                                                   # => [#<struct CarModel code="275 F1", driver="Ascari">]
+team.sync_to_model(team_model)  
+team_model.cars                                                   # => []
+```
+
+#### 3.13. Sync Array of Nested Form Objects to `ActiveRecord`-like Models
+
+if array respond to `:where` (aka `ActiveRecord`) models that correspond to form objects marked for destruction will be also marked for destruction.
+
+```ruby
+class TeamModel < ApplicationRecord
+  has_many :cars
+end
+
+class Team < FormObj::Form
   include FormObj::ModelMapper
   
-  attribute :name
-  attribute :year
-  attribute :cars, array: true, model_attribute: 'equipment.cars', model_class: [Equipment, Car] do
-    attribute :code, primary_key: true     # <- primary key is specified on attribute level
+  attribute :cars, array: true, model_class: CarModel do
+    attribute :id
+    attribute :code
     attribute :driver
   end
 end
-``` 
 
-#### 3.8. Serialize Form Object to Model Hash
+team_model.cars                                   # => #<ActiveRecord::Associations::CollectionProxy [#<Car id: 1, code: "275 F1", driver: "Ascari">]>
+team_model.cars.first.marked_for_destruction?     # => false
+
+team = Team.new(cars: [{ id: 1, _destroy: true }])
+team.sync_to_model(team_model)
+
+team_model.cars                                   # => #<ActiveRecord::Associations::CollectionProxy [#<Car id: 1, code: "275 F1", driver: "Ascari">]>
+team_model.cars.first.marked_for_destruction?     # => true
+```
+
+#### 3.14. Serialize Form Object to Model Hash
 
 Use `to_model_hash(model = :default)` to get hash representation of the model that mapped to the form object.
 
 ```ruby
-class MultiForm < FormObj::Form
+class Team < FormObj::Form
   include FormObj::ModelMapper
   
   attribute :name, model_attribute: :team_name
@@ -1341,39 +1440,37 @@ class MultiForm < FormObj::Form
   attribute :engine_power, model: :car, model_attribute: ':engine.power'
 end
 
-multi_form = MultiForm.new
-multi_form.update_attributes(name: 'McLaren', year: 1966, engine_power: 415)
+team = Team.new(name: 'McLaren', year: 1966, engine_power: 415)
 
-multi_form.to_model_hash              # => { :team_name => "McLaren", :year => 1966 }
-multi_form.to_model_hash(:default)    # => { :team_name => "McLaren", :year => 1966 }
-multi_form.to_model_hash(:car)        # => { :engine => { :power => 415 } }
+team.to_model_hash              # => { :team_name => "McLaren", :year => 1966 }
+team.to_model_hash(:default)    # => { :team_name => "McLaren", :year => 1966 }
+team.to_model_hash(:car)        # => { :engine => { :power => 415 } }
 ``` 
 
 Use `to_models_hash()` to get hash representation of all models that mapped to the form object.
 
 ```ruby
-multi_form.to_models_hash             # => {
-                                      # =>   default: { :team_name => "McLaren", :year => 1966 }
-                                      # =>   car: { :engine => { :power => 415 } }
-                                      # => } 
+team.to_models_hash             # => {
+                                # =>   default: { :team_name => "McLaren", :year => 1966 }
+                                # =>   car: { :engine => { :power => 415 } }
+                                # => } 
 ``` 
 
-If array of form objects mapped to the parent model (`model_attribute: false`) it is serialized to `:self` key.
+If array of form objects mapped to the parent model (`model_nesting: false`) it is serialized to `:self` key.
 
 ```ruby
-class ArrayForm < FormObj::Form
+class Team < FormObj::Form
   include FormObj::ModelMapper
   
   attribute :name
   attribute :year
-  attribute :cars, array: true, model_attribute: false do
+  attribute :cars, array: true, model_nesting: false do
     attribute :code, primary_key: true
     attribute :driver
   end
 end
 
-array_form = ArrayForm.new
-array_form.update_attributes(
+team = Team.new(
     name: 'McLaren', 
     year: 1966, 
     cars: [{
@@ -1385,20 +1482,29 @@ array_form.update_attributes(
     }]
 )
 
-array_form.to_model_hash    # => { 
-                            # =>    :team_name => "McLaren", 
-                            # =>    :year => 1966,
-                            # =>    :self => {
-                            # =>      :code => "M2B",
-                            # =>      :driver => "Bruce McLaren"
-                            # =>    }, {    
-                            # =>      :code => "M7A",
-                            # =>      :driver => "Denis Hulme"
-                            # =>    }  
-                            # => }
+team.to_model_hash    # => { 
+                      # =>    :team_name => "McLaren", 
+                      # =>    :year => 1966,
+                      # =>    :self => {
+                      # =>      :code => "M2B",
+                      # =>      :driver => "Bruce McLaren"
+                      # =>    }, {    
+                      # =>      :code => "M7A",
+                      # =>      :driver => "Denis Hulme"
+                      # =>    }  
+                      # => }
 ```
 
-#### 3.9. Copy Model Validation Errors into Form Object
+#### 3.15. Model Validation and Persistence
+
+`sync_to_model(s)` do not call `save` method on the model(s).
+Also they don't call `valid?` method on the model(s). 
+Instead they just assign form object attributes value to mapped model attributes
+using `<attribute_name>=` accessors on the model(s).
+
+It is completely up to developer to do any additional validations on the model(s) and save it(them).
+
+#### 3.16. Copy Model Validation Errors into Form Object
 
 Even though validation could and should happen in the form object it is possible to have (additional) validation(s) in the model(s).
 In this case it is handy to copy model validation errors to form object in order to be able to present them to the user in a standard way.
@@ -1407,13 +1513,15 @@ Use `copy_errors_from_models(models)` or `copy_errors_from_model(model)` in orde
 Methods return self so one can chain calls.
 
 ```ruby
-multi_form.copy_errors_from_models(default: default_model, car: car_model)
+team.copy_errors_from_models(default: default_model, car: car_model)
 ``` 
 
 In case of single model:
 ```ruby
-single_form.copy_errors_from_model(model)
+team.copy_errors_from_model(model)
 ```
+
+For the moment `copy_errors_from_model(s)` do not support nested form object/model and array of nested form objects/models. 
 
 ### 4. Rails Example
 
