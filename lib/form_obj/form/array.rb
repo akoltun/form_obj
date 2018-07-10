@@ -47,6 +47,10 @@ module FormObj
         { create: to_be_created, update: to_be_updated, destroy: to_be_destroyed }
       end
 
+      # Do not do resort since update_attributes parameter may have not full list of items
+      def resort_items_after_CUD!(items)
+      end
+
       # items - array of items to be destroyed
       def destroy_items(items)
         items.each(&:mark_for_destruction)

@@ -140,6 +140,21 @@ class FormUpdateAttributesTest < Minitest::Test
                    chassis: {
                        brakes: :hands,
                    }
+               }, {
+                   code: 'Tipo 625',
+                   driver: 'Gonzalez',
+                   engine: {
+                       volume: 2.5,
+                       power: 220,
+                   },
+                   chassis: {
+                       suspension: {
+                           front: 'abcd',
+                           rear: 'efgh',
+                       },
+                       brakes: :shoes,
+                   },
+                   _destroy: true,
                }],
         colours: [{
                       name: :red,
@@ -158,59 +173,61 @@ class FormUpdateAttributesTest < Minitest::Test
     assert_equal(1950,      team.year)
 
     assert_equal(4, team.cars.size)
+    assert_equal(['275 F1', '340 F1', '350 F1', '360 F1'], team.cars.map(&:code).sort)
 
-    refute(                           team.cars[0].marked_for_destruction?)
-    assert_equal('275 F1',            team.cars[0].code)
-    assert_equal('Villoresi',         team.cars[0].driver)
-    assert_equal(333,                 team.cars[0].engine.power)
-    assert_equal(5.7,                 team.cars[0].engine.volume)
-    assert_equal('multi-link',        team.cars[0].chassis.suspension.front)
-    assert_equal('leaf springs',      team.cars[0].chassis.suspension.rear)
-    assert_equal(:electromagnetic,    team.cars[0].chassis.brakes)
+    car = team.cars.find { |car| car.code == '275 F1' }
+    refute(                           car.marked_for_destruction?)
+    assert_equal('Villoresi',         car.driver)
+    assert_equal(333,                 car.engine.power)
+    assert_equal(5.7,                 car.engine.volume)
+    assert_equal('multi-link',        car.chassis.suspension.front)
+    assert_equal('leaf springs',      car.chassis.suspension.rear)
+    assert_equal(:electromagnetic,    car.chassis.brakes)
 
-    refute(                           team.cars[1].marked_for_destruction?)
-    assert_equal('340 F1',            team.cars[1].code)
-    assert_equal('Ascari',            team.cars[1].driver)
-    assert_equal(363,                 team.cars[1].engine.power)                # <- this attribute keeps value because it was not updated and this is old element in the array
-    assert_equal(4.1,                 team.cars[1].engine.volume)
-    assert_equal('independent',       team.cars[1].chassis.suspension.front)
-    assert_equal('de Dion',           team.cars[1].chassis.suspension.rear)
-    assert_equal(:drum,               team.cars[1].chassis.brakes)
+    car = team.cars.find { |car| car.code == '340 F1' }
+    refute(                           car.marked_for_destruction?)
+    assert_equal('Ascari',            car.driver)
+    assert_equal(363,                 car.engine.power)                # <- this attribute keeps value because it was not updated and this is old element in the array
+    assert_equal(4.1,                 car.engine.volume)
+    assert_equal('independent',       car.chassis.suspension.front)
+    assert_equal('de Dion',           car.chassis.suspension.rear)
+    assert_equal(:drum,               car.chassis.brakes)
 
-    refute(                           team.cars[2].marked_for_destruction?)
-    assert_equal('350 F1',            team.cars[2].code)
-    assert_equal('Denis Hulme',       team.cars[2].driver)
-    assert_equal(300,                 team.cars[2].engine.power)
-    assert_equal(3.0,                 team.cars[2].engine.volume)               # <- this attribute keeps value because it was not updated and this is old element in the array
-    assert_equal('dependent',         team.cars[2].chassis.suspension.front)
-    assert_equal('de Lion',           team.cars[2].chassis.suspension.rear)
-    assert_equal(:disc,               team.cars[2].chassis.brakes)
+    car = team.cars.find { |car| car.code == '350 F1' }
+    refute(                           car.marked_for_destruction?)
+    assert_equal('Denis Hulme',       car.driver)
+    assert_equal(300,                 car.engine.power)
+    assert_equal(3.0,                 car.engine.volume)               # <- this attribute keeps value because it was not updated and this is old element in the array
+    assert_equal('dependent',         car.chassis.suspension.front)
+    assert_equal('de Lion',           car.chassis.suspension.rear)
+    assert_equal(:disc,               car.chassis.brakes)
 
-    assert(                           team.cars[3].marked_for_destruction?)
-    assert_equal('360 F1',            team.cars[3].code)
-    assert_equal('Jim Clark',         team.cars[3].driver)
-    assert_equal(415,                 team.cars[3].engine.power)
-    assert_equal(3.2,                 team.cars[3].engine.volume)               # <- this attribute keeps value because it was not updated and this is old element in the array
-    assert_equal('fantastic',         team.cars[3].chassis.suspension.front)
-    assert_equal('strange',           team.cars[3].chassis.suspension.rear)
-    assert_equal(:legs,               team.cars[3].chassis.brakes)
+    car = team.cars.find { |car| car.code == '360 F1' }
+    assert(                           car.marked_for_destruction?)
+    assert_equal('Jim Clark',         car.driver)
+    assert_equal(415,                 car.engine.power)
+    assert_equal(3.2,                 car.engine.volume)               # <- this attribute keeps value because it was not updated and this is old element in the array
+    assert_equal('fantastic',         car.chassis.suspension.front)
+    assert_equal('strange',           car.chassis.suspension.rear)
+    assert_equal(:legs,               car.chassis.brakes)
 
     assert_equal(4, team.colours.size)
+    assert_equal(%i{blue green red white}, team.colours.map(&:name).sort)
 
-    refute(                 team.colours[0].marked_for_destruction?)
-    assert_equal(:green,    team.colours[0].name)
-    assert_equal(0x00FF00,  team.colours[0].rgb)
+    colour = team.colours.find { |colour| colour.name == :green }
+    refute(                 colour.marked_for_destruction?)
+    assert_equal(0x00FF00,  colour.rgb)
 
-    refute(                 team.colours[1].marked_for_destruction?)
-    assert_equal(:red,      team.colours[1].name)
-    assert_equal(0xFE0000,  team.colours[1].rgb)
+    colour = team.colours.find { |colour| colour.name == :red }
+    refute(                 colour.marked_for_destruction?)
+    assert_equal(0xFE0000,  colour.rgb)
 
-    refute(                 team.colours[2].marked_for_destruction?)
-    assert_equal(:blue,     team.colours[2].name)
-    assert_equal(0x0000FE,  team.colours[2].rgb)
+    colour = team.colours.find { |colour| colour.name == :blue }
+    refute(                 colour.marked_for_destruction?)
+    assert_equal(0x0000FE,  colour.rgb)
 
-    assert(                 team.colours[3].marked_for_destruction?)
-    assert_equal(:white,    team.colours[3].name)
-    assert_equal(0xFFFFFF,  team.colours[3].rgb)
+    colour = team.colours.find { |colour| colour.name == :white }
+    assert(                 colour.marked_for_destruction?)
+    assert_equal(0xFFFFFF,  colour.rgb)
   end
 end
