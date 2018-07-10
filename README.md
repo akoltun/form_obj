@@ -1725,23 +1725,289 @@ end
 
 ### 5. Reference Guide: `attribute` parameters
 
-| Parameter | Condition | Default value | Defined in | Description |
-| --- |:---:|:---:|:---:| --- |
-| array | block* or `:class`** | `false` | `FormObj::Struct` | This attribute is an array of form objects. The structure of array element form object is described either in the block or in the separate class referenced by `:class` parameter |
-| class | - | - | `FormObj::Struct` | This attribute is either nested form object or array of form objects. The value of this parameter is the class of this form object or the name of the class. |
-| default | - | - | `FormObj::Struct` | Defines default value for the attribute. Nested structures default value can be defined either with Hash or with object. | 
-| model_hash | block* or `:class`** | `false` | `FormObj::ModelMapper` | This attribute is either nested form object or array of form objects. This form object is mapped to a model of the class `Hash` so all its attributes should be accessed by `[:<attribute_name>]` instead of `.<attribute_name>` | 
-| model | - | `:default` | `FormObj::ModelMapper` | The name of the model to which this attribute is mapped |
-| model_attribute | - | `<attribute_name>` | `FormObj::ModelMapper` | The name of the model attribute to which this form object attribute is mapped. Dot notation is used in order to map to nested model, ex. `"car.engine.power"`. Colon is used in front of the name if the model is hash, ex. `"car.:engine.power"` - means call to `#car` returns `Hash` so the model attribute should be accessed like `car[:engine].power`. `false` value means that attribute is not mapped. |
-| model_class | block* or `:class`** or dot notation for `:model_attribute`*** | `<attribute_name>.classify` | `FormObj::ModelMapper` | The class (or the name of the class) of the mapped model. |
-| model_nesting | block* or `:class`** | `true` | `FornObj::ModelMapper` | If attribute describes nested form object and has `model_nesting: false` the attributes of nested form will be called on the parent (upper level) model. If attribute describes array of form objects and has `model_nesting: false` the methods to access array elements (`:[]` etc.) will be called on the parent (upper level) model. | 
-| primary_key | no block* and no `:class`** | `false` | `FormObj::Struct` | This attribute is the primary key of the form object. The mapped model attribute is considered to be a primary key for the corresponding model. |
-| primary_key | block* or `:class`** | - | `FormObj::Struct` | This attribute is either nested form object or array of form objects. The value of this parameter is the name of the primary key attribute of this form object. |
-\* block - means that there is block definition for the attribute
+#### 5.1 `FormObj::Struct`
 
-\** `:class` - means that this attribute has `:class` parameter specified
+##### 5.1.1. Parameter `array`
 
-\*** dot notation for `:model_attribute` - means that this attribute is mapped to nested model attribute (using dot notation)
+*Default value:* `false` 
+
+Specifies attribute as an array of nested `FormObj::Struct`. 
+The attribute shuld have either a block which describes the structure of array item 
+or `class` parameter which refers to another `FormObj::Struct` which describes the structure of array item.
+
+```ruby
+class Team < FormObj::Struct
+  attribute :cars, array: true do
+    attribute :id
+    attribute :driver
+  end
+end
+```
+
+##### 5.1.2. Parameter `class`
+
+Specifies the class of nested `FormObj::Struct`. Cannot be used if there is block definition of nested structure.
+Could be either class constant itself or the name of the class.
+
+```ruby
+class Car < FormObj::Struct
+    attribute :id
+    attribute :driver
+end
+class Team < FormObj::Struct
+  attribute :cars, array: true, class: Car
+end
+```
+
+##### 5.1.3. Parameter `default`
+
+Specifies the default value of an attribute. 
+For nested `FormObj::Struct` could be specified either by its instance or by its hash representation.
+
+```ruby
+class Team < FormObj::Struct
+  attribute :name, default: 'Ferrari'
+  attribute :cars, array: true, default: [{ id: 1, driver: 'Ascari' }] do
+    attribute :id
+    attribute :driver
+  end
+end
+```
+
+or 
+
+```ruby
+class Car < FormObj::Struct
+  attribute :id
+  attribute :driver
+end
+class Team < FormObj::Struct
+  attribute :name, default: 'Ferrari'
+  attribute :cars, array: true, class: 'Car', default: [Car.new(id: 1, driver: 'Ascari')]
+end
+```
+
+##### 5.1.4. Parameter `primary_key`
+
+*Default value:* `:id`
+
+Specifies the primary key of nested `FormObj::Struct` for the array attribute. 
+Could be specified either on the primary key attribute itself (`primary_key: true`)
+
+```ruby
+class Team < FormObj::Struct
+  attribute :cars, array: true do
+    attribute :code, primary_key: true
+    attribute :driver
+  end
+end
+```
+
+or on the array attribute. 
+In latter case the value of the parameter should the name of the primary key attribute (e.g. `primary_key: :team_name`).
+
+```ruby
+class Team < FormObj::Struct
+  attribute :cars, array: true, primary_key: :code do
+    attribute :code
+    attribute :driver
+  end
+end
+```
+ 
+If both ways are mixed, than parameter specified on the array attribute will take precedence.
+
+Composite primary key is not supported.
+
+#### 5.2. `FormObj::Form`
+
+All `FormObj::Struct` parameters can be used with `FormObj::Form`
+
+#### 5.3. `FormObj::Form` with included `FormObj::ModelMapper`
+
+All `FormObj::Form` parameters can be together with following.
+
+##### 5.3.1. Parameter `model`
+
+*Default value:* `:default`
+
+Specifies the name of the model which this attribute is mapped on to. 
+By default each attribute is mapped on to the `:default` model.
+
+```ruby
+class TeamForm < FormObj::Form
+  include FormObj::ModelMapper
+  
+  attribute :name
+  attribute :engine, model: :car 
+end
+
+Car = Struct.new(:engine)
+Team = Struct.new(:name) 
+
+team = Team.new('McLaren')
+car = Car.new('Ford')
+
+team.name           # => "McLaren"
+car.engine          # => "Ford"
+team_form = TeamForm.load_from_models(default: team, car: car)
+team_form.name      # => "McLaren"
+team_form.engine    # => "Ford"
+```
+
+##### 5.3.2. Parameter `model_attribute`
+
+*Default value:* `<attribute name>`
+
+Specifies the name of the model attribute which this attribute is mapped on.
+It supports dot-notation for mapping on the nested model attribute.
+
+```ruby
+class TeamForm < FormObj::Form
+  include FormObj::ModelMapper
+  
+  attribute :car_power, model_attribute: 'car.engine_power' 
+end
+
+Car = Struct.new(:engine_power)
+Team = Struct.new(:car) 
+
+team = Team.new(Car.new(350))
+team.car.engine_power                         # => 350
+team_form = TeamForm.load_from_model(team)
+team_form.car_power                           # => 350
+```
+
+Colon has to be used in front of corresponding `model_attribute` element if the nested model is a hash.
+
+```ruby
+class TeamForm < FormObj::Form
+  include FormObj::ModelMapper
+  
+  attribute :car_power, model_attribute: 'car.:engine_power' 
+end
+
+Team = Struct.new(:car) 
+
+team = Team.new(engine_power: 350)
+team.car[:engine_power]                       # => 350
+team_form = TeamForm.load_from_model(team)
+team_form.car_power                           # => 350
+```
+
+##### 5.3.3. Parameter `model_class`
+
+*Default value:* `<attribute name>.to_s.classify`
+
+This parameter can be used only for nested form objects.
+Specifies the class of the model which the nested form object is mapped on.
+  
+```ruby
+class TeamForm < FormObj::Form
+  include FormObj::ModelMapper
+  
+  attribute :name
+  attribute :engine, model: :car 
+end
+
+Car = Struct.new(:engine)
+Team = Struct.new(:name) 
+
+team = Team.new('McLaren')
+car = Car.new('Ford')
+team_form = TeamForm.load_from_models(default: team, car: car)
+team_form.name      # => "McLaren"
+team_form.engine    # => "Ford"
+```
+
+##### 5.3.4. Parameter `model_hash`
+
+*Default value:* `false`
+
+If nested model is hash it could be specified by means of this parameter.
+
+```ruby
+class TeamForm < FormObj::Form
+  include FormObj::ModelMapper
+  
+  attribute :car, model_hash: true do
+    attribute :power
+  end   
+end
+
+Team = Struct.new(:car) 
+
+team = Team.new(power: 350)
+team.car[:power]                              # => 350
+team_form = TeamForm.load_from_model(team)
+team_form.car.power                           # => 350
+```
+
+The same result could be achieved by using `:`-notation in `model_attribute` parameter.
+
+```ruby
+class TeamForm < FormObj::Form
+  include FormObj::ModelMapper
+  
+  attribute :car do
+    attribute :power, model_attribute: ':power'
+  end 
+end
+
+Team = Struct.new(:car) 
+
+team = Team.new(power: 350)
+team.car[:power]                              # => 350
+team_form = TeamForm.load_from_model(team)
+team_form.car.power                           # => 350
+```
+
+##### 5.3.5. Parameter `model_nesting`
+
+*Default value:* `true`
+
+This parameter can be used only for nested form objects.
+By default nested form object is mapped to nested model. 
+If this parameter has value `false` the nested form object will be mapped to the same model as the parent form object is.
+
+```ruby
+class TeamForm < FormObj::Form
+  include FormObj::ModelMapper
+  
+  attribute :car, model_nesting: false do
+    attribute :power
+  end   
+end
+
+Team = Struct.new(:power) 
+
+team = Team.new(350)
+team.power                                    # => 350
+team_form = TeamForm.load_from_model(team)
+team_form.car.power                           # => 350
+```
+
+Compare with example where `model_nesting: true`.
+
+```ruby
+class TeamForm < FormObj::Form
+  include FormObj::ModelMapper
+  
+  attribute :car, model_nesting: true do
+    attribute :power
+  end   
+end
+
+Car = Struct.new(:power)
+Team = Struct.new(:car) 
+
+team = Team.new(Car.new(350))
+team.car.power                                # => 350
+team_form = TeamForm.load_from_model(team)
+team_form.car.power                           # => 350
+```
+
+`model_nesting: true` can be omitted since it is its default value.
 
 ## Development
 
