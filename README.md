@@ -927,6 +927,12 @@ So attributes are mapped as follows:
 | `team.year` | `team_model.year` |
 | `team.engine_power` | `team_model.car[:engine].power` |
 
+`load_from_model(s)` also exists as class method that allows:
+
+```ruby
+team = Team.load_from_model(team_model)
+```
+
 
 #### 3.2. `load_from_models` - Initialize Form Object from Few Models
 
