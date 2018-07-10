@@ -36,7 +36,7 @@ class StructUpdateAttributesAndAddTwoNewElementsToEmptyArrayTest < Minitest::Tes
 
     assert_equal(0, team.cars.size)
 
-    team.update_attributes(
+    assert_same(team, team.update_attributes(
         name: 'Ferrari',
         year: 1950,
         cars: [{
@@ -73,7 +73,7 @@ class StructUpdateAttributesAndAddTwoNewElementsToEmptyArrayTest < Minitest::Tes
                       name: :white,
                       rgb: 0xFFFFFF,
                   }],
-    )
+    ))
 
     assert_equal('Ferrari', team.name)
     assert_equal(1950,      team.year)

@@ -104,7 +104,7 @@ class FormUpdateAttributesTest < Minitest::Test
                   }]
     )
 
-    team.update_attributes(
+    assert_same(team, team.update_attributes(
         name: 'Ferrari',
         year: 1950,
         cars: [{
@@ -167,7 +167,7 @@ class FormUpdateAttributesTest < Minitest::Test
                       name: :white,
                       _destroy: true,
                   }]
-    )
+    ))
 
     assert_equal('Ferrari', team.name)
     assert_equal(1950,      team.year)

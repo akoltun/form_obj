@@ -47,18 +47,18 @@ class ModelMapperUpdateNonExistentAttributeTest < Minitest::Test
   end
 
   def test_that_non_existent_attribute_is_ignored_when_try_to_update_it_with_parameter_raise_if_not_found_equal_to_false
-    @team.update_attributes({
-                                name: 'Ferrari',
-                                a: 1,
-                                cars: [{
-                                           code: '275 F1',
-                                           b: 2,
-                                           chassis: {
-                                               brakes: :drum,
-                                               c: 3
-                                           }
-                                       }],
-                            }, raise_if_not_found: false)
+    assert_same(@team, @team.update_attributes({
+                                                   name: 'Ferrari',
+                                                   a: 1,
+                                                   cars: [{
+                                                              code: '275 F1',
+                                                              b: 2,
+                                                              chassis: {
+                                                                  brakes: :drum,
+                                                                  c: 3
+                                                              }
+                                                          }],
+                                               }, raise_if_not_found: false))
 
     assert_equal('Ferrari', @team.name)
 
