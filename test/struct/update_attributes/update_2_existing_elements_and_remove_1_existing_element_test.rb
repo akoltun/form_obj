@@ -87,7 +87,7 @@ class StructUpdateAttributesOfTwoExistingElementsAndRemoveOneExistingElementTest
                   }]
     )
 
-    team.update_attributes(
+    assert_same(team, team.update_attributes(
         name: 'Ferrari',
         year: 1950,
         cars: [{
@@ -124,7 +124,7 @@ class StructUpdateAttributesOfTwoExistingElementsAndRemoveOneExistingElementTest
                       name: :white,
                       rgb: 0xFFFFFF,
                   }]
-    )
+    ))
 
     assert_equal('Ferrari', team.name)
     assert_equal(1950,      team.year)
