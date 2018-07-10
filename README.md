@@ -1438,7 +1438,83 @@ team_model.cars                                   # => #<ActiveRecord::Associati
 team_model.cars.first.marked_for_destruction?     # => true
 ```
 
-#### 3.14. Serialize Form Object to Model Hash
+#### 3.14. Customize Sync to Array of Models
+
+`FormObj::ModelMapper::Array` has private methods: `sync_creation_to_models`, `sync_update_to_models`, `sync_destruction_to_models`.
+They are called during syncing process and could be overwritten. 
+The new descendant of `FormObj::ModelMapper::Array` class has to be returned from `array_class` class method.
+As well as the `FormObj::Form` descendant class itself has to be returned from `nested_class` class method.
+
+```ruby
+  class MyForm < FormObj::Form
+    class Array < FormObj::ModelMapper::Array
+      private
+
+      def sync_destruction_to_models(models, ids_to_destroy)
+        if models[:default].respond_to? :where
+          models[:default].where(model_primary_key.name => ids_to_destroy).each { |model| puts "Mark for deletion model #{model}" }
+        else
+          models[:default].select { |model| ids_to_destroy.include? model_primary_key.read_from_model(model) }.each { |model| puts "Delete model #{model}" }
+        end
+        super
+      end
+
+      def sync_update_to_models(models, items_to_update)
+        items_to_update.each_pair do |model, form_object|
+          puts "Update model #{model} with #{form_object.to_model_hash}"
+        end
+        super
+      end
+
+      def sync_creation_to_models(models, form_objects_to_create)
+        form_objects_to_create.each do |form_object|
+          puts "Create model from #{form_object.to_model_hash}"
+        end
+        super
+      end
+    end
+
+    include FormObj::ModelMapper
+
+    def self.array_class
+      Array
+    end
+
+    def self.nested_class
+      MyForm
+    end
+  end
+```
+
+#### 3.15. Model Validation and Persistence
+
+`sync_to_model(s)` do not call `save` method on the model(s).
+Also they don't call `valid?` method on the model(s). 
+Instead they just assign form object attributes value to mapped model attributes
+using `<attribute_name>=` accessors on the model(s).
+
+It is completely up to developer to do any additional validations on the model(s) and save it(them).
+
+#### 3.16. Copy Model Validation Errors into Form Object
+
+Even though validation could and should happen in the form object it is possible to have (additional) validation(s) in the model(s).
+In this case it is handy to copy model validation errors to form object in order to be able to present them to the user in a standard way.
+
+Use `copy_errors_from_models(models)` or `copy_errors_from_model(model)` in order to do it.
+Methods return self so one can chain calls.
+
+```ruby
+team.copy_errors_from_models(default: default_model, car: car_model)
+``` 
+
+In case of single model:
+```ruby
+team.copy_errors_from_model(model)
+```
+
+For the moment `copy_errors_from_model(s)` do not support nested form object/model and array of nested form objects/models. 
+
+#### 3.17. Serialize Form Object to Model Hash
 
 Use `to_model_hash(model = :default)` to get hash representation of the model that mapped to the form object.
 
@@ -1505,34 +1581,6 @@ team.to_model_hash    # => {
                       # =>    }  
                       # => }
 ```
-
-#### 3.15. Model Validation and Persistence
-
-`sync_to_model(s)` do not call `save` method on the model(s).
-Also they don't call `valid?` method on the model(s). 
-Instead they just assign form object attributes value to mapped model attributes
-using `<attribute_name>=` accessors on the model(s).
-
-It is completely up to developer to do any additional validations on the model(s) and save it(them).
-
-#### 3.16. Copy Model Validation Errors into Form Object
-
-Even though validation could and should happen in the form object it is possible to have (additional) validation(s) in the model(s).
-In this case it is handy to copy model validation errors to form object in order to be able to present them to the user in a standard way.
-
-Use `copy_errors_from_models(models)` or `copy_errors_from_model(model)` in order to do it.
-Methods return self so one can chain calls.
-
-```ruby
-team.copy_errors_from_models(default: default_model, car: car_model)
-``` 
-
-In case of single model:
-```ruby
-team.copy_errors_from_model(model)
-```
-
-For the moment `copy_errors_from_model(s)` do not support nested form object/model and array of nested form objects/models. 
 
 ### 4. Rails Example
 
