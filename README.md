@@ -801,6 +801,7 @@ team.cars     # => [#< code: 1, driver: "Ascari">]
 
 In oppose to this `FormObj::Form` `update_attributes` method ignores elements that are absent in the hash but
 marks for destruction those elements that has `_destroy: true` key in the hash.
+New elements with `_destroy: true` are not created at all. 
 
 ```ruby
 class Team < FormObj::Form
@@ -821,7 +822,9 @@ team.cars[1].code                       # => 2
 team.cars[1].driver                     # => 'James Hunt'
 team.cars[1].marked_for_destruction?    # => false
 
-team.update_attributes(cars: [{code: 1, _destroy: true}])
+team.update_attributes(cars: [{code: 1, _destroy: true}, {code: 3, _destroy: true}])
+
+team.cars.size                          # => 2
 
 team.cars[0].code                       # => 2
 team.cars[0].driver                     # => 'James Hunt'
@@ -1391,11 +1394,12 @@ If array does not respond to `:where` models that correspond to form objects mar
 
 ```ruby
 team_model = TeamModel.new([CarModel.new('275 F1', 'Ascari')])
-team = Team.new(cars: [{ code: '275 F1', _destroy: true }])       # => #<Team cars: [#< code: "275 F1", driver: nil marked_for_destruction>]>
+team = Team.new.load_from_model(team_model)                           # => #<Team cars: [#< code: "275 F1", driver: nil>]>
+team.update_attributes(cars: [{ code: '275 F1', _destroy: true }])    # => #<Team cars: [#< code: "275 F1", driver: nil marked_for_destruction>]>
 
-team_model.cars                                                   # => [#<struct CarModel code="275 F1", driver="Ascari">]
+team_model.cars                                                       # => [#<struct CarModel code="275 F1", driver="Ascari">]
 team.sync_to_model(team_model)  
-team_model.cars                                                   # => []
+team_model.cars                                                       # => []
 ```
 
 #### 3.13. Sync Array of Nested Form Objects to `ActiveRecord`-like Models
@@ -1417,10 +1421,11 @@ class Team < FormObj::Form
   end
 end
 
+team_model = TeamModel.find(1)
 team_model.cars                                   # => #<ActiveRecord::Associations::CollectionProxy [#<Car id: 1, code: "275 F1", driver: "Ascari">]>
 team_model.cars.first.marked_for_destruction?     # => false
 
-team = Team.new(cars: [{ id: 1, _destroy: true }])
+team = Team.new.load_from_model(team_model).update_attributes(cars: [{ id: 1, _destroy: true }])
 team.sync_to_model(team_model)
 
 team_model.cars                                   # => #<ActiveRecord::Associations::CollectionProxy [#<Car id: 1, code: "275 F1", driver: "Ascari">]>
