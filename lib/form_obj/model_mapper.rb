@@ -27,6 +27,14 @@ module FormObj
       def model_primary_key
         ModelMapper::ModelPrimaryKey.new(_attributes.find(primary_key).model_attribute)
       end
+
+      def load_from_model(*args)
+        new.load_from_model(*args)
+      end
+
+      def load_from_models(*args)
+        new.load_from_models(*args)
+      end
     end
 
     def load_from_model(model, *args)

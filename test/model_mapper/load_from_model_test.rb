@@ -64,7 +64,6 @@ class ModelMapperLoadFromModelTest < Minitest::Test
 
   def setup
     @team_model = TeamModel.new
-    @team = Team.new
   end
 
   def fill_in_model
@@ -150,16 +149,24 @@ class ModelMapperLoadFromModelTest < Minitest::Test
   end
 
   def test_that_load_from_model_returns_form_itself
+    @team = Team.new
     assert_same(@team, @team.load_from_model(@team_model))  
   end
 
   def test_that_all_attributes_value_are_correctly_loaded_from_empty_model_into_empty_form
+    @team = Team.new.load_from_model(@team_model)
+    check_that_all_attributes_value_are_correctly_loaded_from_empty_model
+    check_that_not_synced_attributes_are_still_empty
+
+    @team = Team.load_from_model(@team_model)
     check_that_all_attributes_value_are_correctly_loaded_from_empty_model
     check_that_not_synced_attributes_are_still_empty
   end
 
   def test_that_all_attributes_value_are_correctly_loaded_from_empty_model_into_filled_form
+    @team = Team.new
     fill_in_form
+    @team.load_from_model(@team_model)
 
     check_that_all_attributes_value_are_correctly_loaded_from_empty_model
     check_that_not_synced_attributes_keep_their_values
@@ -168,13 +175,21 @@ class ModelMapperLoadFromModelTest < Minitest::Test
   def test_that_all_attributes_value_are_correctly_loaded_from_filled_model_into_empty_form
     fill_in_model
 
+    @team = Team.new.load_from_model(@team_model)
+    check_that_all_attributes_value_are_correctly_loaded_from_filled_model
+    check_that_not_synced_attributes_are_still_empty
+
+    @team = Team.load_from_model(@team_model)
     check_that_all_attributes_value_are_correctly_loaded_from_filled_model
     check_that_not_synced_attributes_are_still_empty
   end
 
   def test_that_all_attributes_value_are_correctly_loaded_from_filled_model_into_filled_form
     fill_in_model
+
+    @team = Team.new
     fill_in_form
+    @team.load_from_model(@team_model)
 
     check_that_all_attributes_value_are_correctly_loaded_from_filled_model
     check_that_not_synced_attributes_keep_their_values
@@ -205,8 +220,6 @@ class ModelMapperLoadFromModelTest < Minitest::Test
   end
 
   def check_that_all_attributes_value_are_correctly_loaded_from_empty_model
-    @team.load_from_model(@team_model)
-
     assert_nil(@team.name)
     assert_nil(@team.year)
 
@@ -224,8 +237,6 @@ class ModelMapperLoadFromModelTest < Minitest::Test
   end
 
   def check_that_all_attributes_value_are_correctly_loaded_from_filled_model
-    @team.load_from_model(@team_model)
-
     assert_equal(@team_model.team_name, @team.name)
     assert_equal(@team_model.year, @team.year)
 
