@@ -50,7 +50,7 @@ module FormObj
       # Should return hash with 3 keys: :create, :update, :destroy
       # In default implementation:
       # :create - array of form objects to be added
-      # :update - hash where key is an form object and value is a model to be updated
+      # :update - hash where key is a model to be updated and value is a form object
       # :destroy - array of models to be marked for deletion
       def define_models_for_CUD(models)
         to_be_created = []
@@ -59,7 +59,7 @@ module FormObj
 
         reject(&:marked_for_destruction?).each do |form_object|
           if model = find_model(models[:default], form_object.primary_key)
-            to_be_updated[form_object] = model
+            to_be_updated[model] = form_object
           else
             to_be_created << form_object
           end
@@ -77,7 +77,7 @@ module FormObj
       end
 
       def sync_update_to_models(models, items_to_update)
-        items_to_update.each_pair do |form_object, model|
+        items_to_update.each_pair do |model, form_object|
           form_object.sync_to_models(models.merge(default: model))
         end
       end
