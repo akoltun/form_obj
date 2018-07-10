@@ -1,27 +1,19 @@
 require "test_helper"
 
-class ModelMapperInitializeAttributesTest < Minitest::Test
+class FormInitializeAttributesTest < Minitest::Test
   class Suspension < FormObj::Form
-    include FormObj::ModelMapper
-
     attribute :front
     attribute :rear
   end
   class Chassis < FormObj::Form
-    include FormObj::ModelMapper
-
     attribute :suspension, class: Suspension
     attribute :brakes
   end
   class Colour < FormObj::Form
-    include FormObj::ModelMapper
-
     attribute :name
     attribute :rgb
   end
   class Team < FormObj::Form
-    include FormObj::ModelMapper
-
     attribute :name
     attribute :year
     attribute :cars, array: true do
@@ -31,7 +23,7 @@ class ModelMapperInitializeAttributesTest < Minitest::Test
         attribute :power
         attribute :volume
       end
-      attribute :chassis, class: 'ModelMapperInitializeAttributesTest::Chassis'
+      attribute :chassis, class: 'FormInitializeAttributesTest::Chassis'
     end
     attribute :colours, class: Colour, array: true, primary_key: :name
   end
@@ -70,46 +62,101 @@ class ModelMapperInitializeAttributesTest < Minitest::Test
                        },
                        brakes: :disc,
                    }
+               }, {
+                   code: '375 F1',
+                   driver: 'Hunt',
+                   engine: {
+                       power: 400,
+                       volume: 4.5
+                   },
+                   chassis: {
+                       suspension: {
+                           front: 'McPherson',
+                           rear: 'old',
+                       },
+                       brakes: :hand,
+                   },
+                   _destroy: true
+               }, {
+                   code: 'M7A',
+                   driver: 'Bruce McLaren',
+                   engine: {
+                       power: 430,
+                       volume: 4.2
+                   },
+                   chassis: {
+                       suspension: {
+                           front: 'new',
+                           rear: 'very new',
+                       },
+                       brakes: :leg,
+                   },
+                   _destroy: false
+               }, {
+                   code: 'M3A',
+                   _destroy: true
                }],
         colours: [{
                       name: :red,
                       rgb: nil,
                       'rgb' => 0xFF0000,
                   }, {
+                      name: :green,
+                      rgb: 0x00FF00,
+                      _destroy: true,
+                  }, {
+                      name: :blue,
+                      rgb: 0x0000FF,
+                      _destroy: false,
+                  }, {
                       name: :white,
                       'rgb' => nil,
                       rgb: 0xFFFFFF,
+                  }, {
+                      name: :black,
+                      _destroy: true,
                   }]
     )
 
     assert_equal('Ferrari', team.name)
     assert_equal(1950,      team.year)
 
-    assert_equal(2, team.cars.size)
+    assert_equal(3, team.cars.size)
 
-    assert_equal('340 F1',      team.cars[0].code)
-    assert_equal('Ascari',      team.cars[0].driver)
-    assert_equal(335,           team.cars[0].engine.power)
-    assert_equal(4.1,           team.cars[0].engine.volume)
-    assert_equal('independent', team.cars[0].chassis.suspension.front)
-    assert_equal('de Dion',     team.cars[0].chassis.suspension.rear)
-    assert_equal(:drum,         team.cars[0].chassis.brakes)
+    assert_equal('340 F1',        team.cars[0].code)
+    assert_equal('Ascari',        team.cars[0].driver)
+    assert_equal(335,             team.cars[0].engine.power)
+    assert_equal(4.1,             team.cars[0].engine.volume)
+    assert_equal('independent',   team.cars[0].chassis.suspension.front)
+    assert_equal('de Dion',       team.cars[0].chassis.suspension.rear)
+    assert_equal(:drum,           team.cars[0].chassis.brakes)
 
-    assert_equal('275 F1',    team.cars[1].code)
-    assert_equal('Villoresi', team.cars[1].driver)
-    assert_equal(300,         team.cars[1].engine.power)
-    assert_equal(3.3,         team.cars[1].engine.volume)
-    assert_equal('dependent', team.cars[1].chassis.suspension.front)
-    assert_equal('de Lion',   team.cars[1].chassis.suspension.rear)
-    assert_equal(:disc,       team.cars[1].chassis.brakes)
+    assert_equal('275 F1',        team.cars[1].code)
+    assert_equal('Villoresi',     team.cars[1].driver)
+    assert_equal(300,             team.cars[1].engine.power)
+    assert_equal(3.3,             team.cars[1].engine.volume)
+    assert_equal('dependent',     team.cars[1].chassis.suspension.front)
+    assert_equal('de Lion',       team.cars[1].chassis.suspension.rear)
+    assert_equal(:disc,           team.cars[1].chassis.brakes)
 
-    assert_equal(2, team.colours.size)
+    assert_equal('M7A',           team.cars[2].code)
+    assert_equal('Bruce McLaren', team.cars[2].driver)
+    assert_equal(430,             team.cars[2].engine.power)
+    assert_equal(4.2,             team.cars[2].engine.volume)
+    assert_equal('new',           team.cars[2].chassis.suspension.front)
+    assert_equal('very new',      team.cars[2].chassis.suspension.rear)
+    assert_equal(:leg,            team.cars[2].chassis.brakes)
+
+    assert_equal(3, team.colours.size)
 
     assert_equal(:red,      team.colours[0].name)
     assert_equal(0xFF0000,  team.colours[0].rgb)
 
-    assert_equal(:white,    team.colours[1].name)
-    assert_equal(0xFFFFFF,  team.colours[1].rgb)
+    assert_equal(:blue,     team.colours[1].name)
+    assert_equal(0x0000FF,  team.colours[1].rgb)
+
+    assert_equal(:white,    team.colours[2].name)
+    assert_equal(0xFFFFFF,  team.colours[2].rgb)
   end
 
   def test_that_correctly_initialize_even_not_all_attributes

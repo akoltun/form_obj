@@ -16,26 +16,14 @@ module FormObj
         self.map(&:to_hash)
       end
 
-      def update_attributes(vals, raise_if_not_found:)
-        items_to_add = []
-        items_to_update = {}
+      def update_attributes(items, raise_if_not_found:)
+        items_for_CUD = define_items_for_CUD(items)
 
-        vals.each do |val|
-          val = HashWithIndifferentAccess.new(val)
-          item = find_by_primary_key(primary_key(val))
-          if item
-            items_to_update[item] = val
-          else
-            items_to_add << val
-          end
-        end
-        items_to_destroy = items_for_destruction(items_to_add: items_to_add, items_to_update: items_to_update)
+        destroy_items(items_for_CUD[:destroy])
+        update_items(items_for_CUD[:update], raise_if_not_found: raise_if_not_found)
+        build_items(items_for_CUD[:create], raise_if_not_found: raise_if_not_found)
 
-        destroy_items(items_to_destroy)
-        update_items(items_to_update, raise_if_not_found: raise_if_not_found)
-        build_items(items_to_add, raise_if_not_found: raise_if_not_found)
-
-        sort! { |a, b| (vals.index { |val| primary_key(val) == a.primary_key } || -1) <=> (vals.index { |val| primary_key(val) == b.primary_key } || -1) }
+        resort_items_after_CUD!(items)
       end
 
       private
@@ -48,14 +36,33 @@ module FormObj
         find { |item| item.primary_key == id }
       end
 
-      def build_item(hash, raise_if_not_found:)
-        item_class.new(hash, raise_if_not_found: raise_if_not_found)
+      # Should return hash with 3 keys: :create, :update, :destroy
+      # In default implementation:
+      # :create - array of hashes of new attribute values
+      # :update - hash where key is the item to update and value is a hash of new attribute values
+      # :destroy - array of items to be destroyed
+      def define_items_for_CUD(items)
+        to_be_created = []
+        to_be_updated = {}
+
+        items.each do |item_hash|
+          item_hash = HashWithIndifferentAccess.new(item_hash)
+          item = find_by_primary_key(primary_key(item_hash))
+          if item
+            to_be_updated[item] = item_hash
+          else
+            to_be_created << item_hash
+          end
+        end
+        to_be_destroyed = self - to_be_updated.keys
+
+        { create: to_be_created, update: to_be_updated, destroy: to_be_destroyed }
       end
 
-      # items_to_add - array of hashes of new attribute values
-      # items_to_update - hash where key is the item to update and value is a hash of new attribute values
-      def items_for_destruction(items_to_add:, items_to_update:)
-        self - items_to_update.keys
+      # Resort items so they will be in the same order as in the update_attributes parameter
+      # items - hash received by update_attributes
+      def resort_items_after_CUD!(items)
+        sort! { |a, b| (items.index { |val| primary_key(val) == a.primary_key } || -1) <=> (items.index { |val| primary_key(val) == b.primary_key } || -1) }
       end
 
       # items - array of items to be destroyed
@@ -73,6 +80,10 @@ module FormObj
       # params - additional params for constructor
       def build_items(items, params)
         items.each { |item| self << build_item(item, params) }
+      end
+
+      def build_item(hash, raise_if_not_found:)
+        item_class.new(hash, raise_if_not_found: raise_if_not_found)
       end
     end
   end

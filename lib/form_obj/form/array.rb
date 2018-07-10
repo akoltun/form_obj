@@ -19,21 +19,41 @@ module FormObj
 
       private
 
-      # items_to_add - array of hashes of new attribute values
-      # items_to_update - hash where key is the item to update and value is a hash of new attribute values
-      def items_for_destruction(items_to_add:, items_to_update:)
-        items_to_update.select { |item, attr_values| attr_values[:_destroy] }.keys
+      # Should return hash with 3 keys: :create, :update, :destroy
+      # In default implementation:
+      # :create - array of hashes of new attribute values
+      # :update - hash where key is the item to update and value is a hash of new attribute values
+      # :destroy - array of items to be destroyed
+      def define_items_for_CUD(items)
+        to_be_created = []
+        to_be_updated = {}
+        to_be_destroyed = []
+
+        items.each do |item_hash|
+          item_hash = HashWithIndifferentAccess.new(item_hash)
+          _destroy = item_hash.delete(:_destroy)
+          item = find_by_primary_key(primary_key(item_hash))
+          if item
+            if _destroy
+              to_be_destroyed << item
+            else
+              to_be_updated[item] = item_hash
+            end
+          elsif !_destroy
+            to_be_created << item_hash
+          end
+        end
+
+        { create: to_be_created, update: to_be_updated, destroy: to_be_destroyed }
+      end
+
+      # Do not do resort since update_attributes parameter may have not full list of items
+      def resort_items_after_CUD!(items)
       end
 
       # items - array of items to be destroyed
       def destroy_items(items)
         items.each(&:mark_for_destruction)
-      end
-
-      # items - hash where key is the item to update and value is a hash of new attribute values
-      # params - additional params for :update_attributes method
-      def update_items(items, params)
-        items.each_pair { |item, attr_values| item.update_attributes(attr_values, params) unless attr_values.delete(:_destroy) }
       end
     end
   end
