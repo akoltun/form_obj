@@ -15,6 +15,8 @@ ActiveModel: 3.2+
 The gem is tested against all ruby versions and all versions of its dependencies 
 except ActiveSupport and ActiveModel version 4.0.x because they requires Minitest 4 which is not compatible with Minitest 5.
 
+This gem follows [Semantic Versioning](https://semver.org/).
+
 ## Installation
 
 Add this line to your application's Gemfile:
@@ -32,8 +34,6 @@ Or install it yourself as:
     $ gem install form_obj
 
 ## Usage
-
-**WARNING!!!** The gem is still under development. Expect braking changes in `FormObj::ModelMapper` module.<br/>
 
 Class `FormObj::Struct` allows to describe complicated data structure, to update it with `update_attributes` method and to get its hash representation with `to_hash` method.
 
@@ -62,15 +62,38 @@ model attributes name) and
    1. [`load_from_model` - Initialize Form Object from Model](#31-load_from_model---initialize-form-object-from-model)
    2. [`load_from_models` - Initialize Form Object from Few Models](#32-load_from_models---initialize-form-object-from-few-models)
    3. [Do Not Map Certain Attribute](#33-do-not-map-certain-attribute)
-   4. [Map Nested Form Objects](#34-map-nested-form-objects)
-   5. [Map Nested Form Objects to A Hash Model](#35-map-nested-form-object-to-a-hash-model)
-   6. [Custom Implementation of Loading of Array of Models](#36-custom-implementation-of-loading-of-array-of-models)
-   7. [Sync Form Object to Models](#37-sync-form-object-to-models)
-      1. [Array of Form Objects and Models](#371-array-of-form-objects-and-models)
-   8. [Serialize Form Object to Model Hash](#38-serialize-form-object-to-model-hash)
-   9. [Copy Model Validation Errors into Form Object](#39-copy-model-validation-errors-into-form-object)   
+   4. [Do Not Map Certain Attribute For Reading From Model](#34-do-not-map-certain-attribute-for-reading-from-model)
+   5. [Do Not Map Certain Attribute For Writing to Model](#35-do-not-map-certain-attribute-for-writing-to-model)
+   6. [Map Nested Form Objects](#36-map-nested-form-objects)
+   7. [Map Nested Form Object to Parent Level Model](#37-map-nested-form-object-to-parent-level-model)
+   8. [Map Nested Form Objects to A Hash Model](#38-map-nested-form-object-to-a-hash-model)
+   9. [Map Array of Nested Form Objects](#39-map-array-of-nested-form-objects)
+   10. [Map Array of Nested Form Objects to Nested Array of Nested Models](#310-map-array-of-nested-form-objects-to-nested-array-of-nested-models)
+   11. [Default Implementation of Loading of Array of Models](#311-default-implementation-of-loading-of-array-of-models)
+   12. [Custom Implementation of Loading of Array of Models](#312-custom-implementation-of-loading-of-array-of-models)
+   13. [Sync Form Object to Model(s)](#313-sync-form-object-to-models)
+   14. [Sync Array of Nested Form Objects to Model(s)](#314-sync-array-of-nested-form-objects-to-models)
+   15. [Sync Array of Nested Form Objects to `ActiveRecord`-like Models](#315-sync-array-of-nested-form-objects-to-activerecord-like-models)
+   16. [Customize Sync to Array of Models](#316-customize-sync-to-array-of-models)
+   17. [Model Validation and Persistence](#317-model-validation-and-persistence)
+   18. [Copy Model Validation Errors into Form Object](#318-copy-model-validation-errors-into-form-object)   
+   19. [Serialize Form Object to Model Hash](#319-serialize-form-object-to-model-hash)
 4. [Rails Example](#4-rails-example)
-5. [Reference Guide](#5-reference-guide-attribute-parameters)
+5. [Reference Guide: `attribute`'s paremeters](#5-reference-guide-attributes-parameters)
+   1. [`FormObj::Struct`](#51-formobjstruct)
+      1. [Parameter `array`](#511-parameter-array)
+      2. [Parameter `class`](#512-parameter-class)
+      3. [Parameter `default`](#513-parameter-default)
+      4. [Parameter `primary_key`](#514-parameter-primary_key)
+   2. [`FormObj::Form`](#52-formobjform)
+   3. [`FormObj::Form` with included `FormObj::ModelMapper`](#53-formobjform-with-included-formobjmodelmapper)
+      1. [Parameter `model`](#531-parameter-model)
+      2. [Parameter `model_attribute`](#532-parameter-model_attribute)
+      3. [Parameter `model_class`](#533-parameter-model_class)
+      4. [Parameter `model_hash`](#534-parameter-model_hash)
+      5. [Parameter `model_nesting`](#535-parameter-model_nesting)
+      6. [Parameter `read_from_model`](#536-parameter-read_from_model)
+      7. [Parameter `write_to_model`](#537-parameter-write_to_model)
 
 ### 1. `FormObj::Struct`
 
@@ -897,7 +920,8 @@ Use dot notation to map model attribute to a nested model. Use colon to specify 
 
 #### 3.1. `load_from_model` - Initialize Form Object from Model
 
-Use `load_from_model(model)` method to initialize form object from the model.
+Use `load_from_model(model)` method to initialize form object from the model. 
+This method available both as class method and as instance method.
 
 ```ruby
 class Team < FormObj::Form
@@ -917,6 +941,8 @@ team.to_hash                    # => {
                                 # =>    :year => 1950
                                 # =>    :engine_power => 335
                                 # => }
+
+team.load_from_model(team_model) 
 ```
 
 So attributes are mapped as follows:
@@ -927,15 +953,10 @@ So attributes are mapped as follows:
 | `team.year` | `team_model.year` |
 | `team.engine_power` | `team_model.car[:engine].power` |
 
-`load_from_model(s)` also exists as class method that allows:
-
-```ruby
-team = Team.load_from_model(team_model)
-```
-
 #### 3.2. `load_from_models` - Initialize Form Object from Few Models
 
 Use `load_from_models(models)` method to initialize form object from few models. 
+This method available both as class method and as instance method.
 `models` parameter is a hash where keys are the name of models and values are models themselves. 
 
 By default each form object attribute is mapped to `:default` model.
@@ -959,6 +980,8 @@ team.to_hash                    # => {
                                 # =>    :year => 1950
                                 # =>    :engine_power => 335
                                 # => }
+
+team.load_from_models(default: team_model, car: car_model) 
 ```
 
 So attributes are mapped as follows:
