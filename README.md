@@ -1848,11 +1848,11 @@ Team = Struct.new(:name)
 team = Team.new('McLaren')
 car = Car.new('Ford')
 
-team.name           # => "McLaren"
-car.engine          # => "Ford"
+team.name                                     # => "McLaren"
+car.engine                                    # => "Ford"
 team_form = TeamForm.load_from_models(default: team, car: car)
-team_form.name      # => "McLaren"
-team_form.engine    # => "Ford"
+team_form.name                                # => "McLaren"
+team_form.engine                              # => "Ford"
 ```
 
 ##### 5.3.2. Parameter `model_attribute`
@@ -1915,9 +1915,11 @@ Team = Struct.new(:name)
 
 team = Team.new('McLaren')
 car = Car.new('Ford')
+team.name                                     # => "McLaren"
+car.engine                                    # => "Ford"
 team_form = TeamForm.load_from_models(default: team, car: car)
-team_form.name      # => "McLaren"
-team_form.engine    # => "Ford"
+team_form.name                                # => "McLaren"
+team_form.engine                              # => "Ford"
 ```
 
 ##### 5.3.4. Parameter `model_hash`
