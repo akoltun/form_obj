@@ -897,7 +897,8 @@ Use dot notation to map model attribute to a nested model. Use colon to specify 
 
 #### 3.1. `load_from_model` - Initialize Form Object from Model
 
-Use `load_from_model(model)` method to initialize form object from the model.
+Use `load_from_model(model)` method to initialize form object from the model. 
+This method available both as class method and as instance method.
 
 ```ruby
 class Team < FormObj::Form
@@ -917,6 +918,8 @@ team.to_hash                    # => {
                                 # =>    :year => 1950
                                 # =>    :engine_power => 335
                                 # => }
+
+team.load_from_model(team_model) 
 ```
 
 So attributes are mapped as follows:
@@ -927,15 +930,10 @@ So attributes are mapped as follows:
 | `team.year` | `team_model.year` |
 | `team.engine_power` | `team_model.car[:engine].power` |
 
-`load_from_model(s)` also exists as class method that allows:
-
-```ruby
-team = Team.load_from_model(team_model)
-```
-
 #### 3.2. `load_from_models` - Initialize Form Object from Few Models
 
 Use `load_from_models(models)` method to initialize form object from few models. 
+This method available both as class method and as instance method.
 `models` parameter is a hash where keys are the name of models and values are models themselves. 
 
 By default each form object attribute is mapped to `:default` model.
@@ -959,6 +957,8 @@ team.to_hash                    # => {
                                 # =>    :year => 1950
                                 # =>    :engine_power => 335
                                 # => }
+
+team.load_from_models(default: team_model, car: car_model) 
 ```
 
 So attributes are mapped as follows:
