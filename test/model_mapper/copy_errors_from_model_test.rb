@@ -2,14 +2,15 @@ require "test_helper"
 
 class ModelMapperCopyErrorsFromModelTest < Minitest::Test
   EngineModel = Struct.new(:power, :errors)
-  TeamModel = Struct.new(:team_name, :year, :month, :car, :errors)
+  TeamModel = Struct.new(:team_name, :year, :month, :day, :car, :errors)
 
   class Team < FormObj::Form
     include FormObj::ModelMapper
 
     attribute :name, model_attribute: :team_name
-    attribute :year
+    attribute :year, read_from_model: false
     attribute :month, model_attribute: false
+    attribute :day, write_to_model: false
     attribute :engine_power, model_attribute: 'car.:engine.power'
   end
 
@@ -18,8 +19,9 @@ class ModelMapperCopyErrorsFromModelTest < Minitest::Test
         'Ferrari',
         1950,
         'April',
+        10,
         { engine: EngineModel.new(335, { power: ['too low', 'in wrong units'] }) },
-        { team_name: ['too long', 'not nice'], year: ['not a number'], month: ['wrong month']}
+        { team_name: ['too long', 'not nice'], year: ['not a number'], month: ['wrong month'], day: ['wrong day']}
     )
 
     @team = Team.new
@@ -36,5 +38,6 @@ class ModelMapperCopyErrorsFromModelTest < Minitest::Test
     assert_equal(['not a number'],              @team.errors[:year])
     assert_equal(['too low', 'in wrong units'], @team.errors[:engine_power])
     refute(@team.errors.include? :month)
+    refute(@team.errors.include? :day)
   end
 end

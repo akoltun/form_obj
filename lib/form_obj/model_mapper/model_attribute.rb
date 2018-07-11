@@ -6,9 +6,9 @@ module FormObj
     class ModelAttribute
       attr_reader :model
 
-      def initialize(array:, classes:, default_name:, hash:, model:, names:, nesting:, read_from_model:, subform:)
+      def initialize(array:, classes:, default_name:, hash:, model:, names:, nesting:, read_from_model:, subform:, write_to_model:)
         @read_from_model = read_from_model && !(names === false)
-        @write_to_model = !(names === false)
+        @write_to_model = write_to_model && !(names === false)
 
         @nesting = nesting
         @model = model

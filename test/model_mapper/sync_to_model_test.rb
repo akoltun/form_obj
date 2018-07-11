@@ -48,8 +48,8 @@ class ModelMapperSyncToModelTest < Minitest::Test
     attribute :chassis, array: true, model_hash: true do
       attribute :id
       attribute :suspension do
-        attribute :front
-        attribute :rear
+        attribute :front, write_to_model: true
+        attribute :rear, write_to_model: false
       end
       attribute :brakes
     end
@@ -357,12 +357,12 @@ class ModelMapperSyncToModelTest < Minitest::Test
 
     chassis = @team_model.chassis.find { |chassis| chassis[:id] == 1 }
     assert_equal('independent', chassis[:suspension].front)
-    assert_equal('de Dion', chassis[:suspension].rear)
+    assert_nil(chassis[:suspension].rear)
     assert_equal(:drum, chassis[:brakes])
 
     chassis = @team_model.chassis.find { |chassis| chassis[:id] == 5 }
     assert_equal('swing axle', chassis[:suspension].front)
-    assert_equal('McPherson', chassis[:suspension].rear)
+    assert_nil(chassis[:suspension].rear)
     assert_equal(:electro, chassis[:brakes])
 
     assert_kind_of(::Array, @team_model)
@@ -449,7 +449,7 @@ class ModelMapperSyncToModelTest < Minitest::Test
 
     chassis = @team_model.chassis.find { |chassis| chassis[:id] == 1 }
     assert_equal('independent', chassis[:suspension].front)
-    assert_equal('de Dion', chassis[:suspension].rear)
+    assert_equal('very old', chassis[:suspension].rear)
     assert_equal(:drum, chassis[:brakes])
 
     chassis = @team_model.chassis.find { |chassis| chassis[:id] == 2 }
@@ -459,7 +459,7 @@ class ModelMapperSyncToModelTest < Minitest::Test
 
     chassis = @team_model.chassis.find { |chassis| chassis[:id] == 5 }
     assert_equal('swing axle', chassis[:suspension].front)
-    assert_equal('McPherson', chassis[:suspension].rear)
+    assert_nil(chassis[:suspension].rear)
     assert_equal(:electro, chassis[:brakes])
 
     assert_kind_of(::Array, @team_model)
