@@ -1,5 +1,48 @@
 # Change Log
 
+## [Unreleased](https://github.com/akoltun/form_obj/tree/HEAD)
+
+[Full Changelog](https://github.com/akoltun/form_obj/compare/v0.5.0...HEAD)
+
+**Implemented enhancements:**
+
+- Add parameters :read\_from\_model and :write\_to\_model [\#27](https://github.com/akoltun/form_obj/issues/27)
+
+**Fixed bugs:**
+
+- Create new FormObj::Form with \_destroy: true raises [\#43](https://github.com/akoltun/form_obj/issues/43)
+
+**Closed issues:**
+
+- Rewrite Reference Guide [\#59](https://github.com/akoltun/form_obj/issues/59)
+- Rearrange Table of Content [\#58](https://github.com/akoltun/form_obj/issues/58)
+- Redesign array.update\_attributes similar to array.sync\_to\_model\(s\) [\#47](https://github.com/akoltun/form_obj/issues/47)
+- Add example of custom ModelMapper.sync\_to\_model\(s\) [\#45](https://github.com/akoltun/form_obj/issues/45)
+- Add tests for method inspect  [\#44](https://github.com/akoltun/form_obj/issues/44)
+- Rewrite FormObj::ModelMapper tests in Minitest [\#36](https://github.com/akoltun/form_obj/issues/36)
+- Redesign deletion of arrayed form object in sync\_to\_model\(s\) [\#17](https://github.com/akoltun/form_obj/issues/17)
+- Overwritebility for :append, :update and :delete actions in :sync\_to\_model\(s\) for arrayed form objects [\#16](https://github.com/akoltun/form_obj/issues/16)
+
+**Merged pull requests:**
+
+- Prepare documentation for release [\#63](https://github.com/akoltun/form_obj/pull/63) ([akoltun](https://github.com/akoltun))
+- Add read from model and write to model [\#62](https://github.com/akoltun/form_obj/pull/62) ([akoltun](https://github.com/akoltun))
+- Correct load\_from\_model\(s\) tests [\#61](https://github.com/akoltun/form_obj/pull/61) ([akoltun](https://github.com/akoltun))
+- Rewrite reference guide [\#60](https://github.com/akoltun/form_obj/pull/60) ([akoltun](https://github.com/akoltun))
+- Customize sync to models [\#57](https://github.com/akoltun/form_obj/pull/57) ([akoltun](https://github.com/akoltun))
+- Refactor sync\_to\_models [\#56](https://github.com/akoltun/form_obj/pull/56) ([akoltun](https://github.com/akoltun))
+- Add class methods load\_from\_model\(s\) [\#55](https://github.com/akoltun/form_obj/pull/55) ([akoltun](https://github.com/akoltun))
+- Add load\_from\_model\(s\) as class methods [\#54](https://github.com/akoltun/form_obj/pull/54) ([akoltun](https://github.com/akoltun))
+- Correct documentation in README [\#53](https://github.com/akoltun/form_obj/pull/53) ([akoltun](https://github.com/akoltun))
+- Improve inspect method [\#52](https://github.com/akoltun/form_obj/pull/52) ([akoltun](https://github.com/akoltun))
+- Test that update\_attributes returns itself [\#51](https://github.com/akoltun/form_obj/pull/51) ([akoltun](https://github.com/akoltun))
+- Redesign update attributes [\#50](https://github.com/akoltun/form_obj/pull/50) ([akoltun](https://github.com/akoltun))
+- Add update non existent attribute tests [\#49](https://github.com/akoltun/form_obj/pull/49) ([akoltun](https://github.com/akoltun))
+- Fix wrong primary key test [\#48](https://github.com/akoltun/form_obj/pull/48) ([akoltun](https://github.com/akoltun))
+- Redesign sync arrays to model [\#46](https://github.com/akoltun/form_obj/pull/46) ([akoltun](https://github.com/akoltun))
+- Move tests from rspec to minitests and delete rspec [\#42](https://github.com/akoltun/form_obj/pull/42) ([akoltun](https://github.com/akoltun))
+- Small refactor [\#41](https://github.com/akoltun/form_obj/pull/41) ([akoltun](https://github.com/akoltun))
+
 ## [v0.5.0](https://github.com/akoltun/form_obj/tree/v0.5.0) (2018-06-14)
 [Full Changelog](https://github.com/akoltun/form_obj/compare/v0.4.0...v0.5.0)
 
