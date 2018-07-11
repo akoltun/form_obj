@@ -1,8 +1,7 @@
 # Change Log
 
-## [Unreleased](https://github.com/akoltun/form_obj/tree/HEAD)
-
-[Full Changelog](https://github.com/akoltun/form_obj/compare/v0.5.0...HEAD)
+## [v1.0.0](https://github.com/akoltun/form_obj/tree/v1.0.0) (2018-07-11)
+[Full Changelog](https://github.com/akoltun/form_obj/compare/v0.5.0...v1.0.0)
 
 **Implemented enhancements:**
 
