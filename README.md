@@ -911,12 +911,12 @@ end
 car_model = { engine: Struct.new(:power).new(335) }
 team_model = Struct.new(:team_name, :year, :car).new('Ferrari', 1950, car_model)
 
-team = Team.new.load_from_model(team_model)
-team.to_hash      # => {
-                  # =>    :name => "Ferrari"
-                  # =>    :year => 1950
-                  # =>    :engine_power => 335
-                  # => }
+team = Team.load_from_model(team_model)
+team.to_hash                    # => {
+                                # =>    :name => "Ferrari"
+                                # =>    :year => 1950
+                                # =>    :engine_power => 335
+                                # => }
 ```
 
 So attributes are mapped as follows:
@@ -932,7 +932,6 @@ So attributes are mapped as follows:
 ```ruby
 team = Team.load_from_model(team_model)
 ```
-
 
 #### 3.2. `load_from_models` - Initialize Form Object from Few Models
 
@@ -954,12 +953,12 @@ end
 car_model = { engine: Struct.new(:power).new(335) }
 team_model = Struct.new(:team_name, :year).new('Ferrari', 1950)    # <- doesn't have car attribute !!!
 
-team = Team.new.load_from_models(default: team_model, car: car_model)
-team.to_hash      # => {
-                  # =>    :name => "Ferrari"
-                  # =>    :year => 1950
-                  # =>    :engine_power => 335
-                  # => }
+team = Team.load_from_models(default: team_model, car: car_model)
+team.to_hash                    # => {
+                                # =>    :name => "Ferrari"
+                                # =>    :year => 1950
+                                # =>    :engine_power => 335
+                                # => }
 ```
 
 So attributes are mapped as follows:
@@ -985,12 +984,12 @@ end
 
 team_model = Struct.new(:team_name, :year, :engine_power).new('Ferrari', 1950, 335)
 
-team = Team.new.load_from_model(team_model)
-team.to_hash      # => {
-                  # =>    :name => "Ferrari"
-                  # =>    :year => 1950
-                  # =>    :engine_power => nil
-                  # => }
+team = Team.load_from_model(team_model)
+team.to_hash                    # => {
+                                # =>    :name => "Ferrari"
+                                # =>    :year => 1950
+                                # =>    :engine_power => nil
+                                # => }
 ```
 
 So attributes are mapped as follows:
@@ -1001,9 +1000,53 @@ So attributes are mapped as follows:
 | `form.year` | `team_model.year` |
 | `form.engine_power` | - |
 
-It also works for other methods: `sync_to_model(s)` and `to_model(s)_hash` 
+It also works for other methods: `sync_to_model(s)`, `to_model(s)_hash`, `copy_errors_from_model(s)`. 
 
-#### 3.4. Map Nested Form Objects
+#### 3.4. Do Not Map Certain Attribute For Reading From Model
+
+Use `read_from_model: false` in order to avoid mapping of the attribute only in `load_from_model(s)` methods.
+
+```ruby
+class Team < FormObj::Form
+  include FormObj::ModelMapper
+  
+  attribute :name
+  attribute :year, read_from_model: false
+end
+
+team_model = Struct.new(:name, :year).new('Ferrari', 1950)
+team = Team.new(name: 'McLaren', year: 1966)
+
+team.load_from_model(team_model)
+
+team.name                       # => "Ferrari"
+team.year                       # => 1966
+```
+
+#### 3.5. Do Not Map Certain Attribute For Writing to Model
+
+Use `write_to_model: false` in order to avoid mapping of the attribute only in `sync_to_model(s)`, `to_model(s)_hash`, `copy_errors_from_model(s)` methods.
+
+```ruby
+class Team < FormObj::Form
+  include FormObj::ModelMapper
+  
+  attribute :name
+  attribute :year, write_to_model: false
+end
+
+team_model = Struct.new(:name, :year).new('Ferrari', 1950)
+team = Team.new(name: 'McLaren', year: 1966)
+
+team.sync_to_model(team_model)
+
+team_model.name                 # => "McLaren"
+team_model.year                 # => 1950
+
+team.to_model_hash              # => {:name => "McLaren"}
+```
+
+#### 3.6. Map Nested Form Objects
 
 Nested forms are mapped by default to corresponding nested models.
 
@@ -1022,15 +1065,15 @@ end
 car_model = Struct.new(:code, :driver).new('340 F1', 'Ascari')
 team_model = Struct.new(:team_name, :year, :car).new('Ferrari', 1950, car_model)
 
-team = Team.new.load_from_model(team_model)
-team.to_hash      # => {
-                  # =>    :name => "Ferrari",
-                  # =>    :year => 1950,
-                  # =>    :car => {
-                  # =>        :code => "340 F1",
-                  # =>        :driver => "Ascari"   
-                  # =>    }
-                  # => }
+team = Team.load_from_model(team_model)
+team.to_hash                    # => {
+                                # =>    :name => "Ferrari",
+                                # =>    :year => 1950,
+                                # =>    :car => {
+                                # =>        :code => "340 F1",
+                                # =>        :driver => "Ascari"   
+                                # =>    }
+                                # => }
 ```
 
 So attributes are mapped as follows:
@@ -1044,7 +1087,7 @@ So attributes are mapped as follows:
 
 It also works for other methods: `sync_to_model(s)` and `to_model(s)_hash` 
 
-#### 3.5. Map Nested Form Object to Parent Level Model
+#### 3.7. Map Nested Form Object to Parent Level Model
 
 Use `model_nesting: false` parameter to map nested form object to parent level model.
 
@@ -1062,15 +1105,15 @@ end
 
 team_model = Struct.new(:team_name, :year, :code, :driver).new('Ferrari', 1950, '340 F1', 'Ascari')
 
-team = Team.new.load_from_model(team_model)
-team.to_hash      # => {
-                  # =>    :name => "Ferrari",
-                  # =>    :year => 1950,
-                  # =>    :car => {
-                  # =>        :code => "340 F1",
-                  # =>        :driver => "Ascari"   
-                  # =>    }
-                  # => }
+team = Team.load_from_model(team_model)
+team.to_hash                    # => {
+                                # =>    :name => "Ferrari",
+                                # =>    :year => 1950,
+                                # =>    :car => {
+                                # =>        :code => "340 F1",
+                                # =>        :driver => "Ascari"   
+                                # =>    }
+                                # => }
 ```
 
 So attributes are mapped as follows:
@@ -1084,7 +1127,7 @@ So attributes are mapped as follows:
 
 It also works for other methods: `sync_to_model(s)` and `to_model(s)_hash` 
 
-#### 3.6. Map Nested Form Object to A Hash Model
+#### 3.8. Map Nested Form Object to A Hash Model
 
 Use `model_hash: true` in order to map a nested form object to a hash as a model.
 
@@ -1103,15 +1146,15 @@ end
 car_model = { code: '340 F1', driver: 'Ascari' }
 team_model = Struct.new(:team_name, :year, :car).new('Ferrari', 1950, car_model)
 
-team = Team.new.load_from_model(team_model)
-team.to_hash      # => {
-                  # =>    :name => "Ferrari",
-                  # =>    :year => 1950,
-                  # =>    :car => {
-                  # =>        :code => "340 F1",
-                  # =>        :driver => "Ascari"   
-                  # =>    }
-                  # => }
+team = Team.load_from_model(team_model)
+team.to_hash                    # => {
+                                # =>    :name => "Ferrari",
+                                # =>    :year => 1950,
+                                # =>    :car => {
+                                # =>        :code => "340 F1",
+                                # =>        :driver => "Ascari"   
+                                # =>    }
+                                # => }
 ```
 
 So attributes are mapped as follows:
@@ -1125,7 +1168,7 @@ So attributes are mapped as follows:
 
 It also works for other methods: `sync_to_model(s)` and `to_model(s)_hash` 
 
-#### 3.7. Map Array of Nested Form Objects
+#### 3.9. Map Array of Nested Form Objects
 
 Array of nested forms is mapped by default to corresponding array (or for example to `ActiveRecord::Relation` in case of Rails) of nested models.
 
@@ -1142,7 +1185,7 @@ class Team < FormObj::Form
 end
 ``` 
 
-#### 3.8. Map Array of Nested Form Objects to Nested Array of Nested Models
+#### 3.10. Map Array of Nested Form Objects to Nested Array of Nested Models
 
 If corresponding `:model_attribute` parameter uses dot notations to reference
 nested models the value of `:model_class` parameter should be an array of corresponding model classes.
@@ -1160,7 +1203,7 @@ class ArrayForm < FormObj::Form
 end
 ``` 
 
-#### 3.9. Default Implementation of Loading of Array of Models 
+#### 3.11. Default Implementation of Loading of Array of Models 
 
 By default `load_from_model(s)` methods loads all models from arrays.
 
@@ -1187,28 +1230,28 @@ cars_model = [CarModel.new('340 F1', 'Ascari'), CarModel.new('275 F1', 'Villores
 colours_model = [ColourModel.new(:red, 0xFF0000), ColourModel.new(:white, 0xFFFFFF)]
 team_model = Struct.new(:team_name, :year, :cars, :colours).new('Ferrari', 1950, cars_model, colours_model)
 
-team = Team.new.load_from_model(team_model)
-team.to_hash      # => {
-                  # =>    :name => "Ferrari",
-                  # =>    :year => 1950,
-                  # =>    :cars => [{
-                  # =>        :code => "340 F1",
-                  # =>        :driver => "Ascari"   
-                  # =>    }, {
-                  # =>        :code => "275 F1",
-                  # =>        :driver => "Villoresi"   
-                  # =>    }],
-                  # =>    :colours => [{
-                  # =>        :name => :red,
-                  # =>        :rgb => 0xFF0000   
-                  # =>    }, {
-                  # =>        :name => :white,
-                  # =>        :rgb => 0xFFFFFF   
-                  # =>    }]
-                  # => }
+team = Team.load_from_model(team_model)
+team.to_hash                    # => {
+                                # =>    :name => "Ferrari",
+                                # =>    :year => 1950,
+                                # =>    :cars => [{
+                                # =>        :code => "340 F1",
+                                # =>        :driver => "Ascari"   
+                                # =>    }, {
+                                # =>        :code => "275 F1",
+                                # =>        :driver => "Villoresi"   
+                                # =>    }],
+                                # =>    :colours => [{
+                                # =>        :name => :red,
+                                # =>        :rgb => 0xFF0000   
+                                # =>    }, {
+                                # =>        :name => :white,
+                                # =>        :rgb => 0xFFFFFF   
+                                # =>    }]
+                                # => }
 ```
 
-#### 3.10. Custom Implementation of Loading of Array of Models  
+#### 3.12. Custom Implementation of Loading of Array of Models  
 
 `FormObj::ModelMapper::Array` class implements method (where `*args` are additional params passed to `load_from_model(s)` methods)
 
@@ -1260,39 +1303,39 @@ cars_model = [CarModel.new('340 F1', 'Ascari'), CarModel.new('275 F1', 'Villores
 colours_model = [ColourModel.new(:red, 0xFF0000), ColourModel.new(:white, 0xFFFFFF)]
 team_model = Struct.new(:team_name, :year, :cars, :colours).new('Ferrari', 1950, cars_model, colours_model)
 
-team = Team.new.load_from_model(team_model, offset: 0, limit: 1)
-team.to_hash      # => {
-                  # =>    :name => "Ferrari",
-                  # =>    :year => 1950,
-                  # =>    :cars => [{
-                  # =>        :code => "340 F1",
-                  # =>        :driver => "Ascari"   
-                  # =>    }],
-                  # =>    :colours => [{
-                  # =>        :name => :red,
-                  # =>        :rgb => 0xFF0000   
-                  # =>    }, {
-                  # =>        :name => :white,
-                  # =>        :rgb => 0xFFFFFF   
-                  # =>    }] 
-                  # => }
+team = Team.load_from_model(team_model, offset: 0, limit: 1)
+team.to_hash                    # => {
+                                # =>    :name => "Ferrari",
+                                # =>    :year => 1950,
+                                # =>    :cars => [{
+                                # =>        :code => "340 F1",
+                                # =>        :driver => "Ascari"   
+                                # =>    }],
+                                # =>    :colours => [{
+                                # =>        :name => :red,
+                                # =>        :rgb => 0xFF0000   
+                                # =>    }, {
+                                # =>        :name => :white,
+                                # =>        :rgb => 0xFFFFFF   
+                                # =>    }] 
+                                # => }
 
-team = Team.new.load_from_model(team_model, offset: 1, limit: 1)
-team.to_hash      # => {
-                  # =>    :name => "Ferrari",
-                  # =>    :year => 1950,
-                  # =>    :cars => [{
-                  # =>        :code => "275 F1",
-                  # =>        :driver => "Villoresi"   
-                  # =>    }],
-                  # =>    :colours => [{
-                  # =>        :name => :red,
-                  # =>        :rgb => 0xFF0000   
-                  # =>    }, {
-                  # =>        :name => :white,
-                  # =>        :rgb => 0xFFFFFF   
-                  # =>    }]
-                  # => }
+team = Team.load_from_model(team_model, offset: 1, limit: 1)
+team.to_hash                    # => {
+                                # =>    :name => "Ferrari",
+                                # =>    :year => 1950,
+                                # =>    :cars => [{
+                                # =>        :code => "275 F1",
+                                # =>        :driver => "Villoresi"   
+                                # =>    }],
+                                # =>    :colours => [{
+                                # =>        :name => :red,
+                                # =>        :rgb => 0xFF0000   
+                                # =>    }, {
+                                # =>        :name => :white,
+                                # =>        :rgb => 0xFFFFFF   
+                                # =>    }]
+                                # => }
 ```
 
 Note that our new implementation of `iterate_through_models_to_load_them` limits only cars but not colours.
@@ -1313,7 +1356,7 @@ class ArrayLoadLimit < FormObj::ModelMapper::Array
 end
 ```
      
-#### 3.11. Sync Form Object to Model(s)
+#### 3.13. Sync Form Object to Model(s)
 
 Use `sync_to_models(models)` to sync form object attributes to mapped models.
 Method returns self so calls could be chained.
@@ -1334,14 +1377,14 @@ team = Team.new
 team.update_attributes(name: 'McLaren', year: 1966, engine_power: 415)
 team.sync_to_models(default: default_model, car: car_model)
 
-default_model.team_name     # => "McLaren"
-default_model.year          # => 1966
-car_model[:engine].power    # => 415 
+default_model.team_name         # => "McLaren"
+default_model.year              # => 1966
+car_model[:engine].power        # => 415 
 ``` 
 
 Use `sync_to_model(model)` if form object is mapped to single model.
 
-#### 3.12. Sync Array of Nested Form Objects to Model(s)
+#### 3.14. Sync Array of Nested Form Objects to Model(s)
 
 By default `FormObj::Form` with included `FormObj::ModelMapper` will try to match Form Objects and Models by primary key.
 Therefore Form Object primary key attribute has to be mapped to top level Model attribute.
@@ -1400,7 +1443,7 @@ If array does not respond to `:where` models that correspond to form objects mar
 
 ```ruby
 team_model = TeamModel.new([CarModel.new('275 F1', 'Ascari')])
-team = Team.new.load_from_model(team_model)                           # => #<Team cars: [#< code: "275 F1", driver: nil>]>
+team = Team.load_from_model(team_model)                           # => #<Team cars: [#< code: "275 F1", driver: nil>]>
 team.update_attributes(cars: [{ code: '275 F1', _destroy: true }])    # => #<Team cars: [#< code: "275 F1", driver: nil marked_for_destruction>]>
 
 team_model.cars                                                       # => [#<struct CarModel code="275 F1", driver="Ascari">]
@@ -1408,7 +1451,7 @@ team.sync_to_model(team_model)
 team_model.cars                                                       # => []
 ```
 
-#### 3.13. Sync Array of Nested Form Objects to `ActiveRecord`-like Models
+#### 3.15. Sync Array of Nested Form Objects to `ActiveRecord`-like Models
 
 if array respond to `:where` (aka `ActiveRecord`) models that correspond to form objects marked for destruction will be also marked for destruction.
 
@@ -1431,14 +1474,14 @@ team_model = TeamModel.find(1)
 team_model.cars                                   # => #<ActiveRecord::Associations::CollectionProxy [#<Car id: 1, code: "275 F1", driver: "Ascari">]>
 team_model.cars.first.marked_for_destruction?     # => false
 
-team = Team.new.load_from_model(team_model).update_attributes(cars: [{ id: 1, _destroy: true }])
+team = Team.load_from_model(team_model).update_attributes(cars: [{ id: 1, _destroy: true }])
 team.sync_to_model(team_model)
 
 team_model.cars                                   # => #<ActiveRecord::Associations::CollectionProxy [#<Car id: 1, code: "275 F1", driver: "Ascari">]>
 team_model.cars.first.marked_for_destruction?     # => true
 ```
 
-#### 3.14. Customize Sync to Array of Models
+#### 3.16. Customize Sync to Array of Models
 
 `FormObj::ModelMapper::Array` has private methods: `sync_creation_to_models`, `sync_update_to_models`, `sync_destruction_to_models`.
 They are called during syncing process and could be overwritten. 
@@ -1486,7 +1529,7 @@ As well as the `FormObj::Form` descendant class itself has to be returned from `
   end
 ```
 
-#### 3.15. Model Validation and Persistence
+#### 3.17. Model Validation and Persistence
 
 `sync_to_model(s)` do not call `save` method on the model(s).
 Also they don't call `valid?` method on the model(s). 
@@ -1495,7 +1538,7 @@ using `<attribute_name>=` accessors on the model(s).
 
 It is completely up to developer to do any additional validations on the model(s) and save it(them).
 
-#### 3.16. Copy Model Validation Errors into Form Object
+#### 3.18. Copy Model Validation Errors into Form Object
 
 Even though validation could and should happen in the form object it is possible to have (additional) validation(s) in the model(s).
 In this case it is handy to copy model validation errors to form object in order to be able to present them to the user in a standard way.
@@ -1514,7 +1557,7 @@ team.copy_errors_from_model(model)
 
 For the moment `copy_errors_from_model(s)` do not support nested form object/model and array of nested form objects/models. 
 
-#### 3.17. Serialize Form Object to Model Hash
+#### 3.19. Serialize Form Object to Model Hash
 
 Use `to_model_hash(model = :default)` to get hash representation of the model that mapped to the form object.
 
@@ -1723,7 +1766,7 @@ end
 <% end %>
 ```
 
-### 5. Reference Guide: `attribute` parameters
+### 5. Reference Guide: `attribute`'s parameters
 
 #### 5.1 `FormObj::Struct`
 
@@ -2010,6 +2053,60 @@ team_form.car.power                           # => 350
 ```
 
 `model_nesting: true` can be omitted since it is its default value.
+
+##### 5.3.6. Parameter `read_from_model`
+
+*Default value:* `true`
+
+`false` value of this parameter prevents from reading attribute value from the model in
+`load_from_model(s)` methods.
+
+```ruby
+class TeamForm < FormObj::Form
+  include FormObj::ModelMapper
+  
+  attribute :name
+  attribute :year, read_from_model: false
+end
+
+Team = Struct.new(:name, :year)
+
+team = Team.new('Ferrari', 1950)
+team_form = TeamForm.new(name: 'McLaren', year: 1966)
+
+team_form.load_from_model(team)
+team_form.name                                # => "Ferrari"
+team_form.year                                # => 1966 
+```
+
+##### 5.3.7. Parameter `write_to_model`
+
+*Default value:* `true`
+
+`false` value of this parameter 
+- will prevent from writing attribute value to the model in `sync_to_model(s)` methods, 
+- attribute will not be present in the hash generated by `to_model(s)_hash` methods, 
+- attribute errors will not be copied from the model by `copy_errors_from_model(s)` methods.
+
+```ruby
+class TeamForm < FormObj::Form
+  include FormObj::ModelMapper
+  
+  attribute :name
+  attribute :year, write_to_model: false
+end
+
+Team = Struct.new(:name, :year)
+
+team = Team.new('Ferrari', 1950)
+team_form = TeamForm.new(name: 'McLaren', year: 1966)
+
+team_form.sync_to_model(team)
+team.name                                     # => "McLaren"
+team.year                                     # => 1950
+
+team_form.to_model_hash                       # => {:name=>"McLaren"} 
+```
 
 ## Development
 

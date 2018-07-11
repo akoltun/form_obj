@@ -5,8 +5,19 @@ module FormObj
     class Attribute < FormObj::Form::Attribute
       attr_reader :model_attribute
 
-      def initialize(name, array: false, class: nil, default: nil, model_hash: false, model: :default, model_attribute: nil, model_class: nil, model_nesting: true, parent:, primary_key: nil, &block)
-        @model_attribute = ModelAttribute.new(model: model, names: model_attribute, classes: model_class, default_name: name, nesting: model_nesting, array: array, hash: model_hash, subform: binding.local_variable_get(:class) || block_given?)
+      def initialize(name, array: false, class: nil, default: nil, model_hash: false, model: :default, model_attribute: nil, model_class: nil, model_nesting: true, parent:, primary_key: nil, read_from_model: true, write_to_model: true, &block)
+        @model_attribute = ModelAttribute.new(
+            array: array,
+            classes: model_class,
+            default_name: name,
+            hash: model_hash,
+            model: model,
+            names: model_attribute,
+            nesting: model_nesting,
+            read_from_model: read_from_model,
+            subform: binding.local_variable_get(:class) || block_given?,
+            write_to_model: write_to_model,
+        )
 
         if block_given?
           new_block = Proc.new do

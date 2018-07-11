@@ -38,8 +38,8 @@ class ModelMapperToModelHashTest < Minitest::Test
     attribute :chassis, array: true, model_hash: true, model: :chassis do
       attribute :id
       attribute :suspension do
-        attribute :front
-        attribute :rear
+        attribute :front, write_to_model: true
+        attribute :rear, write_to_model: false
       end
       attribute :brakes
     end
@@ -115,14 +115,12 @@ class ModelMapperToModelHashTest < Minitest::Test
                           id: 1,
                           suspension: {
                               front: 'independent',
-                              rear: 'de Dion',
                           },
                           brakes: :drum
                       }, {
                           id: 3,
                           suspension: {
                               front: 'dependent',
-                              rear: 'de Lion',
                           },
                           brakes: :disc
                       }],

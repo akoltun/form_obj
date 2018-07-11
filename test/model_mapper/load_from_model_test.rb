@@ -49,8 +49,8 @@ class ModelMapperLoadFromModelTest < Minitest::Test
     attribute :chassis, array: true, model_hash: true do
       attribute :id
       attribute :suspension do
-        attribute :front
-        attribute :rear
+        attribute :front, read_from_model: true
+        attribute :rear, read_from_model: false
       end
       attribute :brakes
     end
@@ -267,12 +267,12 @@ class ModelMapperLoadFromModelTest < Minitest::Test
 
     assert_equal(1, @team.chassis[0].id)
     assert_equal('independent', @team.chassis[0].suspension.front)
-    assert_equal('de Dion', @team.chassis[0].suspension.rear)
+    assert_nil(@team.chassis[0].suspension.rear)
     assert_equal(:drum, @team.chassis[0].brakes)
 
     assert_equal(2, @team.chassis[1].id)
     assert_equal('dependent', @team.chassis[1].suspension.front)
-    assert_equal('de Lion', @team.chassis[1].suspension.rear)
+    assert_nil(@team.chassis[1].suspension.rear)
     assert_equal(:disc, @team.chassis[1].brakes)
 
     assert_kind_of(FormObj::ModelMapper::Array, @team.colours)
