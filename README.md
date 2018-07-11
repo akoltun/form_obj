@@ -15,6 +15,8 @@ ActiveModel: 3.2+
 The gem is tested against all ruby versions and all versions of its dependencies 
 except ActiveSupport and ActiveModel version 4.0.x because they requires Minitest 4 which is not compatible with Minitest 5.
 
+This gem follows [Semantic Versioning](https://semver.org/).
+
 ## Installation
 
 Add this line to your application's Gemfile:
@@ -32,8 +34,6 @@ Or install it yourself as:
     $ gem install form_obj
 
 ## Usage
-
-**WARNING!!!** The gem is still under development. Expect braking changes in `FormObj::ModelMapper` module.<br/>
 
 Class `FormObj::Struct` allows to describe complicated data structure, to update it with `update_attributes` method and to get its hash representation with `to_hash` method.
 
