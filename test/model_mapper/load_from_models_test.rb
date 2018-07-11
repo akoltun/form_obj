@@ -90,7 +90,7 @@ class ModelMapperLoadFromModelsTest < Minitest::Test
 
     @chassis_model.chassis = [
         { id: 1, suspension: SuspensionModel.new('independent', 'de Dion'), brakes: :drum },
-        { id: 2, suspension: SuspensionModel.new('dependent', 'de Dion'), brakes: :disc }
+        { id: 2, suspension: SuspensionModel.new('dependent', 'de Lion'), brakes: :disc }
     ]
   end
 
@@ -240,48 +240,48 @@ class ModelMapperLoadFromModelsTest < Minitest::Test
   end
 
   def check_that_all_attributes_value_are_correctly_loaded_from_filled_models
-    assert_equal(@team_model.team_name, @team.name)
-    assert_equal(@team_model.year, @team.year)
+    assert_equal('Ferrari', @team.name)
+    assert_equal(1950, @team.year)
 
     assert_kind_of(FormObj::ModelMapper::Array, @team.cars)
     assert_equal(2, @team.cars.size)
 
-    assert_equal(@team_model.cars[0].code, @team.cars[0].code)
-    assert_equal(@team_model.cars[0].driver, @team.cars[0].driver)
-    assert_equal(@team_model.cars[0].engine.power, @team.cars[0].engine.power)
-    assert_equal(@team_model.cars[0].engine.volume, @team.cars[0].engine.volume)
+    assert_equal('340 F1', @team.cars[0].code)
+    assert_equal('Ascari', @team.cars[0].driver)
+    assert_equal(335, @team.cars[0].engine.power)
+    assert_equal(4.1, @team.cars[0].engine.volume)
 
-    assert_equal(@team_model.cars[1].code, @team.cars[1].code)
-    assert_equal(@team_model.cars[1].driver, @team.cars[1].driver)
-    assert_equal(@team_model.cars[1].engine.power, @team.cars[1].engine.power)
-    assert_equal(@team_model.cars[1].engine.volume, @team.cars[1].engine.volume)
+    assert_equal('275 F1', @team.cars[1].code)
+    assert_equal('Villoresi', @team.cars[1].driver)
+    assert_equal(300, @team.cars[1].engine.power)
+    assert_equal(3.3, @team.cars[1].engine.volume)
 
     assert_kind_of(FormObj::ModelMapper::Array, @team.sponsors)
     assert_equal(2, @team.sponsors.size)
 
-    assert_equal(@team_model.finance[:sponsors][0].title, @team.sponsors[0].title)
-    assert_equal(@team_model.finance[:sponsors][0].money, @team.sponsors[0].money)
+    assert_equal('Shell', @team.sponsors[0].title)
+    assert_equal(1000000, @team.sponsors[0].money)
 
-    assert_equal(@team_model.finance[:sponsors][1].title, @team.sponsors[1].title)
-    assert_equal(@team_model.finance[:sponsors][1].money, @team.sponsors[1].money)
+    assert_equal('Pirelli', @team.sponsors[1].title)
+    assert_equal(500000, @team.sponsors[1].money)
 
     assert_kind_of(FormObj::ModelMapper::Array, @team.chassis)
     assert_equal(2, @team.chassis.size)
 
-    assert_equal(@chassis_model.chassis[0][:id], @team.chassis[0].id)
-    assert_equal(@chassis_model.chassis[0][:suspension].front, @team.chassis[0].suspension.front)
-    assert_equal(@chassis_model.chassis[0][:suspension].rear, @team.chassis[0].suspension.rear)
-    assert_equal(@chassis_model.chassis[0][:brakes], @team.chassis[0].brakes)
+    assert_equal(1, @team.chassis[0].id)
+    assert_equal('independent', @team.chassis[0].suspension.front)
+    assert_equal('de Dion', @team.chassis[0].suspension.rear)
+    assert_equal(:drum, @team.chassis[0].brakes)
 
-    assert_equal(@chassis_model.chassis[1][:id], @team.chassis[1].id)
-    assert_equal(@chassis_model.chassis[1][:suspension].front, @team.chassis[1].suspension.front)
-    assert_equal(@chassis_model.chassis[1][:suspension].rear, @team.chassis[1].suspension.rear)
-    assert_equal(@chassis_model.chassis[1][:brakes], @team.chassis[1].brakes)
+    assert_equal(2, @team.chassis[1].id)
+    assert_equal('dependent', @team.chassis[1].suspension.front)
+    assert_equal('de Lion', @team.chassis[1].suspension.rear)
+    assert_equal(:disc, @team.chassis[1].brakes)
 
     assert_kind_of(::Array, @team.colours)
     assert_equal(1, @team.colours.size)
 
-    assert_equal(@team_model[0].name, @team.colours[0].name)
-    assert_equal(@team_model[0].rgb, @team.colours[0].rgb)
+    assert_equal('white', @team.colours[0].name)
+    assert_equal(0xFFFFFF, @team.colours[0].rgb)
   end
 end
