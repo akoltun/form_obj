@@ -185,20 +185,45 @@ class FormInitializeAttributesTest < Minitest::Test
     assert_equal(0, team.colours.size)
   end
 
-  def test_that_error_is_raised_when_try_to_initialize_non_existent_attribute
-    assert_raises(FormObj::UnknownAttributeError) { Team.new(a: 1) }
-
-    assert_raises(FormObj::UnknownAttributeError) { Team.new(cars: [{a: 1}]) }
-
-    assert_raises(FormObj::UnknownAttributeError) { Team.new(cars: [{chassis: {a: 1}}]) }
-  end
-
   def test_that_error_is_raised_when_try_to_initialize_non_existent_attribute_with_parameter_raise_if_not_found_equal_to_true
     assert_raises(FormObj::UnknownAttributeError) { Team.new({a: 1}, raise_if_not_found: true) }
 
     assert_raises(FormObj::UnknownAttributeError) { Team.new({cars: [{a: 1}]}, raise_if_not_found: true) }
 
     assert_raises(FormObj::UnknownAttributeError) { Team.new({cars: [{chassis: {a: 1}}]}, raise_if_not_found: true) }
+  end
+
+  def test_that_non_existent_attribute_is_ignored_when_try_to_initialize_it
+    team = Team.new({
+                        name: 'Ferrari',
+                        a: 1,
+                        cars: [{
+                                   b: 2,
+                                   chassis: {
+                                       brakes: :drum,
+                                       c: 3
+                                   }
+                               }],
+                    })
+
+    assert_equal('Ferrari', team.name)
+    assert_nil(team.year)
+
+    assert_equal(1, team.cars.size)
+
+    assert_nil(team.cars[0].code)
+    assert_nil(team.cars[0].driver)
+    assert_nil(team.cars[0].engine.power)
+    assert_nil(team.cars[0].engine.volume)
+    assert_nil(team.cars[0].chassis.suspension.front)
+    assert_nil(team.cars[0].chassis.suspension.rear)
+    assert_equal(:drum, team.cars[0].chassis.brakes)
+
+    assert_equal(0, team.colours.size)
+
+    assert_raises(NoMethodError) { team.a }
+    assert_raises(NoMethodError) { team.cars[0].b }
+    assert_raises(NoMethodError) { team.cars[0].chassis.c }
   end
 
   def test_that_non_existent_attribute_is_ignored_when_try_to_initialize_it_with_parameter_raise_if_not_found_equal_to_false

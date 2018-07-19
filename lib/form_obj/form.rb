@@ -68,6 +68,10 @@ module FormObj
       @marked_for_destruction ||= false
     end
 
+    def update_attributes(attrs, raise_if_not_found: false)
+      super
+    end
+
     private
 
     def _set_attribute_value(attribute, value)
