@@ -56,8 +56,9 @@ model attributes name) and
 2. [`FormObj::Form`](#2-formobjform)
    1. [`FormObj::Form` Validation](#21-formobjform-validation)
    2. [`FormObj::Form` Persistence](#22-formobjform-persistence)
-   3. [Delete from Array of `FormObj::Form` via `update_attributes` method](#23-delete-from-array-of-formobjform-via-update_attributes-method)
-   4. [Using `FormObj::Form` in Form Builder](#24-using-formobjform-in-form-builder)
+   3. [Non-Existent Attributes in `FormObj::Form` `update_attributes` Do Not Raise By Default](23-non-existent-attributes-in-formobjform-update_attributes-do-not-raise-by-default)
+   4. [Delete from Array of `FormObj::Form` via `update_attributes` method](#24-delete-from-array-of-formobjform-via-update_attributes-method)
+   5. [Using `FormObj::Form` in Form Builder](#25-using-formobjform-in-form-builder)
 3. [`FormObj::ModelMapper`](#3-formobjmodelmapper)
    1. [`load_from_model` - Initialize Form Object from Model](#31-load_from_model---initialize-form-object-from-model)
    2. [`load_from_models` - Initialize Form Object from Few Models](#32-load_from_models---initialize-form-object-from-few-models)
@@ -805,7 +806,38 @@ team.update_attributes(name: 'McLaren')
 team.persisted?                         # => false
 ```
 
-#### 2.3. Delete from Array of `FormObj::Form` via `update_attributes` method
+#### 2.3. Non-Existent Attributes in `FormObj::Form` `update_attributes` Do Not Raise By Default
+
+`FormObj::Form` `update_attributes` method has `raise_if_not_found` parameter default `false` value.
+In order to have the same behaviour as `FormObj::Struct` `update_attributes` explicitly specify this parameter equal to `true`
+
+```ruby
+class TeamStruct < FormObj::Struct
+  attribute :name
+  attribute :year
+end
+
+TeamStruct.new(name: 'Ferrari', a: 1)     # => FormObj::UnknownAttributeError: a
+TeamStruct.new.update_attributes(a: 1)    # => FormObj::UnknownAttributeError: a
+
+TeamStruct.new({ name: 'Ferrari', a: 1 }, raise_if_not_found: false)    # => #<Team name: "Ferrari", year: nil> 
+TeamStruct.new.update_attributes({ a: 1 }, raise_if_not_found: false)   # => #<Team name: nil, year: nil>
+```
+
+```ruby
+class TeamForm < FormObj::Form
+  attribute :name
+  attribute :year
+end
+
+TeamForm.new(name: 'Ferrari', a: 1)     # => #<Team name: "Ferrari", year: nil>
+TeamForm.new.update_attributes(a: 1)    # => #<Team name: nil, year: nil>
+
+TeamForm.new({ name: 'Ferrari', a: 1 }, raise_if_not_found: true)    # => FormObj::UnknownAttributeError: a 
+TeamForm.new.update_attributes({ a: 1 }, raise_if_not_found: true)   # => FormObj::UnknownAttributeError: a 
+``` 
+
+#### 2.4. Delete from Array of `FormObj::Form` via `update_attributes` method
 
 `FormObj::Struct` `update_attributes` method by default deletes all array elements that are not present in the new hash.
 
@@ -866,7 +898,7 @@ team.cars[0].mark_for_destruction
 team.cars[0].marked_for_destruction?    # => true
 ```
 
-#### 2.4. Using `FormObj::Form` in Form Builder
+#### 2.5. Using `FormObj::Form` in Form Builder
 
 ```ruby
 class Team < FormObj::Form
