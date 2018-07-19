@@ -1,5 +1,12 @@
 # Change Log
 
+## [v1.0.1](https://github.com/akoltun/form_obj/tree/v1.0.1) (2018-07-19)
+[Full Changelog](https://github.com/akoltun/form_obj/compare/v1.0.0...v1.0.1)
+
+**Merged pull requests:**
+
+- FormObj::Form do not raise by default on non-existent attributes update [\#64](https://github.com/akoltun/form_obj/pull/64) ([akoltun](https://github.com/akoltun))
+
 ## [v1.0.0](https://github.com/akoltun/form_obj/tree/v1.0.0) (2018-07-11)
 [Full Changelog](https://github.com/akoltun/form_obj/compare/v0.5.0...v1.0.0)
 
