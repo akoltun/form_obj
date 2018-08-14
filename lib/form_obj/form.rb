@@ -42,9 +42,7 @@ module FormObj
     end
 
     def persisted?
-      @persisted && self.class._attributes.reduce(true) { |persisted, attr|
-        persisted && (!attr.subform? || read_attribute(attr).persisted?)
-      }
+      @persisted
     end
 
     def mark_as_persisted
