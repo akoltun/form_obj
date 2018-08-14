@@ -750,7 +750,7 @@ team.errors.messages                  # => {:name=>["is too short (minimum is 10
 #### 2.2. `FormObj::Form` Persistence
 
 In order to make `FormObj::Form` compatible with form builder it has to respond to `:persisted?` message.
-It maintains persistence status. Initial form is not persisted. 
+Initial form is not persisted. 
 It can be marked as persisted by assigning `persisted = true` which marks as persisted only form itself or
 by calling `mark_as_persisted` method which marks as persisted the form itself and all nested forms and arrays.
 
