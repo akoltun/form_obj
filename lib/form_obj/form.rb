@@ -60,7 +60,6 @@ module FormObj
       self.class._attributes.each { |attr|
         read_attribute(attr).mark_for_destruction if attr.subform?
       }
-      self.persisted = false
       self
     end
 
