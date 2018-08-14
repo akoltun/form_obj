@@ -1,5 +1,17 @@
 # Change Log
 
+## [v1.0.2](https://github.com/akoltun/form_obj/tree/v1.0.2) (2018-08-14)
+
+[Full Changelog](https://github.com/akoltun/form_obj/compare/v1.0.1...v1.0.2)
+
+**Closed issues:**
+
+- Correct persisted? behaviour in accord with ActiveRecord [\#65](https://github.com/akoltun/form_obj/issues/65)
+
+**Merged pull requests:**
+
+- Fix persisted behaviour [\#66](https://github.com/akoltun/form_obj/pull/66) ([akoltun](https://github.com/akoltun))
+
 ## [v1.0.1](https://github.com/akoltun/form_obj/tree/v1.0.1) (2018-07-19)
 [Full Changelog](https://github.com/akoltun/form_obj/compare/v1.0.0...v1.0.1)
 
