@@ -42,9 +42,7 @@ module FormObj
     end
 
     def persisted?
-      @persisted && self.class._attributes.reduce(true) { |persisted, attr|
-        persisted && (!attr.subform? || read_attribute(attr).persisted?)
-      }
+      @persisted
     end
 
     def mark_as_persisted
@@ -60,7 +58,6 @@ module FormObj
       self.class._attributes.each { |attr|
         read_attribute(attr).mark_for_destruction if attr.subform?
       }
-      self.persisted = false
       self
     end
 
@@ -73,11 +70,6 @@ module FormObj
     end
 
     private
-
-    def _set_attribute_value(attribute, value)
-      @persisted = false unless _get_attribute_value(attribute) === value
-      super
-    end
 
     def inner_inspect
       "#{super}#{marked_for_destruction? ? ' marked_for_destruction' : ''}"
