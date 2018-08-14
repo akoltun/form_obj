@@ -2,7 +2,7 @@ module FormObj
   class Form < FormObj::Struct
     class Array < FormObj::Struct::Array
       def persisted?
-        all?(&:persisted?)
+        empty? || all?(&:persisted?)
       end
 
       def mark_as_persisted
