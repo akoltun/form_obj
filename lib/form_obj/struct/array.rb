@@ -26,14 +26,24 @@ module FormObj
         resort_items_after_CUD!(items)
       end
 
+      def eql?(array)
+        array.is_a?(self.class) && size == array.size && all? { |item| item == array.find_by_primary_key(item.primary_key) }
+      end
+
+      def ==(array)
+        array.is_a?(Enumerable) && size == array.count && all? { |item| (array_item = array.find { |ai| ai.respond_to?(item_class.primary_key) && ai.send(item_class.primary_key) == item.primary_key }) && item == array_item }
+      end
+
+      protected
+
+      def find_by_primary_key(id)
+        find { |item| item.primary_key == id }
+      end
+
       private
 
       def primary_key(hash)
         hash[item_class.primary_key]
-      end
-
-      def find_by_primary_key(id)
-        find { |item| item.primary_key == id }
       end
 
       # Should return hash with 3 keys: :create, :update, :destroy

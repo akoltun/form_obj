@@ -99,6 +99,18 @@ module FormObj
       "#<#{inner_inspect}>"
     end
 
+    def eql?(obj)
+      obj.is_a?(self.class) && self.class._attributes.reduce(true) { |result, attribute| result && read_attribute(attribute).eql?(obj.send(attribute.name)) }
+    end
+
+    def ==(obj)
+      self.class._attributes.reduce(true) { |result, attribute| result && obj.respond_to?(attribute.name) && read_attribute(attribute) == obj.send(attribute.name) }
+    end
+
+    def ===(obj)
+      send(:==, obj)
+    end
+
     private
 
     def inner_inspect
