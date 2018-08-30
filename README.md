@@ -53,6 +53,7 @@ model attributes name) and
    1. [Nesting `FormObj::Struct`](#11-nesting-formobjstruct)
    2. [Array of `FormObj::Struct`](#12-array-of-formobjstruct)
    3. [Serialize `FormObj::Struct` to Hash](#13-serialize-formobjstruct-to-hash)
+   4. [Comparison](#14-comparison)
 2. [`FormObj::Form`](#2-formobjform)
    1. [`FormObj::Form` Validation](#21-formobjform-validation)
    2. [`FormObj::Form` Persistence](#22-formobjform-persistence)
@@ -727,6 +728,59 @@ team.to_hash      # => {
                   # =>    }] 
                   # => }
 ```
+
+#### 1.4. Comparison
+
+`FormObj::Struct` redefines comparison rules `==`, `===` and `eql?` for classes and attributes.
+
+##### 1.4.1. Class Comparison
+
+Lets assume that class `A` is inherited from `FormObj::Struct`. In this case: 
+
+- `A.eql? B` if and only if `B` is the same class or inherited from `A` and keeps all attributes unchanged.
+Although it could add new attributes.
+- `A === B` is an alias for `A.eql? B`.
+- `A == B` if and only if `B` is inherited from `FormObj::Struct` and has all the same attributes that `A` has. 
+Although it could have additional attributes. 
+
+So the only difference between `.eql?` and `==` is that 
+the former one requires class `B` to be a subclass of class `A`
+while for the latter one it is enough for class `B` to be a subclass of `FormObj::Struct`.  
+
+The terms "to keep attribute unchanged" and "to have the same attribute" means the same and can be described as follows - 
+for each attribute of class `A` there is corresponding (with the same name) attribute of class `B` that:
+
+- has the same default value (or both do not have it);
+- has the same nested structure (or both do not have it at all);
+- represents (or both do not) the array with the items of the same structure. 
+
+Also class `A` and `B` have to have the same (it terms described above) primary key attributes.
+
+Briefly it could be summarized in the following way:
+
+- `A.eql? B` requires `B` to implement the same interface as `A`;
+- `A == B` requires `B` to implement the same interface as `FormObj::Struct` with the same attributes as `A`.  
+
+##### 1.4.2. Class with Instance Comparison
+
+Lets assume that class `A` is inherited from `FormObj::Struct` 
+and `b` is an instance of class `B` (ex. `b = B.new`). In this case:
+
+- `A === b` if and only if `A.eql? B` 
+
+##### 1.4.3. Instance Comparison
+
+Lets assume that class `A` is inherited from `FormObj::Struct`, 
+`a` is an instance of class `A` (ex. `a = A.new`)
+and `b` is an instance of class `B` (ex. `b = B.new`). In this case:
+
+- `a.eql? b` if and only if `A.eql? B` and all `a`'s attributes 
+and corresponding them `b`'s attributes have the same value in terms of `.eql?`
+(`a.<attribute>.eql? b.<attribute>`) 
+- `a === b` if is an alias for `a == b`
+- `a == b` if and only if `A == B` and all `a`'s attributes 
+and corresponding them `b`'s attributes have the same value in terms of `==`
+(`a.<attribute> == b.<attribute>`) 
 
 ### 2. `FormObj::Form`
 
