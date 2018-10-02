@@ -13,6 +13,9 @@ class StructInitializeAttributesTest < Minitest::Test
     attribute :name
     attribute :rgb
   end
+  class Sponsor < FormObj::Form
+    attribute :name
+  end
   class Team < FormObj::Struct
     attribute :name
     attribute :year
@@ -29,6 +32,7 @@ class StructInitializeAttributesTest < Minitest::Test
   end
 
   def test_that_all_attributes_are_correctly_initialized
+    suspension = Suspension.new(front: 'independent', rear: 'de Dion')
     team = Team.new(
         name: 'McLaren',
         'name' => 'Ferrari',
@@ -41,10 +45,7 @@ class StructInitializeAttributesTest < Minitest::Test
                        volume: 4.1
                    },
                    chassis: {
-                       suspension: {
-                           front: 'independent',
-                           rear: 'de Dion',
-                       },
+                       suspension: suspension,
                        brakes: :drum,
                    }
                }, {
@@ -71,7 +72,7 @@ class StructInitializeAttributesTest < Minitest::Test
                       name: :white,
                       'rgb' => nil,
                       rgb: 0xFFFFFF,
-                  }]
+                  }],
     )
 
     assert_equal('Ferrari', team.name)

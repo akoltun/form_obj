@@ -29,6 +29,7 @@ class FormInitializeAttributesTest < Minitest::Test
   end
 
   def test_that_all_attributes_are_correctly_initialized
+    suspension = Suspension.new(front: 'independent', rear: 'de Dion')
     team = Team.new(
         name: 'McLaren',
         'name' => 'Ferrari',
@@ -41,10 +42,7 @@ class FormInitializeAttributesTest < Minitest::Test
                        volume: 4.1
                    },
                    chassis: {
-                       suspension: {
-                           front: 'independent',
-                           rear: 'de Dion',
-                       },
+                       suspension: suspension,
                        brakes: :drum,
                    }
                }, {
