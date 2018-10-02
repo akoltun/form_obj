@@ -1,7 +1,14 @@
 # Change Log
 
-## [v1.0.2](https://github.com/akoltun/form_obj/tree/v1.0.2) (2018-08-14)
+## [v1.0.3](https://github.com/akoltun/form_obj/tree/v1.0.3) (2018-10-02)
 
+[Full Changelog](https://github.com/akoltun/form_obj/compare/v1.0.2...v1.0.3)
+
+**Merged pull requests:**
+
+- Bugfix assigning subform [\#67](https://github.com/akoltun/form_obj/pull/67) ([akoltun](https://github.com/akoltun))
+
+## [v1.0.2](https://github.com/akoltun/form_obj/tree/v1.0.2) (2018-08-14)
 [Full Changelog](https://github.com/akoltun/form_obj/compare/v1.0.1...v1.0.2)
 
 **Closed issues:**
