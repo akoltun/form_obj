@@ -80,7 +80,7 @@ module FormObj
         if attr.nil?
           raise UnknownAttributeError.new(attr_name) if raise_if_not_found
         else
-          if attr.subform?
+          if attr.subform? && !attr_value.is_a?(FormObj::Struct)
             read_attribute(attr).update_attributes(attr_value, raise_if_not_found: raise_if_not_found)
           else
             update_attribute(attr, attr_value)
