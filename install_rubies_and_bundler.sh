@@ -25,4 +25,4 @@ do
   rvm install $i
 done
 
-rvm all do gem install bundler
+rvm all do gem install bundler -v '<2'

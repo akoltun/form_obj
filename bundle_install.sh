@@ -23,5 +23,5 @@ do
   echo "$i: Start appraisal install"
   echo "====================================================="
   rvm $i exec bundle
-  rvm $i exec appraisal install
+  rvm $i exec bundle exec appraisal install
 done
