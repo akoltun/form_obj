@@ -1,7 +1,11 @@
 # Change Log
 
-## [v1.0.3](https://github.com/akoltun/form_obj/tree/v1.0.3) (2018-10-02)
+## [v1.0.4](https://github.com/akoltun/form_obj/tree/v1.0.4) (2019-08-26)
+[Full Changelog](https://github.com/akoltun/form_obj/compare/v1.0.3...v1.0.4)
 
+- Update dependencies and add tests for new ruby versions
+
+## [v1.0.3](https://github.com/akoltun/form_obj/tree/v1.0.3) (2018-10-02)
 [Full Changelog](https://github.com/akoltun/form_obj/compare/v1.0.2...v1.0.3)
 
 **Merged pull requests:**
