@@ -43,7 +43,7 @@ GEM
       rack (>= 0.4)
     rack-test (0.6.3)
       rack (>= 1.0)
-    rake (10.5.0)
+    rake (13.0.1)
     sprockets (2.1.4)
       hike (~> 1.2)
       rack (~> 1.0)
@@ -61,7 +61,7 @@ DEPENDENCIES
   bundler (~> 1.16)
   form_obj!
   minitest (~> 5.0)
-  rake (~> 10.0)
+  rake (~> 13.0)
 
 BUNDLED WITH
    1.17.3
